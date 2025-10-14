@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    // 基本选项
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "moduleResolution": "Bundler", // 或者 "Node"，"Bundler" 更现代，适合 Vite
+    "resolveJsonModule": true,
+    "isolatedModules": true, // Vite 等工具要求
+    "esModuleInterop": true,
+    "skipLibCheck": true, // 跳过对 .d.ts 文件的检查，加快速度
+
+    // 严格性
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}

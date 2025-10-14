@@ -1,0 +1,21 @@
+{
+  "name": "finance-website2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "pnpm --filter \"./packages/**\" build",
+    "dev": "pnpm --parallel --filter \"./packages/**\" dev",
+    "type-check": "pnpm --filter \"./**\" type-check"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.1",
+  "devDependencies": {
+    "@types/node": "^22.18.6",
+    "eslint": "^9.37.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3"
+  }
+}

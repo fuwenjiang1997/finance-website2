@@ -1,0 +1,24 @@
+{
+  "name": "@fuwenjiang1997/trading-view-replay",
+  "version": "1.0.0",
+  "description": "Shared utility functions for the monorepo",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "dist"
+  ],
+  "packageManager": "pnpm@10.6.1"
+}
