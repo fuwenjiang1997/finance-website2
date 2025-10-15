@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "build": "pnpm --filter \"./packages/**\" build",
     "dev": "pnpm --parallel --filter \"./packages/**\" dev",
-    "type-check": "pnpm --filter \"./**\" type-check"
+    "type-check": "pnpm --filter \"./**\" type-check",
+    "dev:web": "pnpm --filter @fuwenjiang1997/finance-web dev"
   },
   "keywords": [],
   "author": "",
