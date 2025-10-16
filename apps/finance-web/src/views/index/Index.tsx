@@ -1,4 +1,3 @@
-import AdminLayout from '@/layout/AdminLayout'
 import { defineComponent } from 'vue'
 import AdminHeader from './components/AdminHeader'
 import AdminSide from './components/AdminSide'

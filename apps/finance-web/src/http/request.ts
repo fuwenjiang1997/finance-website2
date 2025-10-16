@@ -1,6 +1,9 @@
-// src/utils/request.js
 import axios from 'axios'
 import router from '@/router'
+
+export interface RequestError {
+  message: string
+}
 
 // 创建 axios 实例
 const service = axios.create({
@@ -32,26 +35,35 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response) => {
+    console.log('error.response.data11:>', response.data)
     // 根据实际后端返回结构调整
     if (response.status === 200) {
       return response.data.data
     } else {
       // 可以全局弹窗提示
-      return Promise.reject(response.data)
+      return Promise.reject(<RequestError>{
+        message: response.data,
+      })
     }
   },
   (error) => {
-    const requestUrl = response.config.url;
-
-    if (requestUrl === '/user/profile') {
-      return Promise.resolve(null);
+    if (error && error.config) {
+      const requestUrl = error.config.url
+      if (requestUrl === '/user/profile') {
+        return Promise.resolve(null)
+      }
     }
 
     if (error.response?.status === 401) {
       router.push('/signin')
-      return Promise.reject(error.response?.data?.error || error)
+      return Promise.reject(<RequestError>{
+        message: error.response.data?.error || error?.message || error,
+      })
     }
-    return Promise.reject(error.response.data.error || error)
+
+    return Promise.reject(<RequestError>{
+      message: error.response.data?.error || error?.message || error,
+    })
   },
 )
 

@@ -8,6 +8,14 @@ const router = createRouter({
       path: '/',
       component: IndexPage,
     },
+    {
+      path: '/signin',
+      component: () => import('@/views/sign/SignIn'),
+    },
+    {
+      path: '/signup',
+      component: () => import('@/views/sign/SignUp'),
+    },
   ],
 })
 

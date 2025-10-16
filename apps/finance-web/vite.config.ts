@@ -8,21 +8,25 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    vueJsx(),
-    tailwindcss(),
-    vueDevTools(),
-  ],
+  plugins: [vue(), vueJsx(), tailwindcss(), vueDevTools()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '@fuwenjiang1997/trading-view-replay': fileURLToPath(new URL('../../packages/trading-view-replay/src/index.ts', import.meta.url)),
+      '@fuwenjiang1997/trading-view-replay': fileURLToPath(
+        new URL('../../packages/trading-view-replay/src/index.ts', import.meta.url),
+      ),
     },
   },
-   server: {
+  server: {
     watch: {
       ignored: ['!**/node_modules/@fuwenjiang1997/trading-view-replay/**'],
+    },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:12346',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
     },
   },
 })

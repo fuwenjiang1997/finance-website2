@@ -19,6 +19,7 @@
     "@fuwenjiang1997/trading-view-replay": "workspace:^",
     "@vueuse/components": "^13.9.0",
     "@vueuse/core": "^13.9.0",
+    "axios": "^1.12.2",
     "classnames": "^2.5.1",
     "lightweight-charts": "^5.0.9",
     "lodash-es": "^4.17.21",
