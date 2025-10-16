@@ -13,7 +13,7 @@ interface DrawInfoData {
   icon: string
 }
 
-type DrawInfoParams = { category: DrawCategory; data: DrawInfoData[] }
+type DrawInfoParams = { category: DrawCategory; data: DrawInfoData[]; categoryName: string }
 
 type SelectedDrawMap = Record<DrawCategory, DrawInfoData>
 
@@ -22,6 +22,7 @@ export default defineComponent({
     const drawInfo: DrawInfoParams[] = [
       {
         category: DrawCategory.Line,
+        categoryName: '线段',
         data: [
           { name: '线段', value: 'LineSegment', icon: 'icon-xianduan' },
           { name: '射线', value: 'Ray', icon: 'icon-shexian' },
@@ -93,14 +94,15 @@ export default defineComponent({
                 <OnClickOutside onTrigger={() => closePopup()}>
                   <div
                     class={
-                      'absolute left-full top-0 w-[200px] flex flex-col gap-2 rounded overflow-hidden bg-white z-10 box-shadow'
+                      'absolute left-full top-0 w-[200px] flex flex-col rounded overflow-hidden bg-white z-10 box-shadow text-sm'
                     }
                   >
+                    <div class={'pt-3 pb-1 pl-2 '}>{group.categoryName}</div>
                     {group.data.map((item) => {
                       return (
                         <div
                           class={
-                            'flex gap-2 items-center py-1 px-4 cursor-pointer hover:bg-gray-900 hover:text-white'
+                            'flex gap-2 items-center py-1 px-2 cursor-pointer hover:bg-gray-900 hover:text-white'
                           }
                           onClick={() => onSelectDrawItem(item, group)}
                         >
