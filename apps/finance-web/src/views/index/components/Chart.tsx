@@ -18,11 +18,11 @@ export default defineComponent({
     })
 
     return () => (
-      <div class={' h-full flex flex-col py-4'}>
+      <div class={' h-full flex flex-col bg-white rounded'}>
         <div class={'flex-1'} ref="chartContainerRef">
           <div ref="chartRef"></div>
         </div>
-        <ChartCycle></ChartCycle>
+        <ChartCycle class={'mt-4'}></ChartCycle>
       </div>
     )
   },

@@ -1,5 +1,5 @@
 import { defineComponent, ref } from 'vue'
-import { MyTagButton, MyTagButtonSize } from '@/components/button/MyButton'
+import { MyTagButton } from '@/components/button/MyTagButton'
 
 export default defineComponent({
   setup() {
@@ -14,9 +14,10 @@ export default defineComponent({
       { label: '1周', value: '1w' },
       { label: '1月', value: '1M' },
     ]
+
     return () => (
       <div>
-        <div class={'flex gap-1'}>
+        <div class={'flex gap-1 px-4'}>
           {cycleList.map((item) => {
             return (
               <MyTagButton

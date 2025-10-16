@@ -1,5 +1,9 @@
-
+@import "tailwindcss";
 
 .flex-center {
   @apply flex justify-center items-center;
+}
+
+@theme {
+  --color-gray: #ebebeb
 }
