@@ -15,25 +15,27 @@ export const MAX_CHART_COUNT = 4
 
 export const useChartStore = defineStore('chartStore', () => {
   const chart = shallowRef<IChartApi>()
-  const chartList = reactive<Map<string, ChartInstance>>(new Map())
+  const chartList = reactive<ChartInstance[]>([])
   // const notification = useNotification()
 
   const onAddChartByCode = (data: CodeSymbol) => {
     const chartItem = useChart()
     chartItem.setCode(data)
-    chartList.set(chartItem.id, {
+    chartList.push({
       ...chartItem,
       chart: chartItem.chart.value,
       code: chartItem.code.value,
       name: chartItem.name.value,
+      circle: chartItem.circle.value,
     })
   }
 
   function onDeleteChart(id: string) {
-    if (chartList.has(id)) {
-      const chart = chartList.get(id)
+    const index = chartList.findIndex((item) => item.id === id)
+    if (index !== -1) {
+      const chart = chartList[index]
       chart?.destory()
-      chartList.delete(id)
+      chartList.splice(index, 1)
     }
   }
 

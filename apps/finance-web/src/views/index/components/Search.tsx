@@ -14,7 +14,7 @@ export default defineComponent({
       if (!data.code || !data.name) {
         return
       }
-      const size = chartStore.chartList.size
+      const size = chartStore.chartList.length
       if (size >= MAX_CHART_COUNT) {
         notification.warning({
           content: `最多可以设置${MAX_CHART_COUNT}个图表`,
@@ -122,7 +122,7 @@ const SelectedCodeList: FunctionalComponent = () => {
   const notification = useNotification()
 
   function onDeleteChart(id: string) {
-    if (chartStore.chartList.size <= 1) {
+    if (chartStore.chartList.length <= 1) {
       notification.warning({
         content: '至少需要有一个图表',
         duration: 3000,
@@ -134,7 +134,7 @@ const SelectedCodeList: FunctionalComponent = () => {
 
   return (
     <>
-      {[...chartStore.chartList].map(([, item]) => {
+      {chartStore.chartList.map((item) => {
         return (
           <NTag closable onClose={() => onDeleteChart(item.id)}>
             {item.name}

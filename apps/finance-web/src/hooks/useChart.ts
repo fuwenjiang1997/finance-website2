@@ -79,6 +79,7 @@ export function useChart() {
     chart,
     code,
     name,
+    circle,
     initChart,
     destory,
     setCode,

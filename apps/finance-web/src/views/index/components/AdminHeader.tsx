@@ -1,11 +1,14 @@
 import { MyTagButton } from '@/components/button/MyTagButton'
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import Search from './Search'
 import { useFullscreen } from '@vueuse/core'
+import SetDialog from './SetDialog'
 
 export default defineComponent({
   setup() {
     const { isFullscreen, toggle: toggleFullScreen } = useFullscreen()
+
+    const activeBtn = ref('')
 
     return () => (
       <div class={'h-10 w-full flex items-center bg-white'}>
@@ -15,10 +18,11 @@ export default defineComponent({
           </div>
           <Search></Search>
         </div>
-        <div class={'ml-auto flex gap-2 pr-1'}>
-          <MyTagButton active={true}>
+        <div class={'ml-auto flex pr-1 text-black'}>
+          <MyTagButton>
             <i class={'iconfont icon-shezhi'}></i>
           </MyTagButton>
+          {/* <SetDialog></SetDialog> */}
 
           <MyTagButton onClick={toggleFullScreen}>
             <i

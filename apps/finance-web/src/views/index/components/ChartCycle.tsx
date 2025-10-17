@@ -1,9 +1,17 @@
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, type PropType } from 'vue'
 import { MyTagButton } from '@/components/button/MyTagButton'
+import type { ChartInstance } from '@/hooks/useChart'
 
 export default defineComponent({
-  setup() {
-    const activeCycle = ref('1d')
+  props: {
+    chart: {
+      type: Object as PropType<ChartInstance>,
+      required: true,
+    },
+  },
+  setup(props) {
+    // const activeCycle = ref('1d')
+    console.log('props:>>', props)
     const cycleList = [
       { label: '1分钟', value: '1m' },
       { label: '5分钟', value: '5m' },
@@ -21,8 +29,8 @@ export default defineComponent({
           {cycleList.map((item) => {
             return (
               <MyTagButton
-                onClick={() => (activeCycle.value = item.value)}
-                active={item.value === activeCycle.value}
+                onClick={() => props.chart.setCircle(item.value)}
+                active={item.value === props.chart.circle}
               >
                 {item.label}
               </MyTagButton>
