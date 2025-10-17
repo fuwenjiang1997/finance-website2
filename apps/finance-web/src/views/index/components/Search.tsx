@@ -1,8 +1,9 @@
-import { defineComponent, ref, type FunctionalComponent } from 'vue'
+import { computed, defineComponent, ref, type FunctionalComponent } from 'vue'
 import { useChartStore, type CodeSymbol } from '@/stores/chartStore'
 import MyTable from '@/components/table/MyTable.vue'
 import { NModal, NInput, NButton, NTag, useNotification } from 'naive-ui'
 import type { ModalProps } from 'naive-ui'
+import { throttle } from 'lodash-es'
 
 const MAX_CHART_COUNT = 4
 
@@ -13,6 +14,9 @@ export default defineComponent({
     const notification = useNotification()
 
     function onSelectStock(data: CodeSymbol) {
+      if (!data.code || !data.name) {
+        return
+      }
       const size = chartStore.chartList.size
       if (size >= MAX_CHART_COUNT) {
         notification.warning({
@@ -66,27 +70,51 @@ const SearchDialog: FunctionalComponent<SearchDialogProps> = (props, { attrs }) 
       title: '股票名称',
       dataIndex: 'name',
     },
+    {
+      title: '操作',
+      slotName: 'action',
+    },
   ]
 
-  const data = props.data
+  // const data = props.data
   const searchValue = ref('')
-  function onSearch() {}
+  const renderList = computed(() => {
+    if (!searchValue.value) {
+      return props.data
+    }
+    return props.data.filter((item) => {
+      if (item.code.includes(searchValue.value) || item.name.includes(searchValue.value)) {
+        return true
+      }
+      return false
+    })
+  })
 
   return (
     <NModal {...attrs} title="股票选择" preset="card" style="width: 700px">
-      <div class="overflow-hidden">
+      <div class="flex flex-col h-[70vh]">
         <div class="flex gap-4 mb-2">
-          <NInput value={searchValue.value} placeholder="搜索股票" onKeydown={onSearch} />
+          <NInput
+            value={searchValue.value}
+            onUpdate:value={(v) => (searchValue.value = v)}
+            placeholder="搜索股票"
+          />
           <NButton>搜索</NButton>
         </div>
         <div class={'flex gap-2 mb-5'}>
           <SelectedCodeList />
         </div>
-        <MyTable
-          columns={columns}
-          data={data}
-          onRowClick={(row) => props.onSelect(row as CodeSymbol)}
-        ></MyTable>
+        <MyTable class={'flex-1'} columns={columns} data={renderList.value}>
+          {{
+            action: ({ record }: { record: CodeSymbol }) => (
+              <div class={'flex-center'}>
+                <NButton size="small" onClick={() => props.onSelect(record)}>
+                  选择
+                </NButton>
+              </div>
+            ),
+          }}
+        </MyTable>
       </div>
     </NModal>
   )
