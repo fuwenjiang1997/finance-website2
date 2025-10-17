@@ -6,14 +6,13 @@ import {
   NInput,
   NCheckbox,
   NButton,
-  useMessage,
+  useNotification,
   NDivider,
   type FormInst,
 } from 'naive-ui'
 import { useUserStore, type SignFormParams, type UserInfo } from '@/stores/userStore'
 import { apiSignIn } from '@/http/api'
 import { storeToRefs } from 'pinia'
-import type { AxiosPromise } from 'axios'
 import { useWithLoading } from '@/hooks/useWithLoading'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -28,7 +27,7 @@ export default defineComponent({
     })
     Object.assign(form, rememberMeInfo.value)
     const formRef = useTemplateRef<FormInst | undefined>('formRef')
-    const message = useMessage()
+    const notification = useNotification()
     const router = useRouter()
     const route = useRoute()
 
@@ -57,10 +56,14 @@ export default defineComponent({
         userStore.setUserInfo(user as UserInfo)
         userStore.onSignSuccessCb(form)
         router.push({ path: (route.query?.redirect as string) || '/' })
-        message.success('登录成功～')
+        notification.success({
+          content: '登录成功～',
+        })
       } catch (error) {
         console.error(error)
-        message.error(error?.message)
+        notification.error({
+          content: error?.message,
+        })
       }
       done()
     })

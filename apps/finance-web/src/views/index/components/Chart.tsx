@@ -11,10 +11,10 @@ export default defineComponent({
     const chartRef = useTemplateRef<HTMLDivElement>('chartRef')
 
     onMounted(() => {
-      chartStore.initChart({
-        chartRef: chartRef,
-        chartContainerRef: chartContainerRef,
-      })
+      // chartStore.initChart({
+      //   chartRef: chartRef,
+      //   chartContainerRef: chartContainerRef,
+      // })
     })
 
     return () => (

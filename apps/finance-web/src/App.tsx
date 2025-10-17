@@ -1,6 +1,6 @@
 import { defineComponent } from 'vue'
 import { RouterView } from 'vue-router'
-import { NConfigProvider, NMessageProvider } from 'naive-ui'
+import { NConfigProvider, NMessageProvider, NNotificationProvider } from 'naive-ui'
 import theme from './theme'
 
 // 3. 使用 defineComponent 来定义组件
@@ -11,9 +11,11 @@ export default defineComponent({
   setup() {
     return () => (
       <NConfigProvider themeOverrides={theme}>
-        <NMessageProvider>
-          <RouterView></RouterView>
-        </NMessageProvider>
+        <NNotificationProvider>
+          <NMessageProvider>
+            <RouterView></RouterView>
+          </NMessageProvider>
+        </NNotificationProvider>
       </NConfigProvider>
     )
   },

@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 5041514 */
-  src: url('//at.alicdn.com/t/c/font_5041514_jubkwf8ysgj.woff2?t=1760582622433') format('woff2'),
-       url('//at.alicdn.com/t/c/font_5041514_jubkwf8ysgj.woff?t=1760582622433') format('woff'),
-       url('//at.alicdn.com/t/c/font_5041514_jubkwf8ysgj.ttf?t=1760582622433') format('truetype');
+  src: url('//at.alicdn.com/t/c/font_5041514_eet7eizxk4d.woff2?t=1760671803413') format('woff2'),
+       url('//at.alicdn.com/t/c/font_5041514_eet7eizxk4d.woff?t=1760671803413') format('woff'),
+       url('//at.alicdn.com/t/c/font_5041514_eet7eizxk4d.ttf?t=1760671803413') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-search:before {
+  content: "\ea56";
 }
 
 .icon-close:before {
