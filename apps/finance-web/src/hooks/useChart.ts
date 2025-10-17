@@ -1,7 +1,8 @@
 import type { IChartApi } from 'lightweight-charts'
 import { createChart, ColorType } from 'lightweight-charts'
-import { ref, shallowRef, type TemplateRef } from 'vue'
+import { ref, shallowReactive, shallowRef, type TemplateRef } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
+import { apiGetKLineData } from '@/http/api'
 
 export interface UiInitChartParams {
   chartRef: TemplateRef<HTMLElement>
@@ -20,11 +21,14 @@ export function useChart() {
   const id = uuidv4()
   const chart = shallowRef<IChartApi>()
   const code = ref('')
+  const name = ref('')
   const circle = ref('')
+  const kLineData = shallowReactive(new Map())
 
   // 设置代码
-  const setCode = (v: string) => {
-    code.value = v
+  const setCode = (data: { code: string; name: string }) => {
+    code.value = data.code
+    name.value = data.name
   }
   // 设置周期
   const setCircle = (v: string) => {
@@ -56,6 +60,16 @@ export function useChart() {
     })
   }
 
+  async function getKlineData() {
+    try {
+      const _circle = circle.value
+      const res = await apiGetKLineData({})
+      console.log(_circle, res)
+    } catch (error) {
+      console.log('error:>>', error)
+    }
+  }
+
   const destory = () => {
     // todo 销毁这个chart
   }
@@ -64,6 +78,7 @@ export function useChart() {
     id,
     chart,
     code,
+    name,
     initChart,
     destory,
     setCode,

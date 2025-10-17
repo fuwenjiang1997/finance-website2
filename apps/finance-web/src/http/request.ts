@@ -1,8 +1,28 @@
-import axios from 'axios'
+import axios, { type AxiosRequestConfig } from 'axios'
 import router from '@/router'
 
 export interface RequestError {
   message: string
+}
+
+export interface CustomAxiosInstance {
+  get<T>(url: string, config?: AxiosRequestConfig): Promise<T>
+
+  // Override the 'delete' method signature
+  delete<T>(url: string, config?: AxiosRequestConfig): Promise<T>
+
+  // Override the 'head' method signature
+  head<T>(url: string, config?: AxiosRequestConfig): Promise<T>
+
+  // Override the 'options' method signature
+  options<T>(url: string, config?: AxiosRequestConfig): Promise<T>
+
+  // Override the methods that take data
+  post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T>
+
+  put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T>
+
+  patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T>
 }
 
 // 创建 axios 实例
@@ -67,4 +87,4 @@ service.interceptors.response.use(
   },
 )
 
-export default service
+export default service as CustomAxiosInstance

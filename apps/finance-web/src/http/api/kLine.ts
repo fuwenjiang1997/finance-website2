@@ -1,20 +1,18 @@
 import service from '../request'
 
-/**
- * 获取股票列表
- * @returns
- */
-export function apiGetStockList() {
-  return service.get('/kline/symbols')
+// 获取股票列表
+export function apiGetStockList<T>() {
+  return service.get<T>('/kline/symbols')
 }
 
-/**
- * 获取 K 线数据
- * @param {*} model K 线类型, 1m, 5m
- * @returns
- */
-export function apiGetKLineData(params) {
-  return service.get(`/kline/series`, {
+export function apiGetKLineData<T>(params: {
+  symbol: string
+  interval: string
+  startTime: number
+  endTime: number
+  limit: number
+}) {
+  return service.get<T>(`/kline/series`, {
     params,
   })
 }

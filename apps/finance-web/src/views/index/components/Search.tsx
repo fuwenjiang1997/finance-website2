@@ -1,5 +1,5 @@
 import { defineComponent, ref, type FunctionalComponent } from 'vue'
-import { useChartStore } from '@/stores/chartStore'
+import { useChartStore, type CodeSymbol } from '@/stores/chartStore'
 import MyTable from '@/components/table/MyTable.vue'
 import { NModal, NInput, NButton, NTag, useNotification } from 'naive-ui'
 import type { ModalProps } from 'naive-ui'
@@ -12,7 +12,7 @@ export default defineComponent({
     const chartStore = useChartStore()
     const notification = useNotification()
 
-    function onSelectStock(code: string) {
+    function onSelectStock(data: CodeSymbol) {
       const size = chartStore.chartList.size
       if (size >= MAX_CHART_COUNT) {
         notification.warning({
@@ -21,7 +21,7 @@ export default defineComponent({
         })
         return
       }
-      chartStore.onAddChartByCode(code)
+      chartStore.onAddChartByCode(data)
     }
 
     return () => {
@@ -39,7 +39,7 @@ export default defineComponent({
           <SearchDialog
             show={isShowStockModal.value}
             onUpdate:show={(v) => (isShowStockModal.value = v)}
-            data={[{ code: '122', name: '圣诞节快乐饭' }]}
+            data={chartStore.codeSymbolList}
             onSelect={onSelectStock}
           />
         </>
@@ -54,7 +54,7 @@ interface SearchDialogPropsData {
 }
 interface SearchDialogProps extends ModalProps {
   data: SearchDialogPropsData[]
-  onSelect: (code: string) => void
+  onSelect: (data: CodeSymbol) => void
 }
 const SearchDialog: FunctionalComponent<SearchDialogProps> = (props, { attrs }) => {
   const columns = [
@@ -79,13 +79,13 @@ const SearchDialog: FunctionalComponent<SearchDialogProps> = (props, { attrs }) 
           <NInput value={searchValue.value} placeholder="搜索股票" onKeydown={onSearch} />
           <NButton>搜索</NButton>
         </div>
-        <div class={'mb-5'}>
+        <div class={'flex gap-2 mb-5'}>
           <SelectedCodeList />
         </div>
         <MyTable
           columns={columns}
           data={data}
-          onRowClick={(row) => props.onSelect(row.code)}
+          onRowClick={(row) => props.onSelect(row as CodeSymbol)}
         ></MyTable>
       </div>
     </NModal>
@@ -112,7 +112,7 @@ const SelectedCodeList: FunctionalComponent = () => {
       {[...chartStore.chartList].map(([, item]) => {
         return (
           <NTag closable onClose={() => onDeleteChart(item.id)}>
-            {item.code}
+            {item.name}
           </NTag>
         )
       })}
