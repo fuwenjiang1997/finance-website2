@@ -15,11 +15,21 @@ export default defineConfig({
       '@fuwenjiang1997/trading-view-replay': fileURLToPath(
         new URL('../../packages/trading-view-replay/src/index.ts', import.meta.url),
       ),
+      '@fuwenjiang1997/trading-view-chart': fileURLToPath(
+        new URL('../../packages/trading-view-chart/src/index.ts', import.meta.url),
+      ),
+      '@fuwenjiang1997/common-types': fileURLToPath(
+        new URL('../../packages/trading-view-chart/src/index.ts', import.meta.url),
+      ),
     },
   },
   server: {
     watch: {
-      ignored: ['!**/node_modules/@fuwenjiang1997/trading-view-replay/**'],
+      ignored: [
+        '!**/node_modules/@fuwenjiang1997/trading-view-chart/**',
+        '!**/node_modules/@fuwenjiang1997/trading-view-replay/**',
+        '!**/node_modules/@fuwenjiang1997/common-types/**',
+      ],
     },
     proxy: {
       '/api': {

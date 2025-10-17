@@ -1,8 +1,9 @@
 import type { IChartApi } from 'lightweight-charts'
 import { createChart, ColorType } from 'lightweight-charts'
-import { ref, shallowReactive, shallowRef, type TemplateRef } from 'vue'
+import { ref, shallowReactive, shallowRef, watch, type TemplateRef } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { apiGetKLineData } from '@/http/api'
+import dayjs from 'dayjs'
 
 export interface UiInitChartParams {
   chartRef: TemplateRef<HTMLElement>
@@ -22,7 +23,7 @@ export function useChart() {
   const chart = shallowRef<IChartApi>()
   const code = ref('')
   const name = ref('')
-  const circle = ref('')
+  const circle = ref('1d')
   const kLineData = shallowReactive(new Map())
 
   // 设置代码
@@ -63,12 +64,24 @@ export function useChart() {
   async function getKlineData() {
     try {
       const _circle = circle.value
-      const res = await apiGetKLineData({})
+      const res = await apiGetKLineData({
+        symbol: code.value,
+        interval: circle.value,
+        startTime: 0,
+        endTime: dayjs().valueOf(),
+        limit: 1000,
+      })
       console.log(_circle, res)
     } catch (error) {
       console.log('error:>>', error)
     }
   }
+
+  watch([code, circle], ([_code, _circle]) => {
+    if (_code && _circle) {
+      getKlineData()
+    }
+  })
 
   const destory = () => {
     // todo 销毁这个chart

@@ -14,6 +14,9 @@
     "build": "tsc",
     "dev": "tsc --watch"
   },
+  "devDependencies": {
+    "@fuwenjiang1997/common-types": "workspace:^"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
