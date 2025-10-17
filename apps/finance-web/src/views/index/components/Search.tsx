@@ -1,11 +1,8 @@
 import { computed, defineComponent, ref, type FunctionalComponent } from 'vue'
-import { useChartStore, type CodeSymbol } from '@/stores/chartStore'
+import { MAX_CHART_COUNT, useChartStore, type CodeSymbol } from '@/stores/chartStore'
 import MyTable from '@/components/table/MyTable.vue'
 import { NModal, NInput, NButton, NTag, useNotification } from 'naive-ui'
 import type { ModalProps } from 'naive-ui'
-import { throttle } from 'lodash-es'
-
-const MAX_CHART_COUNT = 4
 
 export default defineComponent({
   setup() {

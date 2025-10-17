@@ -11,6 +11,8 @@ export interface CodeSymbol {
   code: string
 }
 
+export const MAX_CHART_COUNT = 4
+
 export const useChartStore = defineStore('chartStore', () => {
   const chart = shallowRef<IChartApi>()
   const chartList = reactive<Map<string, ChartInstance>>(new Map())
