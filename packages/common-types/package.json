@@ -11,8 +11,8 @@
     }
   },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "vite build --watch",
+    "build": "vite build"
   },
   "keywords": [],
   "author": "",

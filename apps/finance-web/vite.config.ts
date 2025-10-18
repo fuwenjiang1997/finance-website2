@@ -19,7 +19,7 @@ export default defineConfig({
         new URL('../../packages/trading-view-chart/src/index.ts', import.meta.url),
       ),
       '@fuwenjiang1997/common-types': fileURLToPath(
-        new URL('../../packages/trading-view-chart/src/index.ts', import.meta.url),
+        new URL('../../packages/common-types/src/index.ts', import.meta.url),
       ),
     },
   },
