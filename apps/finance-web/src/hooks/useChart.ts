@@ -1,9 +1,16 @@
-import type { IChartApi } from 'lightweight-charts'
+import type {
+  CandlestickData,
+  IChartApi,
+  Time,
+  UTCTimestamp,
+  WhitespaceData,
+} from 'lightweight-charts'
 import { createChart, ColorType } from 'lightweight-charts'
-import { ref, shallowReactive, shallowRef, watch, type TemplateRef } from 'vue'
+import { computed, ref, shallowReactive, shallowRef, watch, type TemplateRef } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { apiGetKLineData } from '@/http/api'
 import dayjs from 'dayjs'
+import vChart, { type VChart, type KLineData } from '@fuwenjiang1997/trading-view-chart'
 
 export interface UiInitChartParams {
   chartRef: TemplateRef<HTMLElement>
@@ -17,6 +24,8 @@ export interface InitChartParams {
 }
 export type ChartInstance = ReturnType<typeof useChart>
 
+export type TradingChartData = CandlestickData<Time> | WhitespaceData<Time>
+
 // 可能有多个chart表，将chart提取出来
 export function useChart() {
   const id = uuidv4()
@@ -24,7 +33,18 @@ export function useChart() {
   const code = ref('')
   const name = ref('')
   const circle = ref('1d')
-  const kLineData = shallowReactive(new Map())
+  const draw: { series: VChart | undefined } = {
+    series: undefined,
+  }
+
+  const kLineData = shallowReactive<Map<string, TradingChartData[]>>(new Map())
+  const currentDataKey = computed(() => `${code.value}_${circle.value}`)
+  const kLineDataByCircle = computed(() => {
+    if (kLineData.has(currentDataKey.value)) {
+      return []
+    }
+    return kLineData.get(currentDataKey.value)
+  })
 
   // 设置代码
   const setCode = (data: { code: string; name: string }) => {
@@ -59,19 +79,35 @@ export function useChart() {
         priceFormatter: (price: number) => price.toFixed(2), // 设置价格格式化函数
       },
     })
+
+    draw.series = vChart(chart.value)
   }
 
   async function getKlineData() {
     try {
+      const _code = code.value
       const _circle = circle.value
       const res = await apiGetKLineData({
-        symbol: code.value,
-        interval: circle.value,
+        symbol: _code,
+        interval: _circle,
         startTime: 0,
         endTime: dayjs().valueOf(),
         limit: 1000,
       })
-      console.log(_circle, res)
+
+      if (Array.isArray(res)) {
+        const d = res.map((item): CandlestickData => {
+          return {
+            time: dayjs(item.OpenTime).unix() as UTCTimestamp,
+            open: item.Open,
+            high: item.High,
+            low: item.Low,
+            close: item.Close,
+          }
+        })
+        kLineData.set(`${_code}_${_circle}`, d)
+        draw?.series?.kLine.setData(d)
+      }
     } catch (error) {
       console.log('error:>>', error)
     }
@@ -93,6 +129,8 @@ export function useChart() {
     code,
     name,
     circle,
+    draw,
+    kLineDataByCircle,
     initChart,
     destory,
     setCode,

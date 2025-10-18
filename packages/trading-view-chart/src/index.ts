@@ -1,9 +1,17 @@
-// import { type VIChartApi } from '@fuwenjiang1997/common-types'
+import { type IChartApi } from 'lightweight-charts'
+import kLineSeries from './libs/kLineSeries/kLineSeries'
 
-// export const drawKLine = (chart: VIChartApi, {}) => {
-//   console.log(111, chart)
-// }
+export { type KLineData } from './libs/kLineSeries/kLineSeries'
 
-export const aa = () => {
-  console.log('a:222')
+interface VChartParams {}
+
+export type VChart = ReturnType<typeof vChart>
+
+export default function vChart(chart: IChartApi, params?: VChartParams) {
+  console.log('params:>>', params)
+  const kLine = kLineSeries(chart)
+
+  return {
+    kLine,
+  }
 }

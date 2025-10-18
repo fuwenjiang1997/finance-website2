@@ -15,6 +15,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@fuwenjiang1997/common-types": ["./packages/common-types/src/index.ts"]
+    }
   }
 }

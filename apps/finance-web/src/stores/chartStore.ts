@@ -52,6 +52,9 @@ export const useChartStore = defineStore('chartStore', () => {
           }
         })
         codeSymbolList.value = data
+        if (chartList.length === 0 && data.length > 0) {
+          onAddChartByCode(data[0] as CodeSymbol)
+        }
       }
     } catch (error) {
       // notification.error({

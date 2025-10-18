@@ -134,6 +134,10 @@ importers:
   packages/common-types: {}
 
   packages/trading-view-chart:
+    dependencies:
+      vue:
+        specifier: ^3.5.22
+        version: 3.5.22(typescript@5.9.3)
     devDependencies:
       '@fuwenjiang1997/common-types':
         specifier: workspace:^
