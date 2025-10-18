@@ -5,7 +5,7 @@ export function apiGetStockList<T>() {
   return service.get<T>('/kline/symbols')
 }
 
-interface apiGetKLineDataReturn {
+export interface apiGetKLineDataReturn {
   OpenTime: string
   Open: number
   High: number
@@ -18,13 +18,14 @@ interface apiGetKLineDataReturn {
   TakerBuyBase: number
   TakerBuyQuote: number
 }
-export function apiGetKLineData(params: {
+export interface ApiGetKLineDataParams {
   symbol: string
   interval: string
   startTime: number
   endTime: number
   limit: number
-}) {
+}
+export function apiGetKLineData(params: ApiGetKLineDataParams) {
   return service.get<apiGetKLineDataReturn[]>(`/kline/series`, {
     params,
   })

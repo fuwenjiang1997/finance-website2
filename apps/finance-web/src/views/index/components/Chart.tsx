@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, useTemplateRef, type PropType } from 'vue'
+import { defineComponent, onMounted, useTemplateRef, type PropType, ref } from 'vue'
 import type { ChartInstance } from '@/hooks/useChart'
 import ChartCycle from './ChartCycle'
 
@@ -7,6 +7,9 @@ export default defineComponent({
     chart: {
       type: Object as PropType<ChartInstance>,
       required: true,
+    },
+    active: {
+      type: Boolean,
     },
   },
   setup(props) {
@@ -22,11 +25,17 @@ export default defineComponent({
     })
 
     return () => (
-      <div class={'h-full flex flex-col bg-white rounded'}>
-        <div class={'flex-1'} ref="chartContainerRef">
-          <div ref="chartRef"></div>
+      <div class={'h-full flex flex-col pb-2 bg-white rounded overflow-hidden'}>
+        <div class={'bg-gray-50'}>
+          <div class={'flex items-center h-8 px-4 bg-white'}>
+            <span>{props.chart.code}</span>
+          </div>
         </div>
-        <ChartCycle chart={props.chart} class={'mt-4'}></ChartCycle>
+
+        <div class={'flex-1 relative'} ref="chartContainerRef">
+          <div class={' absolute left-0 top-0 right-0 bottom-0'} ref="chartRef"></div>
+        </div>
+        <ChartCycle chart={props.chart} class={''}></ChartCycle>
       </div>
     )
   },

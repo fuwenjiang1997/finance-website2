@@ -16,7 +16,8 @@
     "build": "vite build && tsc --emitDeclarationOnly"
   },
   "devDependencies": {
-    "@fuwenjiang1997/common-types": "workspace:^"
+    "@fuwenjiang1997/common-types": "workspace:^",
+    "@types/lodash-es": "^4.17.12"
   },
   "peerDependencies": {
     "vue": "^3.5.22"

@@ -1,4 +1,4 @@
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref, toRef } from 'vue'
 import AdminHeader from './components/AdminHeader'
 import AdminSide from './components/AdminSide'
 import Chart from './components/Chart'
@@ -17,25 +17,34 @@ export default defineComponent({
     const chartStore = useChartStore()
     const { chartList } = storeToRefs(chartStore)
 
-    const colCount = ref(2)
+    // const colCount = ref(1)
 
     const layoutStyle = computed(() => {
-      const rows = 1 // Math.ceil(Math.max(1, chartList.value.length) / colCount.value)
-      return `grid-template-columns: repeat(${colCount.value}, minmax(0, 1fr));grid-template-rows: repeat(${rows}, minmax(0, 1fr));`
+      // 最多两行
+      let colCount = 1
+      let rowCount = 1
+      if (chartList.value.length <= 2) {
+        colCount = chartList.value.length
+        rowCount = 1
+      } else {
+        colCount = Math.ceil(chartList.value.length / 2)
+        rowCount = 2
+      }
+
+      return `grid-template-columns: repeat(${colCount}, minmax(0, 1fr));grid-template-rows: repeat(${rowCount}, minmax(0, 1fr));`
     })
 
     return () => (
       <div class={'h-screen overflow-hidden flex flex-col bg-gray'}>
         <AdminHeader class={'shrink-0'}></AdminHeader>
-        <div class={'flex-1 flex'}>
+        <div class={'flex overflow-hidden'} style="height: calc(100vh - 40px)">
           <AdminSide class={'shrink-0 py-2'}></AdminSide>
           <div
-            class={'flex-1 grid gap-1 p-1 bg-gray overflow-hidden max-sm:!grid-cols-1'}
+            class={'flex-1 h-full grid gap-1 p-1 bg-gray overflow-hidden max-sm:!grid-cols-1'}
             style={layoutStyle.value}
           >
             {chartList.value.map((chart) => {
-              console.log(chart)
-              return <Chart chart={chart}></Chart>
+              return <Chart chart={chart} active={false}></Chart>
             })}
           </div>
         </div>

@@ -142,6 +142,9 @@ importers:
       '@fuwenjiang1997/common-types':
         specifier: workspace:^
         version: link:../common-types
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
 
   packages/trading-view-replay:
     devDependencies:

@@ -11,7 +11,7 @@ export interface CodeSymbol {
   code: string
 }
 
-export const MAX_CHART_COUNT = 4
+export const MAX_CHART_COUNT = 8
 
 export const useChartStore = defineStore('chartStore', () => {
   const chart = shallowRef<IChartApi>()
@@ -27,6 +27,7 @@ export const useChartStore = defineStore('chartStore', () => {
       code: chartItem.code.value,
       name: chartItem.name.value,
       circle: chartItem.circle.value,
+      kLineDataByCircle: chartItem.kLineDataByCircle.value,
     })
   }
 
@@ -52,8 +53,14 @@ export const useChartStore = defineStore('chartStore', () => {
           }
         })
         codeSymbolList.value = data
+
+        let defaultCodeIndex = data.findIndex((item) => item.code === 'BTCUSDT')
+        if (defaultCodeIndex === -1) {
+          defaultCodeIndex = 0
+        }
+
         if (chartList.length === 0 && data.length > 0) {
-          onAddChartByCode(data[0] as CodeSymbol)
+          onAddChartByCode(data[defaultCodeIndex] as CodeSymbol)
         }
       }
     } catch (error) {

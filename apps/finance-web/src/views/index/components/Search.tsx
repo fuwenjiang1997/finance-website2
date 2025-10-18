@@ -79,8 +79,10 @@ const SearchDialog: FunctionalComponent<SearchDialogProps> = (props, { attrs }) 
     if (!searchValue.value) {
       return props.data
     }
+
+    const _searchValue = searchValue.value.toLowerCase()
     return props.data.filter((item) => {
-      if (item.code.includes(searchValue.value) || item.name.includes(searchValue.value)) {
+      if (item.code.toLowerCase().includes(_searchValue) || item.name.includes(_searchValue)) {
         return true
       }
       return false

@@ -11,19 +11,20 @@ import { v4 as uuidv4 } from 'uuid'
 import { apiGetKLineData } from '@/http/api'
 import dayjs from 'dayjs'
 import vChart, { type VChart, type KLineData } from '@fuwenjiang1997/trading-view-chart'
+import { useWithLoading } from './useWithLoading'
+import { KLineCircle } from '@/utils/const'
+// import { useResizeObserver } from '@vueuse/core'
 
 export interface UiInitChartParams {
   chartRef: TemplateRef<HTMLElement>
   chartContainerRef: TemplateRef<HTMLElement>
 }
-
 export interface InitChartParams {
   code?: string
   chartRef: TemplateRef<HTMLElement>
   chartContainerRef: TemplateRef<HTMLElement>
 }
 export type ChartInstance = ReturnType<typeof useChart>
-
 export type TradingChartData = CandlestickData<Time> | WhitespaceData<Time>
 
 // 可能有多个chart表，将chart提取出来
@@ -32,18 +33,18 @@ export function useChart() {
   const chart = shallowRef<IChartApi>()
   const code = ref('')
   const name = ref('')
-  const circle = ref('1d')
+  const circle = ref<KLineCircle>(KLineCircle.D1)
+  const noMoreKLineData = ref<{ [k: string]: boolean }>({})
   const draw: { series: VChart | undefined } = {
     series: undefined,
   }
-
   const kLineData = shallowReactive<Map<string, TradingChartData[]>>(new Map())
-  const currentDataKey = computed(() => `${code.value}_${circle.value}`)
+  const currentDataKey = computed(() => `${circle.value}`)
   const kLineDataByCircle = computed(() => {
-    if (kLineData.has(currentDataKey.value)) {
+    if (!kLineData.has(currentDataKey.value)) {
       return []
     }
-    return kLineData.get(currentDataKey.value)
+    return kLineData.get(currentDataKey.value) || []
   })
 
   // 设置代码
@@ -52,7 +53,7 @@ export function useChart() {
     name.value = data.name
   }
   // 设置周期
-  const setCircle = (v: string) => {
+  const setCircle = (v: KLineCircle) => {
     circle.value = v
   }
 
@@ -62,6 +63,7 @@ export function useChart() {
       throw Error('chartRef 和 chartContainerRef 必须存在')
     }
     chart.value = createChart(chartRef.value, {
+      autoSize: true,
       width: chartContainerRef.value.clientWidth,
       height: chartContainerRef.value.clientHeight,
       layout: {
@@ -81,42 +83,168 @@ export function useChart() {
     })
 
     draw.series = vChart(chart.value)
+    subscribeToRangeChanges()
   }
 
-  async function getKlineData() {
+  const [getKlineData, getKlineDataLoading] = useWithLoading<
+    [{ startTime?: number; endTime?: number }]
+  >(async (done, ...[params]) => {
     try {
       const _code = code.value
       const _circle = circle.value
+      const k = `${_circle}`
+      const _noMoreData = noMoreKLineData.value[_circle] || false
+      const oldData = kLineData.get(k) || []
+
+      if (
+        _noMoreData &&
+        params?.startTime &&
+        oldData.length > 0 &&
+        params.startTime < (oldData[0]?.time as number)
+      ) {
+        return
+      }
+      const _startTime = params?.startTime || 0
       const res = await apiGetKLineData({
         symbol: _code,
         interval: _circle,
-        startTime: 0,
-        endTime: dayjs().valueOf(),
+        startTime: getStartTime(_circle, _startTime),
+        endTime: params?.endTime || dayjs().valueOf(),
         limit: 1000,
       })
 
       if (Array.isArray(res)) {
         const d = res.map((item): CandlestickData => {
           return {
-            time: dayjs(item.OpenTime).unix() as UTCTimestamp,
+            time: dayjs(item.OpenTime).unix() as UTCTimestamp, // time 是秒
             open: item.Open,
             high: item.High,
             low: item.Low,
             close: item.Close,
           }
         })
-        kLineData.set(`${_code}_${_circle}`, d)
-        draw?.series?.kLine.setData(d)
+        if (oldData[0]?.time && d[0]?.time && d[0].time > oldData[0].time) {
+          return
+        }
+        const firstData = d[0]
+        if (firstData?.time === oldData?.[0]?.time) {
+          noMoreKLineData.value[_circle] = true
+        }
+        if (circle.value !== _circle || code.value !== _code) return
+        kLineData.set(k, d)
+        draw?.series?.kLine.setData(kLineDataByCircle.value)
+        done(d)
       }
     } catch (error) {
+      done()
       console.log('error:>>', error)
     }
+  })
+
+  function subscribeToRangeChanges() {
+    if (!chart.value) return
+    const timeScale = chart.value.timeScale()
+    timeScale.subscribeVisibleLogicalRangeChange(async (logicalRange) => {
+      if (logicalRange === null || getKlineDataLoading.value) return
+
+      const BUFFER = 10
+
+      if (logicalRange.from < BUFFER) {
+        // startTime 是秒
+        const startTime = (kLineDataByCircle.value[0]?.time as number) || dayjs().unix()
+        // const endTime = kLineDataByCircle.value.at(-1)?.time || dayjs().valueOf()
+
+        await getKlineData({
+          startTime: getStartTime(circle.value, (startTime as number) * 1000),
+          // endTime: endTime as number,
+        })
+      }
+    })
   }
 
-  watch([code, circle], ([_code, _circle]) => {
-    if (_code && _circle) {
-      getKlineData()
+  function setDefaultVisibleRange(count?: number, params?: { from: number; to: number }) {
+    if (params) {
+      chart.value?.timeScale().setVisibleLogicalRange(params)
+      return
     }
+    if (count !== undefined) {
+      const max = kLineDataByCircle.value.length
+      const from = max > count ? max - count : 0
+      console.log('shezhi')
+      chart.value?.timeScale().setVisibleLogicalRange({ from, to: max })
+      return
+    }
+    chart.value?.timeScale().fitContent()
+  }
+
+  function getStartTime(_circle: KLineCircle, lastStartTime?: number): number {
+    console.log('lastStartTimelastStartTime:', lastStartTime)
+    const t = lastStartTime ? dayjs(lastStartTime) : dayjs()
+
+    const handler: { [k in KLineCircle]: () => number } = {
+      [KLineCircle.m1]: () => {
+        return t.subtract(60, 'm').valueOf()
+      },
+      [KLineCircle.m5]: () => {
+        return t.subtract(60 * 5, 'm').valueOf()
+      },
+      [KLineCircle.m15]: () => {
+        return t.subtract(60 * 15, 'm').valueOf()
+      },
+      [KLineCircle.m30]: () => {
+        return t.subtract(60 * 30, 'm').valueOf()
+      },
+      [KLineCircle.H1]: () => {
+        return t.subtract(3, 'd').valueOf()
+      },
+      [KLineCircle.H4]: () => {
+        return t.subtract(8, 'd').valueOf()
+      },
+      [KLineCircle.D1]: () => {
+        return t.subtract(3, 'M').valueOf()
+      },
+      [KLineCircle.W1]: () => {
+        return t.subtract(1, 'y').valueOf()
+      },
+      [KLineCircle.M1]: () => {
+        return t.subtract(2, 'y').valueOf()
+      },
+    }
+
+    return handler[_circle]?.() || 0
+
+    // 分钟级别的，获取2天
+    // if (selectedKLineCycle.value.includes('m')) {
+    //   return t.subtract(1, 'd').valueOf()
+    // }
+    // // 小时级别的
+    // if (selectedKLineCycle.value.includes('h')) {
+    //   return t.subtract(5, 'd').valueOf()
+    // }
+    // // 天级别的
+    // if (selectedKLineCycle.value.includes('d')) {
+    //   return t.subtract(3, 'M').valueOf()
+    // }
+    // // 周级别的，获取1个月
+    // if (kLineDataByCircle.value.includes('w')) {
+    //   return t.subtract(1, 'y').valueOf()
+    // }
+    // return t.subtract(2, 'y').valueOf()
+  }
+
+  watch([code, circle], async ([_code, _circle]) => {
+    if (!_code || !_circle) return
+
+    if (kLineDataByCircle.value.length === 0) {
+      try {
+        await getKlineData({ startTime: 0 })
+      } catch (error) {
+        console.error('error:', error)
+      }
+    } else {
+      draw?.series?.kLine.setData(kLineDataByCircle.value)
+    }
+    setDefaultVisibleRange(100)
   })
 
   const destory = () => {
