@@ -7,9 +7,6 @@ import SetDialog from './SetDialog'
 export default defineComponent({
   setup() {
     const { isFullscreen, toggle: toggleFullScreen } = useFullscreen()
-
-    const activeBtn = ref('')
-
     return () => (
       <div class={'h-10 w-full flex items-center bg-white'}>
         <div class={'flex'}>
