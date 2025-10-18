@@ -1,6 +1,7 @@
 import { defineComponent, onMounted, useTemplateRef, type PropType, ref } from 'vue'
 import type { ChartInstance } from '@/hooks/useChart'
 import ChartCycle from './ChartCycle'
+import { cycleListMap } from '@/utils/const'
 
 export default defineComponent({
   props: {
@@ -28,7 +29,9 @@ export default defineComponent({
       <div class={'h-full flex flex-col pb-2 bg-white rounded overflow-hidden'}>
         <div class={'bg-gray-50'}>
           <div class={'flex items-center h-8 px-4 bg-white'}>
-            <span>{props.chart.code}</span>
+            <span>
+              {props.chart.code}( {cycleListMap[props.chart.circle]?.value} )
+            </span>
           </div>
         </div>
 

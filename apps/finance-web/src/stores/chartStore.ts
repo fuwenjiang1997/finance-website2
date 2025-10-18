@@ -15,28 +15,29 @@ export const MAX_CHART_COUNT = 8
 
 export const useChartStore = defineStore('chartStore', () => {
   const chart = shallowRef<IChartApi>()
-  const chartList = reactive<ChartInstance[]>([])
+  const chartList = ref<ChartInstance[]>([])
   // const notification = useNotification()
 
   const onAddChartByCode = (data: CodeSymbol) => {
     const chartItem = useChart()
     chartItem.setCode(data)
-    chartList.push({
-      ...chartItem,
-      chart: chartItem.chart.value,
-      code: chartItem.code.value,
-      name: chartItem.name.value,
-      circle: chartItem.circle.value,
-      kLineDataByCircle: chartItem.kLineDataByCircle.value,
-    })
+    chartList.value.push(chartItem)
+    // chartList.value.push({
+    //   ...chartItem,
+    //   chart: chartItem.chart.value,
+    //   code: chartItem.code.value,
+    //   name: chartItem.name.value,
+    //   circle: chartItem.circle.value,
+    //   kLineDataByCircle: chartItem.kLineDataByCircle.value,
+    // })
   }
 
   function onDeleteChart(id: string) {
-    const index = chartList.findIndex((item) => item.id === id)
+    const index = chartList.value.findIndex((item) => item.id === id)
     if (index !== -1) {
       const chart = chartList[index]
       chart?.destory()
-      chartList.splice(index, 1)
+      chartList.value.splice(index, 1)
     }
   }
 
@@ -59,7 +60,7 @@ export const useChartStore = defineStore('chartStore', () => {
           defaultCodeIndex = 0
         }
 
-        if (chartList.length === 0 && data.length > 0) {
+        if (chartList.value.length === 0 && data.length > 0) {
           onAddChartByCode(data[defaultCodeIndex] as CodeSymbol)
         }
       }
