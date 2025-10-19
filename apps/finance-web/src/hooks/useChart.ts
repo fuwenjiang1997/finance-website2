@@ -212,24 +212,6 @@ export function useChart() {
     }
 
     return handler[_circle]?.() || 0
-
-    // 分钟级别的，获取2天
-    // if (selectedKLineCycle.value.includes('m')) {
-    //   return t.subtract(1, 'd').valueOf()
-    // }
-    // // 小时级别的
-    // if (selectedKLineCycle.value.includes('h')) {
-    //   return t.subtract(5, 'd').valueOf()
-    // }
-    // // 天级别的
-    // if (selectedKLineCycle.value.includes('d')) {
-    //   return t.subtract(3, 'M').valueOf()
-    // }
-    // // 周级别的，获取1个月
-    // if (kLineDataByCircle.value.includes('w')) {
-    //   return t.subtract(1, 'y').valueOf()
-    // }
-    // return t.subtract(2, 'y').valueOf()
   }
 
   watch([code, circle], async ([_code, _circle]) => {
