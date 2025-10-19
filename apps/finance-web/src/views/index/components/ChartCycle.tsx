@@ -41,7 +41,13 @@ export default defineComponent({
               active={item.value === currentCircle.value}
               size={isMinWindow.value ? MyTagButtonSize.Small : MyTagButtonSize.Default}
             >
-              <span class={' text-[11px]'}>{item.label}</span>
+              <span
+                class={cn({
+                  'text-[11px]': isMinWindow.value,
+                })}
+              >
+                {item.label}
+              </span>
             </MyTagButton>
           )
         })}
