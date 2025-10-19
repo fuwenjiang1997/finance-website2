@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, useTemplateRef, type PropType, ref, toValue } from 'vue'
+import { defineComponent, onMounted, useTemplateRef, type PropType, toValue } from 'vue'
 import type { ChartInstance } from '@/hooks/useChart'
 import ChartCycle from './ChartCycle'
 import { cycleListMap } from '@/utils/const'
@@ -14,6 +14,10 @@ export default defineComponent({
     },
     active: {
       type: Boolean,
+    },
+    index: {
+      type: Number,
+      required: true,
     },
   },
   setup(props) {
@@ -33,7 +37,7 @@ export default defineComponent({
         class={cn(
           'h-full flex flex-col pb-2 bg-white rounded overflow-hidden border border-transparent',
           {
-            ' !border-black ': props.active,
+            '!border-black ': props.active,
           },
         )}
       >
@@ -41,7 +45,8 @@ export default defineComponent({
           <div class={'flex justify-between items-center h-8 px-4 bg-white'}>
             <div>
               <span>
-                {props.chart.code}( {cycleListMap[toValue(props.chart.circle)]?.label} )
+                [{props.index}] {props.chart.code} ({props.chart.circle})
+                {/* {cycleListMap[toValue(props.chart.circle)]?.label} ) */}
               </span>
             </div>
             <div>

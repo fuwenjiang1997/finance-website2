@@ -48,11 +48,12 @@ export default defineComponent({
             class={'flex-1 h-full grid gap-1 p-1 bg-gray overflow-hidden max-sm:!grid-cols-1'}
             style={layoutStyle.value}
           >
-            {chartList.value.map((chart) => {
+            {chartList.value.map((chart, index) => {
               return (
                 <Chart
                   chart={chart}
                   onMouseenter={() => setActiveChart(chart.id)}
+                  index={index}
                   active={activeChartId.value === chart.id}
                 ></Chart>
               )

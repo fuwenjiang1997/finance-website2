@@ -136,10 +136,10 @@ const SelectedCodeList: FunctionalComponent = () => {
 
   return (
     <>
-      {chartStore.chartList.map((item) => {
+      {chartStore.chartList.map((item, index) => {
         return (
           <NTag closable onClose={() => onDeleteChart(item.id)}>
-            {item.name}
+            [{index}] {item.name}({item.circle})
           </NTag>
         )
       })}
