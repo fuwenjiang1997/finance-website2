@@ -7,7 +7,6 @@ import { storeToRefs } from 'pinia'
 
 export default defineComponent({
   props: {
-    // 字符串类型，必需
     chart: {
       type: String,
       required: true,
