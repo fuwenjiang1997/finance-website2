@@ -8,14 +8,14 @@ export default defineComponent({
   setup() {
     const { isFullscreen, toggle: toggleFullScreen } = useFullscreen()
     return () => (
-      <div class={'h-10 w-full flex items-center bg-white'}>
-        <div class={'flex'}>
+      <div class={'h-10 w-full flex items-center gap-2 bg-white'}>
+        <div class={'flex flex-1 overflow-hidden'}>
           <div class={' w-12 flex-center '}>
             <div class={'w-8 h-8 flex-center text-white bg-red-800 rounded-full'}>F</div>
           </div>
-          <Search></Search>
+          <Search />
         </div>
-        <div class={'ml-auto flex pr-1 text-black'}>
+        <div class={'shrink-0 flex pr-1 text-black'}>
           <MyTagButton>
             <i class={'iconfont icon-shezhi'}></i>
           </MyTagButton>

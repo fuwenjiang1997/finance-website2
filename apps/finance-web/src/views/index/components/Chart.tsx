@@ -42,7 +42,7 @@ export default defineComponent({
         )}
       >
         <div class={'bg-gray-50'}>
-          <div class={'flex justify-between items-center h-8 px-4 bg-white'}>
+          <div class={'flex justify-between items-center h-8 px-2 bg-white'}>
             <div>
               <span>
                 [{props.index}] {props.chart.code} ({props.chart.circle})

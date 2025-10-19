@@ -1,7 +1,7 @@
 import { computed, defineComponent, ref, type FunctionalComponent } from 'vue'
 import { MAX_CHART_COUNT, useChartStore, type CodeSymbol } from '@/stores/chartStore'
 import MyTable from '@/components/table/MyTable.vue'
-import { NModal, NInput, NButton, NTag, useNotification } from 'naive-ui'
+import { NModal, NInput, NButton, NTag, useNotification, NScrollbar } from 'naive-ui'
 import type { ModalProps } from 'naive-ui'
 
 export default defineComponent({
@@ -28,14 +28,20 @@ export default defineComponent({
     return () => {
       return (
         <>
-          <div class={'flex gap-2 items-center'}>
-            <NButton size="small" onClick={() => (isShowStockModal.value = true)}>
+          <div class={'w-full flex gap-2 items-center'}>
+            <NButton
+              class={' shrink-0'}
+              size="small"
+              onClick={() => (isShowStockModal.value = true)}
+            >
               <i class={'iconfont icon-search mr-2'}></i>
               搜索
             </NButton>
-            <div class={'flex gap-2'}>
-              <SelectedCodeList />
-            </div>
+            <NScrollbar x-scrollable>
+              <div class={'h-8 flex-1 flex gap-2 items-center pr-20'}>
+                <SelectedCodeList />
+              </div>
+            </NScrollbar>
           </div>
           <SearchDialog
             show={isShowStockModal.value}
