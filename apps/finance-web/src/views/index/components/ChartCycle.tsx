@@ -1,15 +1,7 @@
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  ref,
-  toValue,
-  useTemplateRef,
-  type PropType,
-} from 'vue'
+import { computed, defineComponent, toValue, useTemplateRef, type PropType } from 'vue'
 import { MyTagButton, MyTagButtonSize } from '@/components/button/MyTagButton'
 import type { ChartInstance } from '@/hooks/useChart'
-import { cycleListMap, KLineCircle } from '@/utils/const'
+import { cycleListMap } from '@/utils/const'
 import { useElementSize } from '@vueuse/core'
 import cn from 'classnames'
 
