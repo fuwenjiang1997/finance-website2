@@ -2,6 +2,9 @@ import { defineComponent, onMounted, useTemplateRef, type PropType, ref, toValue
 import type { ChartInstance } from '@/hooks/useChart'
 import ChartCycle from './ChartCycle'
 import { cycleListMap } from '@/utils/const'
+import LightMenu from './LightMenu'
+import { NButton } from 'naive-ui'
+import cn from 'classnames'
 
 export default defineComponent({
   props: {
@@ -26,18 +29,39 @@ export default defineComponent({
     })
 
     return () => (
-      <div class={'h-full flex flex-col pb-2 bg-white rounded overflow-hidden'}>
+      <div
+        class={cn(
+          'h-full flex flex-col pb-2 bg-white rounded overflow-hidden border border-transparent',
+          {
+            ' !border-black ': props.active,
+          },
+        )}
+      >
         <div class={'bg-gray-50'}>
-          <div class={'flex items-center h-8 px-4 bg-white'}>
-            <span>
-              {props.chart.code}( {cycleListMap[toValue(props.chart.circle)]?.label} )
-            </span>
+          <div class={'flex justify-between items-center h-8 px-4 bg-white'}>
+            <div>
+              <span>
+                {props.chart.code}( {cycleListMap[toValue(props.chart.circle)]?.label} )
+              </span>
+            </div>
+            <div>
+              {props.chart.kLineSimulation.isActriveKLineSimulation && (
+                <NButton
+                  type="primary"
+                  size="small"
+                  onClick={props.chart.kLineSimulation.exitKLineSimulation}
+                >
+                  退出k线模拟
+                </NButton>
+              )}
+            </div>
           </div>
         </div>
 
         <div class={'flex-1 relative'} ref="chartContainerRef">
           <div class={' absolute left-0 top-0 right-0 bottom-0'} ref="chartRef"></div>
         </div>
+        <LightMenu chart={props.chart} chartContainerRef={chartContainerRef}></LightMenu>
         <ChartCycle chart={props.chart} class={''}></ChartCycle>
       </div>
     )

@@ -15,7 +15,7 @@ export default defineComponent({
   },
   setup() {
     const chartStore = useChartStore()
-    const { chartList } = storeToRefs(chartStore)
+    const { chartList, activeChartId } = storeToRefs(chartStore)
 
     // const colCount = ref(1)
 
@@ -34,6 +34,11 @@ export default defineComponent({
       return `grid-template-columns: repeat(${colCount}, minmax(0, 1fr));grid-template-rows: repeat(${rowCount}, minmax(0, 1fr));`
     })
 
+    function setActiveChart(id: string) {
+      console.log(id)
+      activeChartId.value = id
+    }
+
     return () => (
       <div class={'h-screen overflow-hidden flex flex-col bg-gray'}>
         <AdminHeader class={'shrink-0'}></AdminHeader>
@@ -44,7 +49,13 @@ export default defineComponent({
             style={layoutStyle.value}
           >
             {chartList.value.map((chart) => {
-              return <Chart chart={chart} active={false}></Chart>
+              return (
+                <Chart
+                  chart={chart}
+                  onMouseenter={() => setActiveChart(chart.id)}
+                  active={activeChartId.value === chart.id}
+                ></Chart>
+              )
             })}
           </div>
         </div>

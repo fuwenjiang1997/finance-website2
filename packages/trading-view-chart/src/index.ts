@@ -1,5 +1,5 @@
 import { CandlestickData, Time, WhitespaceData, type IChartApi } from 'lightweight-charts'
-import kLineSeries from './libs/kLineSeries/kLineSeries'
+import kLineSeries, { ReturnkLineSeries } from './libs/kLineSeries/kLineSeries'
 import { reactive, Ref } from 'vue'
 import { VChartPlugin } from './libs/type'
 
@@ -24,7 +24,7 @@ export default function vChart(chart: IChartApi, params: VChartParams) {
     plugins,
   }
 
-  const kLine = kLineSeries(chart, seriesParams)
+  const kLine: ReturnkLineSeries = kLineSeries(chart, seriesParams)
 
   return {
     kLine,

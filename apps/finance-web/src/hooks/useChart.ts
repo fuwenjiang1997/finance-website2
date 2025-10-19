@@ -13,6 +13,7 @@ import dayjs from 'dayjs'
 import vChart, { type VChart, type KLineData } from '@fuwenjiang1997/trading-view-chart'
 import { useWithLoading } from './useWithLoading'
 import { KLineCircle } from '@/utils/const'
+import { useKLineSimulation } from './useKLineSimulation'
 // import { useResizeObserver } from '@vueuse/core'
 
 export interface UiInitChartParams {
@@ -40,11 +41,20 @@ export function useChart() {
   }
   const kLineData = shallowReactive<Map<string, TradingChartData[]>>(new Map())
   const currentDataKey = computed(() => `${circle.value}`)
+
+  const kLineSimulation = useKLineSimulation()
+  // const {
+  //   isActriveKLineSimulation,
+  //   getSimulationKLineData,
+  //   startKLineSimulation,
+  //   exitKLineSimulation,
+  // } = useKLineSimulation()
   const kLineDataByCircle = computed(() => {
     if (!kLineData.has(currentDataKey.value)) {
       return []
     }
-    return kLineData.get(currentDataKey.value) || []
+    // 获取模拟k线数据
+    return kLineSimulation.getSimulationKLineData(kLineData.get(currentDataKey.value) || [])
   })
 
   // 设置代码
@@ -152,11 +162,9 @@ export function useChart() {
       if (logicalRange.from < BUFFER) {
         // startTime 是秒
         const startTime = (kLineDataByCircle.value[0]?.time as number) || dayjs().unix()
-        // const endTime = kLineDataByCircle.value.at(-1)?.time || dayjs().valueOf()
 
         await getKlineData({
           startTime: getStartTime(circle.value, (startTime as number) * 1000),
-          // endTime: endTime as number,
         })
       }
     })
@@ -214,6 +222,16 @@ export function useChart() {
     return handler[_circle]?.() || 0
   }
 
+  function getTimePriceFromPosition(chartX: number, chartY: number) {
+    if (!chart.value) return
+    const time = chart.value.timeScale().coordinateToTime(chartX)
+    const mainSeries = draw.series?.kLine.getSeries()
+    if (mainSeries) {
+      return { time: time as number, price: mainSeries.coordinateToPrice(chartY) }
+    }
+    return
+  }
+
   watch([code, circle], async ([_code, _circle]) => {
     if (!_code || !_circle) return
 
@@ -245,5 +263,7 @@ export function useChart() {
     destory,
     setCode,
     setCircle,
+    kLineSimulation,
+    getTimePriceFromPosition,
   }
 }

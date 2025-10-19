@@ -1,9 +1,10 @@
 import type { IChartApi } from 'lightweight-charts'
 import { defineStore } from 'pinia'
-import { onMounted, reactive, ref, shallowRef } from 'vue'
+import { computed, onMounted, reactive, ref, shallowRef } from 'vue'
 import { useChart } from '@/hooks/useChart'
 import type { ChartInstance } from '@/hooks/useChart'
 import { type RequestError, apiGetStockList } from '@/http/api'
+import { useMagicKeys, onKeyStroke } from '@vueuse/core'
 // import { useNotification } from 'naive-ui'
 
 export interface CodeSymbol {
@@ -16,20 +17,27 @@ export const MAX_CHART_COUNT = 8
 export const useChartStore = defineStore('chartStore', () => {
   const chart = shallowRef<IChartApi>()
   const chartList = ref<ChartInstance[]>([])
+  const activeChartId = ref()
+  const activeChart = computed(() => {
+    const index = chartList.value.findIndex((item) => item.id === activeChartId.value)
+    return chartList.value[index]
+  })
   // const notification = useNotification()
+  const magickeys = useMagicKeys() // 跟踪所有按键状态
+
+  /** k线模拟，下一个 */
+  onKeyStroke('ArrowRight', () => {
+    activeChart.value?.kLineSimulation.simulationHandler.next()
+  })
+  /** k线模拟，上一个 */
+  onKeyStroke('ArrowLeft', () => {
+    activeChart.value?.kLineSimulation.simulationHandler.pre()
+  })
 
   const onAddChartByCode = (data: CodeSymbol) => {
     const chartItem = useChart()
     chartItem.setCode(data)
     chartList.value.push(chartItem)
-    // chartList.value.push({
-    //   ...chartItem,
-    //   chart: chartItem.chart.value,
-    //   code: chartItem.code.value,
-    //   name: chartItem.name.value,
-    //   circle: chartItem.circle.value,
-    //   kLineDataByCircle: chartItem.kLineDataByCircle.value,
-    // })
   }
 
   function onDeleteChart(id: string) {
@@ -79,6 +87,7 @@ export const useChartStore = defineStore('chartStore', () => {
     chart,
     chartList,
     codeSymbolList,
+    activeChartId,
     onAddChartByCode,
     onDeleteChart,
   }
