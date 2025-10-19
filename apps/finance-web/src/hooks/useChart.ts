@@ -82,7 +82,7 @@ export function useChart() {
       },
     })
 
-    draw.series = vChart(chart.value)
+    draw.series = vChart(chart.value, { kLineData: kLineDataByCircle })
     subscribeToRangeChanges()
   }
 
@@ -132,7 +132,7 @@ export function useChart() {
         }
         if (circle.value !== _circle || code.value !== _code) return
         kLineData.set(k, d)
-        draw?.series?.kLine.setData(kLineDataByCircle.value)
+        // draw?.series?.kLine.setData(kLineDataByCircle.value)
         done(d)
       }
     } catch (error) {
@@ -224,7 +224,7 @@ export function useChart() {
         console.error('error:', error)
       }
     } else {
-      draw?.series?.kLine.setData(kLineDataByCircle.value)
+      // draw?.series?.kLine.setData(kLineDataByCircle.value)
     }
     setDefaultVisibleRange(120)
   })

@@ -1,12 +1,12 @@
 import {
-  type IChartApi,
   CandlestickData,
   CandlestickSeries,
   ISeriesApi,
   Time,
   WhitespaceData,
 } from 'lightweight-charts'
-import { shallowRef } from 'vue'
+import { shallowRef, watch } from 'vue'
+import { VChartSeries } from '../type'
 
 export interface KLineData {
   OpenTime: string
@@ -23,7 +23,11 @@ export interface KLineData {
 }
 
 // 画k线
-export default function kLineSeries(chart: IChartApi) {
+const kLineSeries: VChartSeries = (chart, params) => {
+  watch(params.kLineData, (_kLineData) => {
+    setData(_kLineData)
+  })
+
   const mainSeries = shallowRef<ISeriesApi<'Candlestick'>>()
 
   mainSeries.value = chart.addSeries(CandlestickSeries, {
@@ -54,3 +58,5 @@ export default function kLineSeries(chart: IChartApi) {
     setData,
   }
 }
+
+export default kLineSeries
