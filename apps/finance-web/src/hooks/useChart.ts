@@ -169,9 +169,7 @@ export function useChart() {
     }
     if (count !== undefined) {
       const max = kLineDataByCircle.value.length
-      const from = max > count ? max - count : 0
-      console.log('shezhi')
-      chart.value?.timeScale().setVisibleLogicalRange({ from, to: max })
+      chart.value?.timeScale().setVisibleLogicalRange({ from: Math.max(0, max - count), to: max })
       return
     }
     chart.value?.timeScale().fitContent()
@@ -181,33 +179,35 @@ export function useChart() {
     console.log('lastStartTimelastStartTime:', lastStartTime)
     const t = lastStartTime ? dayjs(lastStartTime) : dayjs()
 
+    const PerCount = 120
+
     const handler: { [k in KLineCircle]: () => number } = {
       [KLineCircle.m1]: () => {
-        return t.subtract(60, 'm').valueOf()
+        return t.subtract(PerCount, 'm').valueOf()
       },
       [KLineCircle.m5]: () => {
-        return t.subtract(60 * 5, 'm').valueOf()
+        return t.subtract(PerCount * 5, 'm').valueOf()
       },
       [KLineCircle.m15]: () => {
-        return t.subtract(60 * 15, 'm').valueOf()
+        return t.subtract(PerCount * 15, 'm').valueOf()
       },
       [KLineCircle.m30]: () => {
-        return t.subtract(60 * 30, 'm').valueOf()
+        return t.subtract(PerCount * 30, 'm').valueOf()
       },
       [KLineCircle.H1]: () => {
-        return t.subtract(3, 'd').valueOf()
+        return t.subtract(PerCount, 'h').valueOf()
       },
       [KLineCircle.H4]: () => {
-        return t.subtract(8, 'd').valueOf()
+        return t.subtract(PerCount * 4, 'h').valueOf()
       },
       [KLineCircle.D1]: () => {
-        return t.subtract(3, 'M').valueOf()
+        return t.subtract(PerCount, 'd').valueOf()
       },
       [KLineCircle.W1]: () => {
-        return t.subtract(1, 'y').valueOf()
+        return t.subtract(PerCount * 7, 'd').valueOf()
       },
       [KLineCircle.M1]: () => {
-        return t.subtract(2, 'y').valueOf()
+        return t.subtract(PerCount, 'M').valueOf()
       },
     }
 
@@ -244,7 +244,7 @@ export function useChart() {
     } else {
       draw?.series?.kLine.setData(kLineDataByCircle.value)
     }
-    setDefaultVisibleRange(100)
+    setDefaultVisibleRange(120)
   })
 
   const destory = () => {
