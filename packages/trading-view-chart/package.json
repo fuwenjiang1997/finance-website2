@@ -28,5 +28,9 @@
   "files": [
     "dist"
   ],
-  "packageManager": "pnpm@10.6.1"
+  "packageManager": "pnpm@10.6.1",
+  "dependencies": {
+    "color": "^5.0.2",
+    "dayjs": "^1.11.18"
+  }
 }

@@ -24,7 +24,8 @@ export interface KLineData {
 }
 
 export type ReturnkLineSeries = ReturnType<typeof kLineSeries>
-// 画k线
+
+/** k线 */
 const kLineSeries = (chart: IChartApi, params: VChartSeriesParams) => {
   watch(params.kLineData, (_kLineData) => {
     setData(_kLineData)

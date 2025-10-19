@@ -6,14 +6,24 @@ import type {
   WhitespaceData,
 } from 'lightweight-charts'
 import { createChart, ColorType } from 'lightweight-charts'
-import { computed, ref, shallowReactive, shallowRef, watch, type TemplateRef } from 'vue'
+import {
+  computed,
+  ref,
+  shallowReactive,
+  shallowRef,
+  watch,
+  type Ref,
+  type ShallowRef,
+  type TemplateRef,
+} from 'vue'
 import { v4 as uuidv4 } from 'uuid'
-import { apiGetKLineData } from '@/http/api'
+import { apiGetKLineData, type apiGetKLineDataReturn } from '@/http/api'
 import dayjs from 'dayjs'
-import vChart, { type VChart, type KLineData } from '@fuwenjiang1997/trading-view-chart'
+import vChart, { type VChart } from '@fuwenjiang1997/trading-view-chart'
 import { useWithLoading } from './useWithLoading'
 import { KLineCircle } from '@/utils/const'
 import { useKLineSimulation } from './useKLineSimulation'
+import { useResizeObserver } from '@vueuse/core'
 // import { useResizeObserver } from '@vueuse/core'
 
 export interface UiInitChartParams {
@@ -39,22 +49,20 @@ export function useChart() {
   const draw: { series: VChart | undefined } = {
     series: undefined,
   }
+  const theChartContainerRef = shallowRef<HTMLElement | null>()
+  const kLineOriginData = shallowReactive<Map<string, apiGetKLineDataReturn[]>>(new Map())
   const kLineData = shallowReactive<Map<string, TradingChartData[]>>(new Map())
   const currentDataKey = computed(() => `${circle.value}`)
-
   const kLineSimulation = useKLineSimulation()
-  // const {
-  //   isActriveKLineSimulation,
-  //   getSimulationKLineData,
-  //   startKLineSimulation,
-  //   exitKLineSimulation,
-  // } = useKLineSimulation()
   const kLineDataByCircle = computed(() => {
     if (!kLineData.has(currentDataKey.value)) {
       return []
     }
     // 获取模拟k线数据
     return kLineSimulation.getSimulationKLineData(kLineData.get(currentDataKey.value) || [])
+  })
+  const kLineOriginDataByCircle = computed(() => {
+    return kLineOriginData.get(currentDataKey.value) || []
   })
 
   // 设置代码
@@ -92,7 +100,11 @@ export function useChart() {
       },
     })
 
-    draw.series = vChart(chart.value, { kLineData: kLineDataByCircle })
+    draw.series = vChart(chart.value, {
+      kLineData: kLineDataByCircle,
+      kLineOriginData: kLineOriginDataByCircle,
+    })
+    theChartContainerRef.value = params.chartContainerRef.value
     subscribeToRangeChanges()
   }
 
@@ -141,6 +153,8 @@ export function useChart() {
           noMoreKLineData.value[_circle] = true
         }
         if (circle.value !== _circle || code.value !== _code) return
+
+        kLineOriginData.set(k, res)
         kLineData.set(k, d)
         // draw?.series?.kLine.setData(kLineDataByCircle.value)
         done(d)
@@ -232,6 +246,12 @@ export function useChart() {
     return
   }
 
+  function getOneRenderCount(w: number) {
+    const volCount = 10
+    const count = Math.floor(w / volCount)
+    return count
+  }
+
   watch([code, circle], async ([_code, _circle]) => {
     if (!_code || !_circle) return
 
@@ -241,10 +261,17 @@ export function useChart() {
       } catch (error) {
         console.error('error:', error)
       }
-    } else {
-      // draw?.series?.kLine.setData(kLineDataByCircle.value)
     }
-    setDefaultVisibleRange(120)
+    const w = theChartContainerRef.value?.clientWidth || 0
+    setDefaultVisibleRange(getOneRenderCount(w))
+  })
+
+  useResizeObserver(theChartContainerRef, (entries) => {
+    const entry = entries[0]
+    if (!entry) return
+    const { width } = entry.contentRect
+    console.log('dddd:')
+    setDefaultVisibleRange(getOneRenderCount(width))
   })
 
   const destory = () => {
@@ -259,6 +286,7 @@ export function useChart() {
     circle,
     draw,
     kLineDataByCircle,
+    kLineOriginDataByCircle,
     initChart,
     destory,
     setCode,
