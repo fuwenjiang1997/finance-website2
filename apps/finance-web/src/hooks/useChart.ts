@@ -270,7 +270,6 @@ export function useChart() {
     const entry = entries[0]
     if (!entry) return
     const { width } = entry.contentRect
-    console.log('dddd:')
     setDefaultVisibleRange(getOneRenderCount(width))
   })
 
