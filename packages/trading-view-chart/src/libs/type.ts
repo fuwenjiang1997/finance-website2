@@ -1,9 +1,11 @@
 import { CandlestickData, Time, WhitespaceData } from 'lightweight-charts'
 import { Reactive, Ref } from 'vue'
+import { ReturnkLineSeries } from './kLineSeries/kLineSeries'
 
-export interface VChartPlugin {
+export type VChartPlugin = (params: { kLine: ReturnkLineSeries }, ...args: any[]) => VChartPluginRes
+export interface VChartPluginRes {
   name: string
-  beforeSetData: (
+  beforeSetData?: (
     data: CandlestickData<Time> | WhitespaceData<Time>,
   ) => CandlestickData<Time> | WhitespaceData<Time>
 }

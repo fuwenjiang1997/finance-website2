@@ -1,5 +1,5 @@
 {
-  "name": "@fuwenjiang1997/trading-view-replay",
+  "name": "@fuwenjiang1997/draw-plugin",
   "version": "1.0.0",
   "description": "Shared utility functions for the monorepo",
   "main": "dist/index.js",
@@ -16,6 +16,9 @@
   },
   "devDependencies": {
     "@fuwenjiang1997/common-types": "workspace:^"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.22"
   },
   "keywords": [],
   "author": "",

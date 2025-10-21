@@ -1,7 +1,8 @@
 import { MyTagButton, MyTagButtonSize } from '@/components/button/MyTagButton'
-import { defineComponent, ref, type Ref } from 'vue'
+import { defineComponent, isRef, ref } from 'vue'
 import { OnClickOutside } from '@vueuse/components'
-import { throttle } from 'lodash-es'
+import { useChartStore } from '@/stores/chartStore'
+import { storeToRefs } from 'pinia'
 
 enum DrawCategory {
   Line = 'line',
@@ -19,24 +20,9 @@ type SelectedDrawMap = Record<DrawCategory, DrawInfoData>
 
 export default defineComponent({
   setup() {
-    const drawInfo: DrawInfoParams[] = [
-      {
-        category: DrawCategory.Line,
-        categoryName: '线段',
-        data: [
-          { name: '线段', value: 'LineSegment', icon: 'icon-xianduan' },
-          { name: '射线', value: 'Ray', icon: 'icon-shexian' },
-        ],
-      },
-    ]
-
-    const selectedDrawMap = ref<Partial<SelectedDrawMap>>({})
-    const activeDraw = ref<DrawInfoData | undefined>()
+    const chartStore = useChartStore()
+    const { activePlugin, selectedPluginsMap, pluginsInfo } = storeToRefs(chartStore)
     const showPopupName = ref<DrawCategory | undefined>()
-
-    drawInfo.forEach((item) => {
-      selectedDrawMap.value[item.category] = item.data[0]
-    })
 
     function toggleShowPopup(group: DrawInfoParams) {
       console.log(showPopupName.value, group.category)
@@ -57,40 +43,46 @@ export default defineComponent({
     }
 
     function onSelectDrawItem(item: DrawInfoData, group: DrawInfoParams) {
-      selectedDrawMap.value[group.category] = item
-      activeDraw.value = item
+      selectedPluginsMap.value[group.category] = item
+      activePlugin.value = item
       closePopup()
     }
     function onActiveDraw(item: DrawInfoData | undefined) {
       if (item) {
-        activeDraw.value = item
+        activePlugin.value = item
       }
     }
 
     return () => (
       <div class={' w-12 h-full bg-white'}>
-        {drawInfo.map((group) => {
+        {pluginsInfo.value.map((group) => {
           return (
             <div class={'relative flex-center'}>
               <MyTagButton
-                active={activeDraw.value?.value === selectedDrawMap.value[group.category]?.value}
+                active={
+                  activePlugin.value?.value === selectedPluginsMap.value[group.category]?.value
+                }
                 size={MyTagButtonSize.Large}
                 activeBgColor="#ebebeb"
-                onClick={() => onActiveDraw(selectedDrawMap.value[group.category])}
+                onClick={() => onActiveDraw(selectedPluginsMap.value[group.category])}
               >
                 <i
-                  class={['iconfont !text-[24px]', selectedDrawMap.value[group.category]?.icon]}
+                  class={['iconfont !text-[24px]', selectedPluginsMap.value[group.category]?.icon]}
                 ></i>
               </MyTagButton>
-              <MyTagButton
-                class="!min-w-0 !px-0"
-                active={showPopupName.value === group.category}
-                onClick={() => toggleShowPopup(group)}
-              >
-                <i class={'iconfont icon-xiangyou1 !text-xs'}></i>
-              </MyTagButton>
+              <div class={'w-2'}>
+                {group.data.length > 1 && (
+                  <MyTagButton
+                    class="!min-w-0 w-2 !px-0"
+                    active={showPopupName.value === group.category}
+                    onClick={() => toggleShowPopup(group)}
+                  >
+                    <i class={'iconfont icon-xiangyou1 !text-xs'}></i>
+                  </MyTagButton>
+                )}
+              </div>
 
-              {showPopupName.value === group.category && (
+              {showPopupName.value === group.category && group.data.length > 0 && (
                 <OnClickOutside onTrigger={() => closePopup()}>
                   <div
                     class={

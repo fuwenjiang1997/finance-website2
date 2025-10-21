@@ -16,12 +16,6 @@ export type VChart = ReturnType<typeof vChart>
 export default function vChart(chart: IChartApi, params: VChartParams) {
   const plugins = reactive<{ [k: string]: VChartPlugin }>({})
 
-  function usePlugin(plugin: VChartPlugin) {
-    if (!plugins[plugin.name]) {
-      plugins[plugin.name] = plugin
-    }
-  }
-
   const seriesParams: VChartSeriesParams = {
     kLineData: params.kLineData,
     kLineOriginData: params.kLineOriginData,
@@ -32,9 +26,18 @@ export default function vChart(chart: IChartApi, params: VChartParams) {
   const kLine: ReturnkLineSeries = kLineSeries(chart, seriesParams)
   const volume = tradingVolume(chart, seriesParams)
 
+  function usePlugin(plugin: VChartPlugin) {
+    if (!plugins[plugin.name]) {
+      plugins[plugin.name] = (...args) => {
+        return plugin({ kLine }, ...args)
+      }
+    }
+  }
+
   return {
     kLine,
     volume,
+    plugins,
     usePlugin,
   }
 }

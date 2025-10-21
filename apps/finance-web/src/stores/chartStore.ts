@@ -5,6 +5,7 @@ import { useChart } from '@/hooks/useChart'
 import type { ChartInstance } from '@/hooks/useChart'
 import { type RequestError, apiGetStockList } from '@/http/api'
 import { useMagicKeys, onKeyStroke } from '@vueuse/core'
+import { useDrawPlugin } from '@/hooks/useDrawPlugin'
 // import { useNotification } from 'naive-ui'
 
 export interface CodeSymbol {
@@ -22,8 +23,8 @@ export const useChartStore = defineStore('chartStore', () => {
     const index = chartList.value.findIndex((item) => item.id === activeChartId.value)
     return chartList.value[index]
   })
-  // const notification = useNotification()
-  const magickeys = useMagicKeys() // 跟踪所有按键状态
+  const { activePlugin, selectedPluginsMap, pluginsInfo } = useDrawPlugin()
+  useMagicKeys() // 跟踪所有按键状态
 
   /** k线模拟，下一个 */
   onKeyStroke('ArrowRight', () => {
@@ -90,5 +91,8 @@ export const useChartStore = defineStore('chartStore', () => {
     activeChartId,
     onAddChartByCode,
     onDeleteChart,
+    activePlugin,
+    selectedPluginsMap,
+    pluginsInfo,
   }
 })

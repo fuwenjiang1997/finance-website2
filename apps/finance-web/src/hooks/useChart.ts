@@ -24,6 +24,7 @@ import { useWithLoading } from './useWithLoading'
 import { KLineCircle } from '@/utils/const'
 import { useKLineSimulation } from './useKLineSimulation'
 import { useResizeObserver } from '@vueuse/core'
+// import {  } from '@fuwenjiang1997/draw-plugin'
 // import { useResizeObserver } from '@vueuse/core'
 
 export interface UiInitChartParams {
@@ -50,6 +51,7 @@ export function useChart() {
     series: undefined,
   }
   const theChartContainerRef = shallowRef<HTMLElement | null>()
+  const theChartRef = shallowRef<HTMLElement | null>()
   const kLineOriginData = shallowReactive<Map<string, apiGetKLineDataReturn[]>>(new Map())
   const kLineData = shallowReactive<Map<string, TradingChartData[]>>(new Map())
   const currentDataKey = computed(() => `${circle.value}`)
@@ -105,6 +107,8 @@ export function useChart() {
       kLineOriginData: kLineOriginDataByCircle,
     })
     theChartContainerRef.value = params.chartContainerRef.value
+    theChartRef.value = params.chartRef.value
+    addEventListenerHandler()
     subscribeToRangeChanges()
   }
 
@@ -273,8 +277,32 @@ export function useChart() {
     setDefaultVisibleRange(getOneRenderCount(width))
   })
 
+  const handler = {
+    move: (event: MouseEvent) => {
+      console.log('event:', event)
+    },
+    click: () => {},
+    mousedown: () => {},
+    mouseup: () => {},
+  }
+
+  // 监听chart中鼠标的点击、移动事件
+  function addEventListenerHandler() {
+    theChartRef.value?.addEventListener('click', handler.click)
+    theChartRef.value?.addEventListener('move', handler.move)
+    theChartRef.value?.addEventListener('mousedown', handler.mousedown)
+    theChartRef.value?.addEventListener('mouseup', handler.mouseup)
+  }
+  function removeEventListenerHandler() {
+    theChartRef.value?.removeEventListener('click', handler.click)
+    theChartRef.value?.removeEventListener('move', handler.move)
+    theChartRef.value?.removeEventListener('mousedown', handler.mousedown)
+    theChartRef.value?.removeEventListener('mouseup', handler.mouseup)
+  }
+
   const destory = () => {
     // todo 销毁这个chart
+    removeEventListenerHandler()
   }
 
   return {

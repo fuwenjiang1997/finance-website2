@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@fuwenjiang1997/trading-view-chart": "workspace:^",
-    "@fuwenjiang1997/trading-view-replay": "workspace:^",
+    "@fuwenjiang1997/draw-plugin": "workspace:^",
     "@vueuse/components": "^13.9.0",
     "@vueuse/core": "^13.9.0",
     "axios": "^1.12.2",

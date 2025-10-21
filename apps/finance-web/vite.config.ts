@@ -12,8 +12,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '@fuwenjiang1997/trading-view-replay': fileURLToPath(
-        new URL('../../packages/trading-view-replay/src/index.ts', import.meta.url),
+      '@fuwenjiang1997/draw-plugin': fileURLToPath(
+        new URL('../../packages/draw-plugin/src/index.ts', import.meta.url),
       ),
       '@fuwenjiang1997/trading-view-chart': fileURLToPath(
         new URL('../../packages/trading-view-chart/src/index.ts', import.meta.url),
@@ -27,7 +27,7 @@ export default defineConfig({
     watch: {
       ignored: [
         '!**/node_modules/@fuwenjiang1997/trading-view-chart/**',
-        '!**/node_modules/@fuwenjiang1997/trading-view-replay/**',
+        '!**/node_modules/@fuwenjiang1997/draw-plugin/**',
         '!**/node_modules/@fuwenjiang1997/common-types/**',
       ],
     },
