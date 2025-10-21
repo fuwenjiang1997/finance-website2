@@ -1,11 +1,12 @@
 import { Plugin, PluginCategory, PluginName, PluginPoint, PluginStore, PluginWidth } from '../type'
 import { LineSeries, LineStyle, UTCTimestamp } from 'lightweight-charts'
 import { DEFAULT_COLOR, DEFAULT_LINE_WIDTH } from '../utils/const'
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 
-export const lineSegment: Plugin = (chart) => {
+export const lineSegment: Plugin = (chart, params) => {
   const category = PluginCategory.Line
   const name = PluginName.lineSegment
+  const isFinished = ref(false)
   const store = reactive<PluginStore>({
     points: [],
     series: [],
@@ -13,11 +14,18 @@ export const lineSegment: Plugin = (chart) => {
     lineStyle: LineStyle.Solid,
   })
 
-  function setPoint(fn: (oldPoints: PluginPoint[]) => PluginPoint[]) {
-    const newPoints = fn(store.points)
-    if (Array.isArray(newPoints)) store.points = newPoints
-    render()
+  function setPoint(_points: PluginPoint[]) {
+    if (!Array.isArray(_points)) return
+    try {
+      store.points = _points.sort((item) => item.x - item.y)
+
+      // store.points[0] = _points[0]
+      // store.points[1] = _points[1]
+      console.log('设置了points:', store.points)
+      render()
+    } catch (error) {}
   }
+  // const throttleSetPoint = throttle(setPoint, 1)
   function setWidth(w: PluginWidth) {
     store.width = w
     render()
@@ -26,60 +34,91 @@ export const lineSegment: Plugin = (chart) => {
     store.lineStyle = v
     render()
   }
+
+  const SPACE = 20
+
   // 判断点是否命中了这个图表
-  function isFoucus(p: PluginPoint): boolean {
+  function isFoucus(point: PluginPoint): boolean {
     if (store.points.length < 2) return false
-    const [a, b] = store.points
-    const width = store.width
-    // 计算线段AB的向量及其长度的平方
-    const dx = b.x - a.x
-    const dy = b.y - a.y
-    const segmentLengthSq = dx * dx + dy * dy
 
-    // --- 特殊情况处理：线段的两个端点是同一个点 ---
-    // 此时，区域为一个以a为圆心，width/2为半径的圆
-    if (segmentLengthSq === 0) {
-      const distSq = (p.x - a.x) * (p.x - a.x) + (p.y - a.y) * (p.y - a.y)
-      return distSq <= (width / 2) * (width / 2)
-    }
+    const p1 = params.getScreenPositionFromPoint(store.points[0])
+    const p2 = params.getScreenPositionFromPoint(store.points[1])
 
-    // --- 1. 投影条件检查 ---
-    // 计算向量AP的点积 (dot product)
-    // dot = (p.x - a.x) * dx + (p.y - a.y) * dy
-    // 如果点p的投影不在线段AB上，则直接返回false
-    // 0 <= dot <= segmentLengthSq
-    const dot = (p.x - a.x) * dx + (p.y - a.y) * dy
-    if (dot < 0 || dot > segmentLengthSq) {
-      return false
-    }
+    const screenMouse = point
+    const screenP1 = p1
+    const screenP2 = p2
 
-    // --- 2. 垂直距离条件检查 ---
-    // 计算向量AP和AB的叉积 (cross product) 的绝对值
-    // crossProduct = |(p.y - a.y) * dx - (p.x - a.x) * dy|
-    // crossProduct的平方等于点p到直线AB的垂直距离的平方乘以线段长度的平方
-    const crossProduct = (p.y - a.y) * dx - (p.x - a.x) * dy
-    const distanceSq = (crossProduct * crossProduct) / segmentLengthSq
+    if (!screenMouse || !screenP1 || !screenP2) return false
 
-    // 检查垂直距离的平方是否小于等于 (width/2) 的平方
-    const halfWidthSq = (width / 2) * (width / 2)
+    const threshold = 10 // 10像素的容差范围
 
-    return distanceSq <= halfWidthSq
+    // 检查是否靠近端点
+    const distToP1 = Math.sqrt(
+      Math.pow(screenMouse.x - screenP1.x, 2) + Math.pow(screenMouse.y - screenP1.y, 2),
+    )
+    if (distToP1 < threshold) return true
+
+    const distToP2 = Math.sqrt(
+      Math.pow(screenMouse.x - screenP2.x, 2) + Math.pow(screenMouse.y - screenP2.y, 2),
+    )
+    if (distToP2 < threshold) return true
+
+    // 检查是否靠近线段主体 (点到线段的距离)
+    const dx = screenP2.x - screenP1.x
+    const dy = screenP2.y - screenP1.y
+    const lenSq = dx * dx + dy * dy
+
+    if (lenSq === 0) return distToP1 < threshold
+
+    let t = ((screenMouse.x - screenP1.x) * dx + (screenMouse.y - screenP1.y) * dy) / lenSq
+    t = Math.max(0, Math.min(1, t)) // 确保投影点在线段内
+
+    const projectionX = screenP1.x + t * dx
+    const projectionY = screenP1.y + t * dy
+
+    const distToLine = Math.sqrt(
+      Math.pow(screenMouse.x - projectionX, 2) + Math.pow(screenMouse.y - projectionY, 2),
+    )
+    return distToLine < threshold
+  }
+
+  function isFoucesFirstPoint(p: PluginPoint) {
+    const _p = store.points[0]
+    if (!_p) return false
+
+    return p.x >= _p.x - SPACE && p.x <= _p.x + SPACE && p.y >= _p.y - SPACE && p.y <= _p.y + SPACE
+  }
+  function isFoucesEndPoint(p: PluginPoint) {
+    const _p = store.points[1]
+    if (!_p) return false
+
+    // console.log(
+    //   'xxxx',
+    //   p.x >= _p.x - SPACE,
+    //   p.x <= _p.x + SPACE,
+    //   p.y >= _p.y - SPACE,
+    //   p.y <= _p.y + SPACE,
+    // )
+    return p.x >= _p.x - SPACE && p.x <= _p.x + SPACE && p.y >= _p.y - SPACE && p.y <= _p.y + SPACE
   }
 
   function render() {
-    let series
     if (store.series.length === 0) {
-      series = chart.addSeries(LineSeries, {
+      const _series = chart.addSeries(LineSeries, {
         color: DEFAULT_COLOR,
         lineWidth: store.width || DEFAULT_LINE_WIDTH,
         lineStyle: store.lineStyle,
       })
-      store.series.push(series)
-    } else {
-      series = store.series[0]
+      store.series.push(_series)
     }
-    if (!series) return
 
+    const series = store.series[0]
+    if (store.points.length > 2) {
+      store.points.length = 2
+    }
+    if (!series || store.points.length < 2) return
+
+    console.log('渲染:', store.points.length, store.points)
     series.setData(
       store.points.map((item) => {
         return {
@@ -90,6 +129,59 @@ export const lineSegment: Plugin = (chart) => {
     )
   }
 
+  function finished() {
+    isFinished.value = true
+    params?.finished?.()
+  }
+
+  let isMouseDown = false
+  let isMouseMoveFirstPoint = false
+  let isMouseMoveEndPoint = false
+  function click(_: MouseEvent, point: PluginPoint) {
+    if (isFinished.value) {
+      return
+    }
+    console.log('点击:', store.points.length)
+    if (store.points.length === 0) {
+      console.log('1点击')
+      setPoint([point])
+    } else {
+      console.log('多个点:')
+      setPoint([store.points[0], point])
+      finished()
+    }
+  }
+  function mousemove(event: MouseEvent, point: PluginPoint) {
+    event.stopPropagation()
+    if (isMouseDown) {
+      console.log('1:', point)
+      if (isMouseMoveFirstPoint) {
+        setPoint([point, store.points[0]])
+      }
+      if (isMouseMoveEndPoint) {
+        setPoint([store.points[0], point])
+      }
+    } else if (!isFinished.value && store.points[0]) {
+      console.log('2:')
+      setPoint([store.points[0], point])
+    }
+  }
+
+  function mousedown(_: MouseEvent, point: PluginPoint) {
+    console.log(point)
+    isMouseDown = true
+
+    if (isFoucesEndPoint(point)) {
+      isMouseMoveEndPoint = true
+    } else if (isFoucesFirstPoint(point)) {
+      isMouseMoveFirstPoint = true
+    }
+  }
+  function mouseup(_: MouseEvent, _2: PluginPoint) {
+    console.log('mouseup:')
+    isMouseDown = false
+  }
+
   // 销毁
   function destory() {}
 
@@ -97,6 +189,10 @@ export const lineSegment: Plugin = (chart) => {
     category,
     name,
     store,
+    click,
+    mousemove,
+    mousedown,
+    mouseup,
     setPoint,
     setWidth,
     isFoucus,

@@ -24,6 +24,8 @@ import { useWithLoading } from './useWithLoading'
 import { KLineCircle } from '@/utils/const'
 import { useKLineSimulation } from './useKLineSimulation'
 import { useResizeObserver } from '@vueuse/core'
+import type { DrawInfoData } from './useDrawPlugin'
+import { usePlguinController } from './usePlguinController'
 // import {  } from '@fuwenjiang1997/draw-plugin'
 // import { useResizeObserver } from '@vueuse/core'
 
@@ -38,9 +40,13 @@ export interface InitChartParams {
 }
 export type ChartInstance = ReturnType<typeof useChart>
 export type TradingChartData = CandlestickData<Time> | WhitespaceData<Time>
+export interface UserChartParams {
+  uiActivePlugin: Ref<DrawInfoData>
+  uiSelectedPluginsMap: Ref<{ [k: string]: DrawInfoData }>
+}
 
 // 可能有多个chart表，将chart提取出来
-export function useChart() {
+export function useChart({ uiActivePlugin, uiSelectedPluginsMap }: UserChartParams) {
   const id = uuidv4()
   const chart = shallowRef<IChartApi>()
   const code = ref('')
@@ -65,6 +71,12 @@ export function useChart() {
   })
   const kLineOriginDataByCircle = computed(() => {
     return kLineOriginData.get(currentDataKey.value) || []
+  })
+
+  const { init: initPlugin } = usePlguinController({
+    chart,
+    uiActivePlugin,
+    theChartRef,
   })
 
   // 设置代码
@@ -108,7 +120,9 @@ export function useChart() {
     })
     theChartContainerRef.value = params.chartContainerRef.value
     theChartRef.value = params.chartRef.value
-    addEventListenerHandler()
+    initPlugin({
+      kLineSeries: draw.series.kLine.getSeries(),
+    })
     subscribeToRangeChanges()
   }
 
@@ -240,6 +254,17 @@ export function useChart() {
     return handler[_circle]?.() || 0
   }
 
+  function getPointFromMouseEvent(event: MouseEvent) {
+    const container = theChartContainerRef.value
+    if (!chart.value || !container) return null
+
+    const rect = container.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+
+    return [getTimePriceFromPosition(x, y), { x, y }]
+  }
+
   function getTimePriceFromPosition(chartX: number, chartY: number) {
     if (!chart.value) return
     const time = chart.value.timeScale().coordinateToTime(chartX)
@@ -248,6 +273,19 @@ export function useChart() {
       return { time: time as number, price: mainSeries.coordinateToPrice(chartY) }
     }
     return
+  }
+  function getScreenPositionFromPoint(p: {
+    x: number
+    y: number
+  }): { x: number; y: number } | null | undefined {
+    if (!chart.value) return
+    const timeScale = chart.value.timeScale()
+    const mainSeries = draw.series?.kLine.getSeries()
+    if (!mainSeries) return null
+    const x = timeScale.timeToCoordinate(p.x as Time)
+    const y = mainSeries.priceToCoordinate(p.y)
+    if (x === null || y === null) return null
+    return { x, y }
   }
 
   function getOneRenderCount(w: number) {
@@ -277,32 +315,8 @@ export function useChart() {
     setDefaultVisibleRange(getOneRenderCount(width))
   })
 
-  const handler = {
-    move: (event: MouseEvent) => {
-      console.log('event:', event)
-    },
-    click: () => {},
-    mousedown: () => {},
-    mouseup: () => {},
-  }
-
-  // 监听chart中鼠标的点击、移动事件
-  function addEventListenerHandler() {
-    theChartRef.value?.addEventListener('click', handler.click)
-    theChartRef.value?.addEventListener('move', handler.move)
-    theChartRef.value?.addEventListener('mousedown', handler.mousedown)
-    theChartRef.value?.addEventListener('mouseup', handler.mouseup)
-  }
-  function removeEventListenerHandler() {
-    theChartRef.value?.removeEventListener('click', handler.click)
-    theChartRef.value?.removeEventListener('move', handler.move)
-    theChartRef.value?.removeEventListener('mousedown', handler.mousedown)
-    theChartRef.value?.removeEventListener('mouseup', handler.mouseup)
-  }
-
   const destory = () => {
     // todo 销毁这个chart
-    removeEventListenerHandler()
   }
 
   return {

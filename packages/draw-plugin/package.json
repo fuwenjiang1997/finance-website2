@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --noEmit",
     "dev": "tsc --watch"
   },
   "devDependencies": {
@@ -26,5 +26,8 @@
   "files": [
     "dist"
   ],
-  "packageManager": "pnpm@10.6.1"
+  "packageManager": "pnpm@10.6.1",
+  "dependencies": {
+    "lodash-es": "^4.17.21"
+  }
 }

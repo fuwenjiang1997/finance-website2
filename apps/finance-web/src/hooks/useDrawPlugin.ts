@@ -6,20 +6,20 @@ enum DrawCategory {
   Line = 'line',
 }
 
-interface DrawInfoData {
+export interface DrawInfoData {
   name: string
   value: string
   icon: string
 }
 
 export type DrawInfoParams = { category: DrawCategory; data: DrawInfoData[]; categoryName: string }
-const SelectDot = 'selectDot'
+const SelectDot = 'noneSelectDot'
 
 export function useDrawPlugin() {
   console.log('allPlugins:', plugins)
-  const activePlugin = ref<DrawInfoData>()
+  const uiActivePlugin = ref<DrawInfoData>()
 
-  const pluginsInfo = ref<DrawInfoParams[]>([
+  const uiPluginsInfo = ref<DrawInfoParams[]>([
     {
       category: DrawCategory.Select,
       categoryName: '选择',
@@ -36,15 +36,22 @@ export function useDrawPlugin() {
       ],
     },
   ])
-  const selectedPluginsMap = ref<{ [k: string]: DrawInfoData }>({})
+  const uiSelectedPluginsMap = ref<{ [k: string]: DrawInfoData }>({})
+  const uiPluginMap = ref<{ [k: string]: DrawInfoData }>({})
 
-  pluginsInfo.value.forEach((item) => {
-    selectedPluginsMap.value[item.category] = item.data[0] as DrawInfoData
+  uiPluginsInfo.value.forEach((item) => {
+    uiSelectedPluginsMap.value[item.category] = item.data[0] as DrawInfoData
+    if (item.data.length > 0) {
+      item.data.map((v) => {
+        uiPluginMap.value[v.value] = v
+      })
+    }
   })
 
   return {
-    pluginsInfo,
-    activePlugin,
-    selectedPluginsMap,
+    uiPluginsInfo,
+    uiActivePlugin,
+    uiSelectedPluginsMap,
+    uiPluginMap,
   }
 }

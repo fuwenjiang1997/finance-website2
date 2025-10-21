@@ -1,5 +1,5 @@
 import { MyTagButton, MyTagButtonSize } from '@/components/button/MyTagButton'
-import { defineComponent, isRef, ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { OnClickOutside } from '@vueuse/components'
 import { useChartStore } from '@/stores/chartStore'
 import { storeToRefs } from 'pinia'
@@ -16,12 +16,10 @@ interface DrawInfoData {
 
 type DrawInfoParams = { category: DrawCategory; data: DrawInfoData[]; categoryName: string }
 
-type SelectedDrawMap = Record<DrawCategory, DrawInfoData>
-
 export default defineComponent({
   setup() {
     const chartStore = useChartStore()
-    const { activePlugin, selectedPluginsMap, pluginsInfo } = storeToRefs(chartStore)
+    const { uiActivePlugin, uiSelectedPluginsMap, uiPluginsInfo } = storeToRefs(chartStore)
     const showPopupName = ref<DrawCategory | undefined>()
 
     function toggleShowPopup(group: DrawInfoParams) {
@@ -43,31 +41,34 @@ export default defineComponent({
     }
 
     function onSelectDrawItem(item: DrawInfoData, group: DrawInfoParams) {
-      selectedPluginsMap.value[group.category] = item
-      activePlugin.value = item
+      uiSelectedPluginsMap.value[group.category] = item
+      uiActivePlugin.value = item
       closePopup()
     }
     function onActiveDraw(item: DrawInfoData | undefined) {
       if (item) {
-        activePlugin.value = item
+        uiActivePlugin.value = item
       }
     }
 
     return () => (
       <div class={' w-12 h-full bg-white'}>
-        {pluginsInfo.value.map((group) => {
+        {uiPluginsInfo.value.map((group) => {
           return (
             <div class={'relative flex-center'}>
               <MyTagButton
                 active={
-                  activePlugin.value?.value === selectedPluginsMap.value[group.category]?.value
+                  uiActivePlugin.value?.value === uiSelectedPluginsMap.value[group.category]?.value
                 }
                 size={MyTagButtonSize.Large}
                 activeBgColor="#ebebeb"
-                onClick={() => onActiveDraw(selectedPluginsMap.value[group.category])}
+                onClick={() => onActiveDraw(uiSelectedPluginsMap.value[group.category])}
               >
                 <i
-                  class={['iconfont !text-[24px]', selectedPluginsMap.value[group.category]?.icon]}
+                  class={[
+                    'iconfont !text-[24px]',
+                    uiSelectedPluginsMap.value[group.category]?.icon,
+                  ]}
                 ></i>
               </MyTagButton>
               <div class={'w-2'}>
