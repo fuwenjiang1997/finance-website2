@@ -145,7 +145,7 @@ const SelectedCodeList: FunctionalComponent = () => {
       {chartStore.chartList.map((item, index) => {
         return (
           <NTag closable onClose={() => onDeleteChart(item.id)}>
-            [{index}] {item.name}({item.circle})
+            [{index + 1}] {item.name}({item.circle})
           </NTag>
         )
       })}

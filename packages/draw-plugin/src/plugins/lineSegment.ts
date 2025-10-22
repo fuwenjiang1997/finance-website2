@@ -46,6 +46,8 @@ export class LineSegment extends DrawPlugin {
     const distToP1 = Math.sqrt(
       Math.pow(screenMouse.x - screenP1.x, 2) + Math.pow(screenMouse.y - screenP1.y, 2),
     )
+
+    console.log('distToP1:', distToP1)
     if (distToP1 < threshold) return true
 
     const distToP2 = Math.sqrt(
