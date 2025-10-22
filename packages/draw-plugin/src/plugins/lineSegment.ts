@@ -40,7 +40,7 @@ export class LineSegment extends DrawPlugin {
 
     if (!screenMouse || !screenP1 || !screenP2) return false
 
-    const threshold = 20 // 10像素的容差范围
+    const threshold = 10 // 10像素的容差范围
 
     // 检查是否靠近端点
     const distToP1 = Math.sqrt(

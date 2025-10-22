@@ -44,7 +44,6 @@ export abstract class DrawPlugin implements IDrawingTool {
   }
 
   public onMouseUp(_: PluginPoint): void {
-    console.log('鼠标抬起:')
     this.isDragging = false
     this.draggedPointIndex = undefined
     this.dragStartPoint = undefined
