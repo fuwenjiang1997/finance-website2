@@ -1,6 +1,7 @@
 import type {
   CandlestickData,
   IChartApi,
+  ISeriesApi,
   Time,
   UTCTimestamp,
   WhitespaceData,
@@ -26,6 +27,7 @@ import { useKLineSimulation } from './useKLineSimulation'
 import { useResizeObserver } from '@vueuse/core'
 import type { DrawInfoData } from './useDrawPlugin'
 import { usePlguinController } from './usePlguinController'
+import { getTpFromMouseEvent } from '@fuwenjiang1997/draw-plugin'
 // import {  } from '@fuwenjiang1997/draw-plugin'
 // import { useResizeObserver } from '@vueuse/core'
 
@@ -41,12 +43,12 @@ export interface InitChartParams {
 export type ChartInstance = ReturnType<typeof useChart>
 export type TradingChartData = CandlestickData<Time> | WhitespaceData<Time>
 export interface UserChartParams {
-  uiActivePlugin: Ref<DrawInfoData>
-  uiSelectedPluginsMap: Ref<{ [k: string]: DrawInfoData }>
+  uiActivePlugin: Ref<DrawInfoData | undefined>
+  uiPluginMap: Ref<{ [k: string]: DrawInfoData }>
 }
 
 // 可能有多个chart表，将chart提取出来
-export function useChart({ uiActivePlugin, uiSelectedPluginsMap }: UserChartParams) {
+export function useChart({ uiActivePlugin, uiPluginMap }: UserChartParams) {
   const id = uuidv4()
   const chart = shallowRef<IChartApi>()
   const code = ref('')
@@ -75,8 +77,8 @@ export function useChart({ uiActivePlugin, uiSelectedPluginsMap }: UserChartPara
 
   const { init: initPlugin } = usePlguinController({
     chart,
-    uiActivePlugin,
-    theChartRef,
+    activePlugin: uiActivePlugin,
+    chartRef: theChartRef,
   })
 
   // 设置代码
@@ -120,9 +122,13 @@ export function useChart({ uiActivePlugin, uiSelectedPluginsMap }: UserChartPara
     })
     theChartContainerRef.value = params.chartContainerRef.value
     theChartRef.value = params.chartRef.value
-    initPlugin({
-      kLineSeries: draw.series.kLine.getSeries(),
-    })
+
+    const kLineSeries = draw.series.kLine.getSeries()
+    if (kLineSeries) {
+      initPlugin({
+        kLineSeries: kLineSeries as ISeriesApi<'Candlestick'>,
+      })
+    }
     subscribeToRangeChanges()
   }
 
@@ -216,7 +222,6 @@ export function useChart({ uiActivePlugin, uiSelectedPluginsMap }: UserChartPara
   }
 
   function getStartTime(_circle: KLineCircle, lastStartTime?: number): number {
-    console.log('lastStartTimelastStartTime:', lastStartTime)
     const t = lastStartTime ? dayjs(lastStartTime) : dayjs()
 
     const PerCount = 120
@@ -254,39 +259,36 @@ export function useChart({ uiActivePlugin, uiSelectedPluginsMap }: UserChartPara
     return handler[_circle]?.() || 0
   }
 
-  function getPointFromMouseEvent(event: MouseEvent) {
-    const container = theChartContainerRef.value
-    if (!chart.value || !container) return null
-
-    const rect = container.getBoundingClientRect()
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
-
-    return [getTimePriceFromPosition(x, y), { x, y }]
-  }
-
-  function getTimePriceFromPosition(chartX: number, chartY: number) {
-    if (!chart.value) return
-    const time = chart.value.timeScale().coordinateToTime(chartX)
+  function getTimePriceFromPosition(event: MouseEvent) {
     const mainSeries = draw.series?.kLine.getSeries()
-    if (mainSeries) {
-      return { time: time as number, price: mainSeries.coordinateToPrice(chartY) }
+    // chartX: number, chartY: number
+    if (!chart.value || !mainSeries || !theChartContainerRef.value) return
+    const { tp } = getTpFromMouseEvent(chart.value, mainSeries, theChartContainerRef.value, event)
+    if (tp) {
+      return tp
     }
     return
+    // if (!chart.value) return
+    // const time = chart.value.timeScale().coordinateToTime(chartX)
+    // const mainSeries = draw.series?.kLine.getSeries()
+    // if (mainSeries) {
+    //   return { time: time as number, price: mainSeries.coordinateToPrice(chartY) }
+    // }
+    // return
   }
-  function getScreenPositionFromPoint(p: {
-    x: number
-    y: number
-  }): { x: number; y: number } | null | undefined {
-    if (!chart.value) return
-    const timeScale = chart.value.timeScale()
-    const mainSeries = draw.series?.kLine.getSeries()
-    if (!mainSeries) return null
-    const x = timeScale.timeToCoordinate(p.x as Time)
-    const y = mainSeries.priceToCoordinate(p.y)
-    if (x === null || y === null) return null
-    return { x, y }
-  }
+  // function getScreenPositionFromPoint(p: {
+  //   x: number
+  //   y: number
+  // }): { x: number; y: number } | null | undefined {
+  //   if (!chart.value) return
+  //   const timeScale = chart.value.timeScale()
+  //   const mainSeries = draw.series?.kLine.getSeries()
+  //   if (!mainSeries) return null
+  //   const x = timeScale.timeToCoordinate(p.x as Time)
+  //   const y = mainSeries.priceToCoordinate(p.y)
+  //   if (x === null || y === null) return null
+  //   return { x, y }
+  // }
 
   function getOneRenderCount(w: number) {
     const volCount = 10

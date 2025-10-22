@@ -71,10 +71,10 @@ export default defineComponent({
       }
       showDropdown.value = false // 先关闭
 
-      const chartX = event.clientX - chartContainerRef.value.getBoundingClientRect().left
-      const chartY = event.clientY - chartContainerRef.value.getBoundingClientRect().top
+      // const chartX = event.clientX - chartContainerRef.value.getBoundingClientRect().left
+      // const chartY = event.clientY - chartContainerRef.value.getBoundingClientRect().top
 
-      const data = chart.getTimePriceFromPosition(chartX, chartY)
+      const data = chart.getTimePriceFromPosition(event)
       if (data) {
         kLineInfo.price = data.price || undefined
         kLineInfo.time = data.time || undefined

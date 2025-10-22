@@ -26,6 +26,53 @@ export const usePlguinController = ({
   const currentDrawPlugin = ref()
   const kLineSeries = ref<ISeriesApi<SeriesType>>()
 
+  // const getUiUsePlugin = () => {
+  //   // if (activePlugin.value && plugins[activePlugin.value.value as PluginName]) {
+  //   //   return plugins[activePlugin.value.value as PluginName]
+  //   // }
+  //   // return undefined
+  // }
+
+  // function getPointFromMouseEvent(event: MouseEvent): [
+  //   (
+  //     | {
+  //         time: number
+  //         price: BarPrice | null
+  //       }
+  //     | undefined
+  //   ),
+  //   p: Point | undefined,
+  // ] {
+  //   const container = chartRef.value
+  //   if (!chart.value || !container || !kLineSeries.value) return [undefined, undefined]
+
+  //   const rect = container.getBoundingClientRect()
+  //   const x = event.clientX - rect.left
+  //   const y = event.clientY - rect.top
+
+  //   return [getTimePriceFromPosition(x, y), { x, y }]
+  // }
+
+  function getTimePriceFromPosition(chartX: number, chartY: number) {
+    // if (!chart.value) return
+    // const time = chart.value.timeScale().coordinateToTime(chartX)
+    // if (kLineSeries.value) {
+    //   return { time: time as number, price: kLineSeries.value.coordinateToPrice(chartY) }
+    // }
+    // return
+  }
+
+  function getScreenPositionFromPoint(p: Point): Point | null | undefined {
+    // if (!chart.value) return
+    // const timeScale = chart.value.timeScale()
+    // const mainSeries = kLineSeries.value
+    // if (!mainSeries) return null
+    // const x = timeScale.timeToCoordinate(p.x as Time)
+    // const y = mainSeries.priceToCoordinate(p.y)
+    // if (x === null || y === null) return null
+    // return { x, y }
+  }
+
   const handler = {
     mousemove: (event: MouseEvent) => {
       // event.stopPropagation()

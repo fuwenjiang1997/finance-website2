@@ -1,0 +1,215 @@
+import { Plugin, PluginCategory, PluginName, PluginPoint, PluginStore, PluginWidth } from '../type'
+import { LineSeries, LineStyle, UTCTimestamp } from 'lightweight-charts'
+import { DEFAULT_COLOR, DEFAULT_LINE_WIDTH } from '../utils/const'
+import { nextTick, reactive, ref, toValue } from 'vue'
+import { throttle } from 'lodash-es'
+
+export const lineSegment: Plugin = (chart, params) => {
+  const category = PluginCategory.Line
+  const name = PluginName.lineSegment
+  let isFinished = false
+  const draggedPointIndex = ref<number>(0)
+  const store = reactive<PluginStore>({
+    points: [],
+    series: [],
+    width: DEFAULT_LINE_WIDTH,
+    lineStyle: LineStyle.Solid,
+  })
+
+  function setPoint(_points: PluginPoint[]) {
+    if (!Array.isArray(_points)) return
+    try {
+      store.points = _points //.sort((item, item2) => item.x - item2.x)
+      // console.log('store.points:>>:', store.points)
+      render()
+    } catch (error) {
+      console.log('error:', error)
+    }
+  }
+  const throttleSetPoint = throttle(setPoint, 32)
+  function setWidth(w: PluginWidth) {
+    store.width = w
+    render()
+  }
+  function setLineStyle(v: LineStyle) {
+    store.lineStyle = v
+    render()
+  }
+
+  const SPACE = 20
+
+  // 判断点是否命中了这个图表
+  function isFoucus(point: PluginPoint): boolean {
+    if (store.points.length < 2) return false
+
+    const p1 = params.getScreenPositionFromPoint(store.points[0])
+    const p2 = params.getScreenPositionFromPoint(store.points[1])
+
+    const screenMouse = point
+    const screenP1 = p1
+    const screenP2 = p2
+
+    if (!screenMouse || !screenP1 || !screenP2) return false
+
+    const threshold = 10 // 10像素的容差范围
+
+    // 检查是否靠近端点
+    const distToP1 = Math.sqrt(
+      Math.pow(screenMouse.x - screenP1.x, 2) + Math.pow(screenMouse.y - screenP1.y, 2),
+    )
+    if (distToP1 < threshold) return true
+
+    const distToP2 = Math.sqrt(
+      Math.pow(screenMouse.x - screenP2.x, 2) + Math.pow(screenMouse.y - screenP2.y, 2),
+    )
+    if (distToP2 < threshold) return true
+
+    // 检查是否靠近线段主体 (点到线段的距离)
+    const dx = screenP2.x - screenP1.x
+    const dy = screenP2.y - screenP1.y
+    const lenSq = dx * dx + dy * dy
+
+    if (lenSq === 0) return distToP1 < threshold
+
+    let t = ((screenMouse.x - screenP1.x) * dx + (screenMouse.y - screenP1.y) * dy) / lenSq
+    t = Math.max(0, Math.min(1, t)) // 确保投影点在线段内
+
+    const projectionX = screenP1.x + t * dx
+    const projectionY = screenP1.y + t * dy
+
+    const distToLine = Math.sqrt(
+      Math.pow(screenMouse.x - projectionX, 2) + Math.pow(screenMouse.y - projectionY, 2),
+    )
+    return distToLine < threshold
+  }
+
+  function isFoucesFirstPoint(p: PluginPoint) {
+    const _p = store.points[0]
+    if (!_p) return false
+
+    const { x: x0, y: y0 } = _p
+    const { x, y } = p
+
+    return x >= x0 - SPACE && x <= x0 + SPACE && y >= y0 - SPACE && y <= y0 + SPACE
+  }
+  function isFoucesEndPoint(p: PluginPoint) {
+    const _p = store.points[1]
+    if (!_p) return false
+    const { x: x1, y: y1 } = _p
+    const { x, y } = p
+    return x >= x1 - SPACE && x <= x1 + SPACE && y >= y1 - SPACE && y <= y1 + SPACE
+  }
+
+  function render() {
+    if (store.series.length === 0) {
+      const _series = chart.addSeries(LineSeries, {
+        color: DEFAULT_COLOR,
+        lineWidth: store.width || DEFAULT_LINE_WIDTH,
+        lineStyle: store.lineStyle,
+      })
+      store.series.push(_series)
+    }
+
+    const series = store.series[0]
+    if (store.points.length > 2) {
+      store.points.length = 2
+    }
+    if (!series || store.points.length < 2) return
+
+    const renderData = store.points.map((item) => {
+      return {
+        time: item.x as UTCTimestamp,
+        value: item.y,
+      }
+    })
+    renderData.sort((a, b) => a.time - b.time)
+    const k = `e_${new Date().getTime()}`
+    console.time(k)
+    console.log('renderData:>>', renderData)
+    series.setData(renderData)
+    console.timeEnd(k)
+  }
+
+  function finished() {
+    isFinished = true
+    params?.finished?.()
+  }
+
+  let isMouseDown = false
+  // let isMouseMoveFirstPoint = false
+  // let isMouseMoveEndPoint = false
+  function click(_: MouseEvent, point: PluginPoint) {
+    if (isFinished) {
+      return
+    }
+
+    if (store.points.length === 0) {
+      setPoint([point])
+    } else {
+      setPoint([toValue(store.points[0]), point])
+      finished()
+    }
+  }
+  function mousemove(event: MouseEvent, point: PluginPoint) {
+    event.stopPropagation()
+    event.preventDefault()
+    const point0 = store.points[0]
+    if (isMouseDown) {
+      if (draggedPointIndex.value === 0) {
+        throttleSetPoint([point, store.points[1]])
+      } else if (draggedPointIndex.value === 1) {
+        throttleSetPoint([point0, point])
+      } else {
+        // 拖动的是整个节点
+      }
+    } else if (!isFinished && point0) {
+      console.log('2222:')
+      setPoint([point0, point])
+    }
+  }
+
+  function mousedown(event: MouseEvent, point: PluginPoint) {
+    event.stopPropagation()
+    event.preventDefault()
+    isMouseDown = true
+    const threshold = 15 // 稍大的点击区域
+
+    const screenMouse = params.getScreenPositionFromPoint(point)
+
+    for (let i = 0; i < store.points.length; i++) {
+      const screenP = params.getScreenPositionFromPoint(store.points[i])
+      if (!screenP) continue
+
+      const dist = Math.sqrt(
+        Math.pow(screenMouse!.x - screenP.x, 2) + Math.pow(screenMouse!.y - screenP.y, 2),
+      )
+      if (dist < threshold) {
+        draggedPointIndex.value = i // 记录被拖拽的端点索引
+        return
+      }
+    }
+    draggedPointIndex.value = -1 // 拖动的整根线
+  }
+  function mouseup(_: MouseEvent, _2: PluginPoint) {
+    isMouseDown = false
+  }
+
+  // 销毁
+  function destory() {}
+
+  return {
+    category,
+    name,
+    store,
+    isFinished,
+    click,
+    mousemove,
+    mousedown,
+    mouseup,
+    setPoint,
+    setWidth,
+    isFoucus,
+    destory,
+    setLineStyle,
+  }
+}

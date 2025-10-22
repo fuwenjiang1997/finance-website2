@@ -1,9 +1,9 @@
 import type { IChartApi } from 'lightweight-charts'
 import { defineStore } from 'pinia'
-import { computed, onMounted, reactive, ref, shallowRef } from 'vue'
+import { computed, onMounted, ref, shallowRef } from 'vue'
 import { useChart } from '@/hooks/useChart'
 import type { ChartInstance } from '@/hooks/useChart'
-import { type RequestError, apiGetStockList } from '@/http/api'
+import { apiGetStockList } from '@/http/api'
 import { useMagicKeys, onKeyStroke } from '@vueuse/core'
 import { useDrawPlugin } from '@/hooks/useDrawPlugin'
 // import { useNotification } from 'naive-ui'
@@ -12,7 +12,6 @@ export interface CodeSymbol {
   name: string
   code: string
 }
-
 export const MAX_CHART_COUNT = 8
 
 export const useChartStore = defineStore('chartStore', () => {
@@ -23,7 +22,8 @@ export const useChartStore = defineStore('chartStore', () => {
     const index = chartList.value.findIndex((item) => item.id === activeChartId.value)
     return chartList.value[index]
   })
-  const { uiActivePlugin, uiSelectedPluginsMap, uiPluginsInfo } = useDrawPlugin()
+
+  const { uiActivePlugin, uiSelectedPluginsMap, uiPluginMap, uiPluginsInfo } = useDrawPlugin()
   useMagicKeys() // 跟踪所有按键状态
 
   /** k线模拟，下一个 */
@@ -36,7 +36,7 @@ export const useChartStore = defineStore('chartStore', () => {
   })
 
   const onAddChartByCode = (data: CodeSymbol) => {
-    const chartItem = useChart({ uiActivePlugin, uiSelectedPluginsMap })
+    const chartItem = useChart({ uiActivePlugin, uiPluginMap })
     chartItem.setCode(data)
     chartList.value.push(chartItem)
   }

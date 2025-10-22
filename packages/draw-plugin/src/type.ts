@@ -1,4 +1,4 @@
-import { IChartApi, ISeriesApi, LineStyle, SeriesType } from 'lightweight-charts'
+import { BarPrice, IChartApi, ISeriesApi, LineStyle, SeriesType } from 'lightweight-charts'
 import { Ref } from 'vue'
 
 export enum PluginCategory {
@@ -33,6 +33,7 @@ export interface PluginRes {
   name: PluginName
   category: PluginCategory
   store: Readonly<PluginStore>
+  isFinished: Ref<Boolean>
   setPoint: (points: PluginPoint[]) => void
   setWidth: (w: number) => void
   isFoucus: (p: PluginPoint) => boolean
@@ -45,8 +46,12 @@ export interface PluginRes {
 }
 
 export interface PluginParams {
-  kLineSeries: Ref<ISeriesApi<SeriesType> | undefined>
+  kLineSeries: ISeriesApi<SeriesType> | undefined
   finished?: () => void
-  getScreenPositionFromPoint: (p: PluginPoint) => PluginPoint
+  getScreenPositionFromPoint: (p: PluginPoint) => PluginPoint | null | undefined
+  getPointFromMouseEvent: (
+    e: MouseEvent,
+  ) => [{ time: number; price: BarPrice | null } | undefined, p: PluginPoint | undefined]
 }
+
 export type Plugin = (chart: IChartApi, params: PluginParams) => PluginRes

@@ -11,11 +11,12 @@
     }
   },
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsc",
     "dev": "tsc --watch"
   },
   "devDependencies": {
-    "@fuwenjiang1997/common-types": "workspace:^"
+    "@fuwenjiang1997/common-types": "workspace:^",
+    "@types/lodash-es": "^4.17.12"
   },
   "peerDependencies": {
     "vue": "^3.5.22"
@@ -28,6 +29,7 @@
   ],
   "packageManager": "pnpm@10.6.1",
   "dependencies": {
-    "lodash-es": "^4.17.21"
+    "lodash-es": "^4.17.21",
+    "uuid": "^13.0.0"
   }
 }

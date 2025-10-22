@@ -138,6 +138,9 @@ importers:
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
+      uuid:
+        specifier: ^13.0.0
+        version: 13.0.0
       vue:
         specifier: ^3.5.22
         version: 3.5.22(typescript@5.9.3)
@@ -145,6 +148,9 @@ importers:
       '@fuwenjiang1997/common-types':
         specifier: workspace:^
         version: link:../common-types
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
 
   packages/trading-view-chart:
     dependencies:
