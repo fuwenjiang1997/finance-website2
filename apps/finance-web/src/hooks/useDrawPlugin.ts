@@ -19,6 +19,12 @@ export enum PluginName {
 export type DrawInfoParams = { category: DrawCategory; data: DrawInfoData[]; categoryName: string }
 const SelectDot = 'noneSelectDot'
 
+// const PLUGINS = {
+//   [PluginName.lineSegment]: LineSegment
+// }
+
+export type UseDrawPluginRes = ReturnType<typeof useDrawPlugin>
+
 export function useDrawPlugin() {
   const uiActivePluginKey = ref<PluginName | string>(SelectDot)
   const uiActivePlugin = computed(() => {
@@ -42,6 +48,10 @@ export function useDrawPlugin() {
   const uiSelectedPluginsMap = ref<{ [k: string]: DrawInfoData }>({})
   const uiPluginMap = ref<{ [k: string]: DrawInfoData }>({})
 
+  function resetUiActivePluginKeyWhenDrawCompleted() {
+    uiActivePluginKey.value = SelectDot
+  }
+
   uiPluginsInfo.value.forEach((item) => {
     uiSelectedPluginsMap.value[item.category] = item.data[0] as DrawInfoData
     if (item.data.length > 0) {
@@ -57,5 +67,6 @@ export function useDrawPlugin() {
     uiActivePluginKey,
     uiSelectedPluginsMap,
     uiPluginMap,
+    resetUiActivePluginKeyWhenDrawCompleted,
   }
 }

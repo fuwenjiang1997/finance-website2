@@ -23,8 +23,8 @@ export const useChartStore = defineStore('chartStore', () => {
     return chartList.value[index]
   })
 
-  const { uiActivePlugin, uiActivePluginKey, uiSelectedPluginsMap, uiPluginMap, uiPluginsInfo } =
-    useDrawPlugin()
+  const drawPluginHook = useDrawPlugin()
+  const { uiActivePlugin, uiActivePluginKey, uiSelectedPluginsMap, uiPluginsInfo } = drawPluginHook
   useMagicKeys() // 跟踪所有按键状态
 
   /** k线模拟，下一个 */
@@ -37,7 +37,7 @@ export const useChartStore = defineStore('chartStore', () => {
   })
 
   const onAddChartByCode = (data: CodeSymbol) => {
-    const chartItem = useChart({ uiActivePlugin, uiPluginMap })
+    const chartItem = useChart({ drawPluginHook })
     chartItem.setCode(data)
     chartList.value.push(chartItem)
   }

@@ -1,3 +1,4 @@
 export * from './type'
 export * from './utils/index'
+export * from './plugins/DrawPlugin'
 export * from './plugins/LineSegment'

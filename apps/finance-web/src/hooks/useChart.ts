@@ -7,16 +7,7 @@ import type {
   WhitespaceData,
 } from 'lightweight-charts'
 import { createChart, ColorType } from 'lightweight-charts'
-import {
-  computed,
-  ref,
-  shallowReactive,
-  shallowRef,
-  watch,
-  type Ref,
-  type ShallowRef,
-  type TemplateRef,
-} from 'vue'
+import { computed, ref, shallowReactive, shallowRef, watch, type Ref, type TemplateRef } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { apiGetKLineData, type apiGetKLineDataReturn } from '@/http/api'
 import dayjs from 'dayjs'
@@ -26,10 +17,9 @@ import { KLineCircle } from '@/utils/const'
 import { useKLineSimulation } from './useKLineSimulation'
 import { useResizeObserver } from '@vueuse/core'
 import type { DrawInfoData } from './useDrawPlugin'
-import { usePlguinController } from './usePlguinController'
+import { useDrawingManager } from './useDrawingManager'
 import { getTpFromMouseEvent } from '@fuwenjiang1997/draw-plugin'
-// import {  } from '@fuwenjiang1997/draw-plugin'
-// import { useResizeObserver } from '@vueuse/core'
+import { type UseDrawPluginRes } from './useDrawPlugin'
 
 export interface UiInitChartParams {
   chartRef: TemplateRef<HTMLElement>
@@ -48,7 +38,7 @@ export interface UserChartParams {
 }
 
 // 可能有多个chart表，将chart提取出来
-export function useChart({ uiActivePlugin, uiPluginMap }: UserChartParams) {
+export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes }) {
   const id = uuidv4()
   const chart = shallowRef<IChartApi>()
   const code = ref('')
@@ -75,11 +65,7 @@ export function useChart({ uiActivePlugin, uiPluginMap }: UserChartParams) {
     return kLineOriginData.get(currentDataKey.value) || []
   })
 
-  const { init: initPlugin } = usePlguinController({
-    chart,
-    activePlugin: uiActivePlugin,
-    chartRef: theChartRef,
-  })
+  const { init: initPlugin } = useDrawingManager({ drawPluginHook })
 
   // 设置代码
   const setCode = (data: { code: string; name: string }) => {
@@ -126,7 +112,9 @@ export function useChart({ uiActivePlugin, uiPluginMap }: UserChartParams) {
     const kLineSeries = draw.series.kLine.getSeries()
     if (kLineSeries) {
       initPlugin({
+        chart: chart.value,
         kLineSeries: kLineSeries as ISeriesApi<'Candlestick'>,
+        chartContainer: chartContainerRef.value,
       })
     }
     subscribeToRangeChanges()
@@ -268,27 +256,7 @@ export function useChart({ uiActivePlugin, uiPluginMap }: UserChartParams) {
       return tp
     }
     return
-    // if (!chart.value) return
-    // const time = chart.value.timeScale().coordinateToTime(chartX)
-    // const mainSeries = draw.series?.kLine.getSeries()
-    // if (mainSeries) {
-    //   return { time: time as number, price: mainSeries.coordinateToPrice(chartY) }
-    // }
-    // return
   }
-  // function getScreenPositionFromPoint(p: {
-  //   x: number
-  //   y: number
-  // }): { x: number; y: number } | null | undefined {
-  //   if (!chart.value) return
-  //   const timeScale = chart.value.timeScale()
-  //   const mainSeries = draw.series?.kLine.getSeries()
-  //   if (!mainSeries) return null
-  //   const x = timeScale.timeToCoordinate(p.x as Time)
-  //   const y = mainSeries.priceToCoordinate(p.y)
-  //   if (x === null || y === null) return null
-  //   return { x, y }
-  // }
 
   function getOneRenderCount(w: number) {
     const volCount = 10
