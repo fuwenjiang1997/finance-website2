@@ -9,8 +9,8 @@ export class LineSegment extends DrawPlugin {
     this.kLineSeries = kLineSeries
     const _series = chart.addSeries(LineSeries, {
       color: 'red',
-      lineWidth: 1,
-      lineStyle: LineStyle.Solid, // 预览时使用虚线
+      lineWidth: this.store.lineWidth,
+      lineStyle: this.store.lineStyle, // 预览时使用虚线
     })
     this.series.push(_series)
     this.render = throttle((points: PluginPoint[]) => {
@@ -40,7 +40,7 @@ export class LineSegment extends DrawPlugin {
 
     if (!screenMouse || !screenP1 || !screenP2) return false
 
-    const threshold = 10 // 10像素的容差范围
+    const threshold = this.store.lineWidth + 10 // 10像素的容差范围
 
     // 检查是否靠近端点
     const distToP1 = Math.sqrt(

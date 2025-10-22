@@ -1,3 +1,5 @@
+import { LineStyle } from 'lightweight-charts'
+
 export interface PluginPoint {
   x: number
   y: number
@@ -20,6 +22,8 @@ export interface IDrawingTool {
     id: string
     isLocked: boolean // 是否被锁定
     points: PluginPoint[]
+    lineWidth: PluginWidth
+    lineStyle: LineStyle
   }
   render?: (point: PluginPoint[]) => void
   // 命中检测：检查坐标是否在图形上

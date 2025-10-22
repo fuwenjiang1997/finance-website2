@@ -1,6 +1,6 @@
-import { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts'
+import { IChartApi, ISeriesApi, LineStyle, SeriesType } from 'lightweight-charts'
 import { v4 as uuidv4 } from 'uuid'
-import { IDrawingTool, PluginPoint } from '../type'
+import { IDrawingTool, PluginPoint, PluginWidth } from '../type'
 import { getScreenPositonFromTP } from '../utils'
 
 const DEFAULT_COLOR = 'red'
@@ -17,7 +17,13 @@ export abstract class DrawPlugin implements IDrawingTool {
   public render?: (point: PluginPoint[]) => void
   protected dragStartPoint: PluginPoint | undefined
   protected series: ISeriesApi<SeriesType>[] = [] // 用于存放绘制的 series
-  store: { id: string; isLocked: boolean; points: PluginPoint[] }
+  store: {
+    id: string
+    isLocked: boolean
+    points: PluginPoint[]
+    lineWidth: PluginWidth.w1
+    lineStyle: LineStyle.Solid
+  }
 
   constructor(chart: IChartApi) {
     this.chart = chart
@@ -25,6 +31,8 @@ export abstract class DrawPlugin implements IDrawingTool {
       id: uuidv4(),
       isLocked: false,
       points: [],
+      lineWidth: PluginWidth.w1,
+      lineStyle: LineStyle.Solid,
     }
   }
   onChartCrosshairMove(_: PluginPoint): void {
