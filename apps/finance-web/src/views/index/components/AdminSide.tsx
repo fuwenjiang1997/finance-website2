@@ -19,7 +19,8 @@ type DrawInfoParams = { category: DrawCategory; data: DrawInfoData[]; categoryNa
 export default defineComponent({
   setup() {
     const chartStore = useChartStore()
-    const { uiActivePlugin, uiSelectedPluginsMap, uiPluginsInfo } = storeToRefs(chartStore)
+    const { uiActivePluginKey, uiActivePlugin, uiSelectedPluginsMap, uiPluginsInfo } =
+      storeToRefs(chartStore)
     const showPopupName = ref<DrawCategory | undefined>()
 
     function toggleShowPopup(group: DrawInfoParams) {
@@ -42,12 +43,12 @@ export default defineComponent({
 
     function onSelectDrawItem(item: DrawInfoData, group: DrawInfoParams) {
       uiSelectedPluginsMap.value[group.category] = item
-      uiActivePlugin.value = item
+      uiActivePluginKey.value = item.value
       closePopup()
     }
     function onActiveDraw(item: DrawInfoData | undefined) {
       if (item) {
-        uiActivePlugin.value = item
+        uiActivePluginKey.value = item.value
       }
     }
 

@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { LineSegment } from '@fuwenjiang1997/draw-plugin'
 
 enum DrawCategory {
@@ -20,7 +20,10 @@ export type DrawInfoParams = { category: DrawCategory; data: DrawInfoData[]; cat
 const SelectDot = 'noneSelectDot'
 
 export function useDrawPlugin() {
-  const uiActivePlugin = ref<DrawInfoData>()
+  const uiActivePluginKey = ref<PluginName | string>(SelectDot)
+  const uiActivePlugin = computed(() => {
+    return uiPluginMap.value[uiActivePluginKey.value]
+  })
 
   const uiPluginsInfo = ref<DrawInfoParams[]>([
     {
@@ -51,6 +54,7 @@ export function useDrawPlugin() {
   return {
     uiPluginsInfo,
     uiActivePlugin,
+    uiActivePluginKey,
     uiSelectedPluginsMap,
     uiPluginMap,
   }

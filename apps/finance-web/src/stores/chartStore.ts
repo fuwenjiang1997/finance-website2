@@ -23,7 +23,8 @@ export const useChartStore = defineStore('chartStore', () => {
     return chartList.value[index]
   })
 
-  const { uiActivePlugin, uiSelectedPluginsMap, uiPluginMap, uiPluginsInfo } = useDrawPlugin()
+  const { uiActivePlugin, uiActivePluginKey, uiSelectedPluginsMap, uiPluginMap, uiPluginsInfo } =
+    useDrawPlugin()
   useMagicKeys() // 跟踪所有按键状态
 
   /** k线模拟，下一个 */
@@ -91,6 +92,7 @@ export const useChartStore = defineStore('chartStore', () => {
     activeChartId,
     onAddChartByCode,
     onDeleteChart,
+    uiActivePluginKey,
     uiActivePlugin,
     uiSelectedPluginsMap,
     uiPluginsInfo,
