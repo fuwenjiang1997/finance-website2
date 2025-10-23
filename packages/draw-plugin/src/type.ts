@@ -1,4 +1,4 @@
-import { BarPrice, LineData, LineStyle, Time } from 'lightweight-charts'
+import { LineData, LineStyle, Time } from 'lightweight-charts'
 
 export interface PluginPoint {
   x: number
