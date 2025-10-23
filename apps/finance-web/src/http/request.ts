@@ -55,7 +55,6 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response) => {
-    console.log('error.response.data11:>', response.data)
     // 根据实际后端返回结构调整
     if (response.status === 200) {
       return response.data.data

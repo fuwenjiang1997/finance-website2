@@ -24,7 +24,6 @@ export default defineComponent({
     const showPopupName = ref<DrawCategory | undefined>()
 
     function toggleShowPopup(group: DrawInfoParams) {
-      console.log(showPopupName.value, group.category)
       if (showPopupName.value === group.category) {
         showPopupName.value = undefined
         return
@@ -34,7 +33,6 @@ export default defineComponent({
 
     function closePopup() {
       setTimeout(() => {
-        console.log('showPopupName.value:>>', showPopupName.value)
         if (showPopupName.value) {
           showPopupName.value = undefined
         }

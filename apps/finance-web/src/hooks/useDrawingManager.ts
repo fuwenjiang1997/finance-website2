@@ -130,15 +130,12 @@ export const useDrawingManager = ({ drawPluginHook }: { drawPluginHook: UseDrawP
 
       if (selectedDrawing.value && selectedDrawing.value.isDragging) {
         const point = getPoint(event)
-        console.log('point1111:', point)
         if (!point) return
-        console.log('point11112222:', point)
         selectedDrawing.value.onMouseUp(point)
       }
     },
     // click: (event: MouseEvent) => {},
     onChartClick: (param: MouseEventParams) => {
-      console.log('dddd:', activeDrawingInstance)
       if (!activeDrawingInstance || !chart || !param.point) return
       const time = param.time
       const price = kLineSeries.coordinateToPrice(param.point.y)

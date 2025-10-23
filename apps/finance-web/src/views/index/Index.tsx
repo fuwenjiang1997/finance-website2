@@ -34,7 +34,6 @@ export default defineComponent({
     })
 
     function setActiveChart(id: string) {
-      console.log(id)
       activeChartId.value = id
     }
 
