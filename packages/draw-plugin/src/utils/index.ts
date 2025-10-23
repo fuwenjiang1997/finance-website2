@@ -1,13 +1,18 @@
 import { IChartApi, ISeriesApi, SeriesType, Time } from 'lightweight-charts'
+import { PluginTpPoint } from '../type'
 
 export function getTPFromScreenPosition(
   chart: IChartApi,
   kLineSeries: ISeriesApi<SeriesType>,
   x: number,
   y: number,
-) {
+): PluginTpPoint | undefined {
   const time = chart.timeScale().coordinateToTime(x)
-  return { time: time as number, price: kLineSeries.coordinateToPrice(y) }
+  const value = kLineSeries.coordinateToPrice(y)
+  if (!time || !value) {
+    return undefined
+  }
+  return { time, value }
 }
 
 export function getTpFromMouseEvent(

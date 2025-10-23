@@ -22,21 +22,21 @@ export interface IDrawingTool {
   store: {
     id: string
     isLocked: boolean // 是否被锁定
-    points: PluginPoint[]
+    points: PluginTpPoint[]
     lineWidth: PluginWidth
     lineStyle: LineStyle
   }
-  render?: (point: PluginPoint[]) => void
+  render?: (point: PluginTpPoint[]) => void
   // 命中检测：检查坐标是否在图形上
-  isPointNear(point: PluginPoint): boolean
+  isPointNear(point: PluginTpPoint): boolean
   // 处理鼠标交互事件
-  onClick(point: PluginPoint): void
-  onCrosshairClick(point: PluginPoint): void
-  onMouseMove(point: PluginPoint): void
-  onChartCrosshairMove(point: PluginPoint): void
-  onMouseDown(point: PluginPoint): void
-  onDrag(point: PluginPoint): void
-  onMouseUp(point: PluginPoint): void
+  onClick(point: PluginTpPoint): void
+  onCrosshairClick(point: PluginTpPoint): void
+  onMouseMove(point: PluginTpPoint): void
+  onChartCrosshairMove(point: PluginTpPoint): void
+  onMouseDown(point: PluginTpPoint): void
+  onDrag(point: PluginTpPoint): void
+  onMouseUp(point: PluginTpPoint): void
   // 判断绘制是否完成
   isComplete(): boolean
   deselect(): void

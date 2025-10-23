@@ -1,6 +1,6 @@
 import { IChartApi, ISeriesApi, LineStyle, SeriesType } from 'lightweight-charts'
 import { v4 as uuidv4 } from 'uuid'
-import { IDrawingTool, PluginPoint, PluginWidth } from '../type'
+import { IDrawingTool, PluginTpPoint, PluginWidth } from '../type'
 import { getScreenPositonFromTP } from '../utils'
 
 const DEFAULT_COLOR = 'red'
@@ -14,13 +14,13 @@ export abstract class DrawPlugin implements IDrawingTool {
   public isDrawing: boolean = false
   public isSelected: boolean = false
   protected draggedPointIndex: number | 'body' | undefined
-  public render?: (point: PluginPoint[]) => void
-  protected dragStartPoint: PluginPoint | undefined
+  public render?: (point: PluginTpPoint[]) => void
+  protected dragStartPoint: PluginTpPoint | undefined
   protected series: ISeriesApi<SeriesType>[] = [] // 用于存放绘制的 series
   store: {
     id: string
     isLocked: boolean
-    points: PluginPoint[]
+    points: PluginTpPoint[]
     lineWidth: PluginWidth.w1
     lineStyle: LineStyle.Solid
   }
@@ -35,30 +35,30 @@ export abstract class DrawPlugin implements IDrawingTool {
       lineStyle: LineStyle.Solid,
     }
   }
-  onChartCrosshairMove(_: PluginPoint): void {
+  onChartCrosshairMove(_: PluginTpPoint): void {
     throw new Error('Method not implemented.')
   }
 
-  public abstract isPointNear(point: PluginPoint): boolean
-  public abstract onMouseMove(point: PluginPoint): void
-  public onMouseDown(point: PluginPoint) {
+  public abstract isPointNear(point: PluginTpPoint): boolean
+  public abstract onMouseMove(point: PluginTpPoint): void
+  public onMouseDown(point: PluginTpPoint) {
     if (!this.isSelected) return
     this.isDragging = true
     this.dragStartPoint = { ...point } // 记录拖拽起始点
   }
 
-  public onDrag(_: PluginPoint): void {
+  public onDrag(_: PluginTpPoint): void {
     if (!this.isDragging || !this.dragStartPoint) return
   }
 
-  public onMouseUp(_: PluginPoint): void {
+  public onMouseUp(_: PluginTpPoint): void {
     this.isDragging = false
     this.draggedPointIndex = undefined
     this.dragStartPoint = undefined
   }
-  public abstract onClick(point: PluginPoint): void
+  public abstract onClick(point: PluginTpPoint): void
   public abstract isComplete(): boolean
-  public abstract onCrosshairClick(point: PluginPoint): void
+  public abstract onCrosshairClick(point: PluginTpPoint): void
 
   select(): void {
     this.isSelected = true
@@ -78,8 +78,8 @@ export abstract class DrawPlugin implements IDrawingTool {
     this.series = []
   }
 
-  public toScreen(p: PluginPoint) {
-    if (!this.kLineSeries || !p.x || !p.y) return
-    return getScreenPositonFromTP(this.chart, this.kLineSeries, p.x, p.y)
+  public toScreen(p: PluginTpPoint) {
+    if (!this.kLineSeries || !p.time || !p.value) return
+    return getScreenPositonFromTP(this.chart, this.kLineSeries, p.time as number, p.value)
   }
 }

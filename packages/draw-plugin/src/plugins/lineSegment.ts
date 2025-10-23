@@ -1,6 +1,6 @@
 import { IChartApi, ISeriesApi, LineSeries, LineStyle, SeriesType, Time } from 'lightweight-charts'
 import { DrawPlugin } from './DrawPlugin'
-import { PluginPoint } from '../type'
+import { PluginTpPoint } from '../type'
 import { cloneDeep, throttle } from 'lodash-es'
 import { LINE_THRESHOLD } from '../utils/const'
 
@@ -14,13 +14,8 @@ export class LineSegment extends DrawPlugin {
       lineStyle: this.store.lineStyle, // 预览时使用虚线
     })
     this.series.push(_series)
-    this.render = throttle((points: PluginPoint[]) => {
-      const renderPoints = cloneDeep(points)
-        .sort((a, b) => a.x - b.x)
-        .map((item) => ({
-          time: item.x as Time,
-          value: item.y,
-        }))
+    this.render = throttle((points: PluginTpPoint[]) => {
+      const renderPoints = cloneDeep(points).sort((a, b) => (a.time as number) - (b.time as number))
       try {
         this.series[0].setData(renderPoints)
       } catch (error) {
@@ -49,7 +44,7 @@ export class LineSegment extends DrawPlugin {
   //   return undefined
   // }
 
-  isPointNear(point: PluginPoint) {
+  isPointNear(point: PluginTpPoint) {
     if (this.store.points.length < 2) return false
 
     const p1 = this.store.points[0]
@@ -96,14 +91,14 @@ export class LineSegment extends DrawPlugin {
     // console.log('distToLine < threshold:', distToLine < threshold, distToLine, threshold)
     return distToLine < threshold
   }
-  onMouseMove(_: PluginPoint) {}
-  onChartCrosshairMove(point: PluginPoint) {
+  onMouseMove(_: PluginTpPoint) {}
+  onChartCrosshairMove(point: PluginTpPoint) {
     if (!this.isDrawing || this.store.points.length < 1) return
 
     // "橡皮筋"效果: 更新第二个点的位置
     const tempPoints = [this.store.points[0], point]
-    if (tempPoints[0].x === tempPoints[1].x) return
-    tempPoints.sort((a, b) => a.x - b.x)
+    if (tempPoints[0].time === tempPoints[1].time) return
+    // tempPoints.sort((a, b) => a.x - b.x)
 
     if (this.series[0]) {
       this.render?.(tempPoints)
@@ -116,7 +111,7 @@ export class LineSegment extends DrawPlugin {
       this.render?.(tempPoints)
     }
   }
-  onMouseDown(point: PluginPoint) {
+  onMouseDown(point: PluginTpPoint) {
     super.onMouseDown(point) // 调用基类方法设置 isDragging
 
     const screenMouse = this.toScreen(point)
@@ -141,20 +136,20 @@ export class LineSegment extends DrawPlugin {
     // 如果没有点击到端点，则认为是拖拽整个线段
     this.draggedPointIndex = 'body'
   }
-  onDrag(point: PluginPoint) {
+  onDrag(point: PluginTpPoint) {
     super.onDrag(point) // 调用基类方法
     if (!this.isDragging || !this.dragStartPoint) return
 
-    const priceDiff = point.y - this.dragStartPoint.y
+    const priceDiff = point.value - this.dragStartPoint.value
     // 时间戳不能直接加减，需要转换为数值
-    const timeDiff = (point.x as number) - (this.dragStartPoint.x as number)
+    const timeDiff = (point.time as number) - (this.dragStartPoint.time as number)
 
     if (this.draggedPointIndex === 'body') {
       // 移动整个线段
-      this.store.points[0].y += priceDiff
-      this.store.points[1].y += priceDiff
-      this.store.points[0].x = (this.store.points[0].x as number) + timeDiff
-      this.store.points[1].x = (this.store.points[1].x as number) + timeDiff
+      this.store.points[0].value += priceDiff
+      this.store.points[1].value += priceDiff
+      this.store.points[0].time = ((this.store.points[0].time as number) + timeDiff) as Time
+      this.store.points[1].time = ((this.store.points[1].time as number) + timeDiff) as Time
     } else if (typeof this.draggedPointIndex === 'number') {
       // 移动单个端点
       this.store.points[this.draggedPointIndex] = { ...point }
@@ -163,36 +158,29 @@ export class LineSegment extends DrawPlugin {
     this.dragStartPoint = { ...point }
     this.render?.(this.store.points)
   }
-  onMouseUp(point: PluginPoint) {
+  onMouseUp(point: PluginTpPoint) {
     super.onMouseUp(point)
   }
-  onClick(_: PluginPoint) {}
-  onCrosshairClick(point: PluginPoint) {
+  onClick(_: PluginTpPoint) {}
+  onCrosshairClick(point: PluginTpPoint) {
     if (!this.isDrawing) {
       // 开始绘制
       this.isDrawing = true
 
       const _points = cloneDeep(this.store.points)
       _points.push(point)
-      _points.sort((a, b) => a.x - b.x)
+      _points.sort((a, b) => (a.time as number) - (b.time as number))
       this.store.points = _points
     } else {
       // 第二次绘制
       const _points = cloneDeep(this.store.points)
       _points.push(point)
-      _points.sort((a, b) => a.x - b.x)
+      _points.sort((a, b) => (a.time as number) - (b.time as number))
       this.store.points = _points
       this.isDrawing = false
       // 确保 line series 已创建并更新最终数据
       if (this.series[0]) {
-        ;(this.series[0] as ISeriesApi<'Line'>).setData(
-          this.store.points.map((item) => {
-            return {
-              time: item.x as Time,
-              value: item.y,
-            }
-          }),
-        )
+        ;(this.series[0] as ISeriesApi<'Line'>).setData(this.store.points)
       }
     }
   }

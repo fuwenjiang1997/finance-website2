@@ -1,4 +1,4 @@
-import { onBeforeUnmount, reactive, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
+import { reactive, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import type { DrawInfoData } from './useDrawPlugin'
 import type {
   IChartApi,
@@ -9,11 +9,6 @@ import type {
 } from 'lightweight-charts'
 import { getTpFromMouseEvent, type IDrawingTool } from '@fuwenjiang1997/draw-plugin'
 import { type UseDrawPluginRes } from '@/hooks/useDrawPlugin'
-
-interface Point {
-  x: number
-  y: number
-}
 
 export interface UsePlguinControllerParams {
   chart: Ref<IChartApi | undefined>
@@ -40,8 +35,7 @@ export const useDrawingManager = ({ drawPluginHook }: { drawPluginHook: UseDrawP
 
   function getPoint(event: MouseEvent) {
     const { tp } = getTpFromMouseEvent(chart, kLineSeries, chartContainer, event)
-    if (!tp) return
-    return { x: tp.time, y: tp.price as number }
+    return tp
   }
 
   const deactivateTool = () => {
@@ -141,7 +135,7 @@ export const useDrawingManager = ({ drawPluginHook }: { drawPluginHook: UseDrawP
       const price = kLineSeries.coordinateToPrice(param.point.y)
       if (!time || price === null) return
 
-      activeDrawingInstance.onCrosshairClick({ x: time as number, y: price })
+      activeDrawingInstance.onCrosshairClick({ time, value: price })
 
       if (activeDrawingInstance.isComplete()) {
         // activeDrawingInstance.draw() // 绘制最终形态
@@ -159,7 +153,7 @@ export const useDrawingManager = ({ drawPluginHook }: { drawPluginHook: UseDrawP
       // const mainSeries = chartInstance.getSeries()[0];
       const price = kLineSeries.coordinateToPrice(param.point.y)
       if (!time || price === null) return
-      activeDrawingInstance.onChartCrosshairMove({ x: time, y: price })
+      activeDrawingInstance.onChartCrosshairMove({ time, value: price })
     },
   }
 
@@ -182,10 +176,10 @@ export const useDrawingManager = ({ drawPluginHook }: { drawPluginHook: UseDrawP
     chartContainer?.removeEventListener('mouseup', handler.mouseup)
   }
 
-  const clearAllDrawings = () => {
-    drawings.forEach((d) => d.remove())
-    drawings.length = 0 // 清空数组
-  }
+  // const clearAllDrawings = () => {
+  //   drawings.forEach((d) => d.remove())
+  //   drawings.length = 0 // 清空数组
+  // }
 
   const destory = () => {
     // todo 销毁这个chart
