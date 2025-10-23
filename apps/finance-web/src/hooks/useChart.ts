@@ -65,7 +65,11 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     return kLineOriginData.get(currentDataKey.value) || []
   })
 
-  const { init: initPlugin } = useDrawingManager({ drawPluginHook })
+  const {
+    init: initPlugin,
+    destory: destoryDrawingManager,
+    clearAllDrawings,
+  } = useDrawingManager({ drawPluginHook })
 
   // 设置代码
   const setCode = (data: { code: string; name: string }) => {
@@ -278,15 +282,18 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     setDefaultVisibleRange(getOneRenderCount(w))
   })
 
-  useResizeObserver(theChartContainerRef, (entries) => {
+  const { stop } = useResizeObserver(theChartContainerRef, (entries) => {
     const entry = entries[0]
     if (!entry) return
     const { width } = entry.contentRect
     setDefaultVisibleRange(getOneRenderCount(width))
   })
 
-  const destory = () => {
-    // todo 销毁这个chart
+  const destory = async () => {
+    clearAllDrawings() // todo 暂时是删除所有线，后面需要拿到所有线信息后保存打数据库
+    stop()
+    destoryDrawingManager()
+    chart.value?.remove()
   }
 
   return {

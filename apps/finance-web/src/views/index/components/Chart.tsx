@@ -1,7 +1,6 @@
-import { defineComponent, onMounted, useTemplateRef, type PropType, toValue } from 'vue'
+import { defineComponent, onMounted, useTemplateRef, type PropType } from 'vue'
 import type { ChartInstance } from '@/hooks/useChart'
 import ChartCycle from './ChartCycle'
-import { cycleListMap } from '@/utils/const'
 import LightMenu from './LightMenu'
 import { NButton, useNotification } from 'naive-ui'
 import cn from 'classnames'
@@ -35,14 +34,16 @@ export default defineComponent({
     })
 
     function onDeleteChart(id: string) {
-      if (chartStore.chartList.length <= 1) {
-        notification.warning({
-          content: '至少需要有一个图表',
-          duration: 3000,
-        })
-        return
+      try {
+        chartStore.onDeleteChart(id)
+      } catch (error) {
+        if (error instanceof Error && error?.message === 'Minimum1') {
+          notification.warning({
+            content: '至少需要有一个图表',
+            duration: 3000,
+          })
+        }
       }
-      chartStore.onDeleteChart(id)
     }
 
     return () => (

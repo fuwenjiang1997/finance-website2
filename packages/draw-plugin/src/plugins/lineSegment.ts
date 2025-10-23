@@ -24,26 +24,6 @@ export class LineSegment extends DrawPlugin {
     }, 16)
   }
 
-  // isNearPoint(point: PluginPoint): number | undefined {
-  //   const screenMouse = this.toScreen(point)
-  //   const threshold = LINE_THRESHOLD
-  //   if (!screenMouse) return
-
-  //   // 判断点击的是哪个端点
-  //   for (let i = 0; i < this.store.points.length; i++) {
-  //     const screenP = this.toScreen(this.store.points[i])
-  //     if (!screenP) continue
-
-  //     const dist = Math.sqrt(
-  //       Math.pow(screenMouse.x - screenP.x, 2) + Math.pow(screenMouse.y - screenP.y, 2),
-  //     )
-  //     if (dist < threshold) {
-  //       return i // 记录被拖拽的端点索引
-  //     }
-  //   }
-  //   return undefined
-  // }
-
   isPointNear(point: PluginTpPoint) {
     if (this.store.points.length < 2) return false
 

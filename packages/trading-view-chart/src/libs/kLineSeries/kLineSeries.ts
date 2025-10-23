@@ -57,8 +57,8 @@ const kLineSeries = (chart: IChartApi, params: VChartSeriesParams) => {
   }
 
   return {
+    mainSeries,
     getSeries,
-    setData,
   }
 }
 

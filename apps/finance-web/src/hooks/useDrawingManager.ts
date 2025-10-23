@@ -176,17 +176,17 @@ export const useDrawingManager = ({ drawPluginHook }: { drawPluginHook: UseDrawP
     chartContainer?.removeEventListener('mouseup', handler.mouseup)
   }
 
-  // const clearAllDrawings = () => {
-  //   drawings.forEach((d) => d.remove())
-  //   drawings.length = 0 // 清空数组
-  // }
+  const clearAllDrawings = () => {
+    drawings.forEach((d) => d.remove())
+    drawings.length = 0 // 清空数组
+  }
 
   const destory = () => {
-    // todo 销毁这个chart
     removeEventListenerHandler()
   }
   return {
     init,
     destory,
+    clearAllDrawings,
   }
 }

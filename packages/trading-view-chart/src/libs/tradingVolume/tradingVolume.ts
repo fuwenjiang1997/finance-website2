@@ -46,6 +46,14 @@ const tradingVolume = (chart: IChartApi, params: VChartSeriesParams) => {
       bottom: 0, // 主图底部留白 30%，这个空间会给 pane 1
     },
   })
+
+  function getSeries() {
+    return volumeSeries.value
+  }
+
+  return {
+    getSeries,
+  }
 }
 
 export default tradingVolume

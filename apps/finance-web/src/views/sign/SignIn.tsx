@@ -60,10 +60,11 @@ export default defineComponent({
           content: '登录成功～',
         })
       } catch (error) {
-        console.error(error)
-        notification.error({
-          content: error?.message,
-        })
+        if (error instanceof Error) {
+          notification.error({
+            content: error.message,
+          })
+        }
       }
       done()
     })

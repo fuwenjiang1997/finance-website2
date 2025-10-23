@@ -1,6 +1,6 @@
 import type { IChartApi } from 'lightweight-charts'
 import { defineStore } from 'pinia'
-import { computed, onMounted, ref, shallowRef } from 'vue'
+import { computed, nextTick, onMounted, ref, shallowRef } from 'vue'
 import { useChart } from '@/hooks/useChart'
 import type { ChartInstance } from '@/hooks/useChart'
 import { apiGetStockList } from '@/http/api'
@@ -43,9 +43,12 @@ export const useChartStore = defineStore('chartStore', () => {
   }
 
   function onDeleteChart(id: string) {
+    if (chartList.value.length <= 1) {
+      throw Error('Minimum1')
+    }
     const index = chartList.value.findIndex((item) => item.id === id)
     if (index !== -1) {
-      const chart = chartList[index]
+      const chart = chartList.value[index]
       chart?.destory()
       chartList.value.splice(index, 1)
     }
@@ -75,9 +78,11 @@ export const useChartStore = defineStore('chartStore', () => {
         }
       }
     } catch (error) {
-      // notification.error({
-      //   content: (error as RequestError)?.message || '获取列表失败',
-      // })
+      if (error instanceof Error && error.message) {
+        // notification.error({
+        //   content: (error as RequestError)?.message || '获取列表失败',
+        // })
+      }
     }
   }
 

@@ -130,14 +130,16 @@ const SelectedCodeList: FunctionalComponent = () => {
   const notification = useNotification()
 
   function onDeleteChart(id: string) {
-    if (chartStore.chartList.length <= 1) {
-      notification.warning({
-        content: '至少需要有一个图表',
-        duration: 3000,
-      })
-      return
+    try {
+      chartStore.onDeleteChart(id)
+    } catch (error) {
+      if (error instanceof Error && error?.message === 'Minimum1') {
+        notification.warning({
+          content: '至少需要有一个图表',
+          duration: 3000,
+        })
+      }
     }
-    chartStore.onDeleteChart(id)
   }
 
   return (

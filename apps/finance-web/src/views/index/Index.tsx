@@ -50,6 +50,7 @@ export default defineComponent({
               return (
                 <Chart
                   chart={chart}
+                  key={chart.id}
                   onMouseenter={() => setActiveChart(chart.id)}
                   index={index}
                   active={activeChartId.value === chart.id}

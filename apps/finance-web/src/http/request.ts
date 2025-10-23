@@ -60,7 +60,8 @@ service.interceptors.response.use(
       return response.data.data
     } else {
       // 可以全局弹窗提示
-      return Promise.reject(<RequestError>{
+      return Promise.reject(<Error>{
+        name: '',
         message: response.data,
       })
     }
@@ -75,12 +76,14 @@ service.interceptors.response.use(
 
     if (error.response?.status === 401) {
       router.push('/signin')
-      return Promise.reject(<RequestError>{
+      return Promise.reject(<Error>{
+        name: '',
         message: error.response.data?.error || error?.message || error,
       })
     }
 
-    return Promise.reject(<RequestError>{
+    return Promise.reject(<Error>{
+      name: '',
       message: error.response.data?.error || error?.message || error,
     })
   },
