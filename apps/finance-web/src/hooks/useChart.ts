@@ -134,8 +134,6 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
       const _noMoreData = noMoreKLineData.value[_circle] || false
       const oldData = kLineData.get(k) || []
       const oldFisrtDataTime = oldData[0]?.time ? (oldData[0].time as number) : undefined
-
-      console.log('窒息行了:11111')
       if (
         _noMoreData ||
         (params?.startTime && oldFisrtDataTime && params.startTime >= oldFisrtDataTime * 1000)
@@ -153,6 +151,18 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
       })
 
       if (Array.isArray(res) && res.length > 0) {
+        if (oldFisrtDataTime) {
+          const repeatStartIndex = res.findIndex((item) => {
+            return dayjs(item.OpenTime).valueOf() >= oldFisrtDataTime * 1000
+          })
+          res.splice(repeatStartIndex)
+        }
+        if (res.length === 0) {
+          noMoreKLineData.value[_circle] = true
+          done()
+          return
+        }
+
         const newData = res.map((item): CandlestickData => {
           return {
             time: dayjs(item.OpenTime).unix() as UTCTimestamp, // time 是秒
@@ -163,34 +173,9 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
           }
         })
 
-        if (circle.value !== _circle || code.value !== _code) {
-          done()
-          return
-        }
         const oldOriginData = kLineOriginData.get(k) || []
-
-        if (!oldFisrtDataTime) {
-          kLineOriginData.set(k, res)
-          kLineData.set(k, newData)
-        } else {
-          // 需要检查数据是否有重复的
-          const repeatStartIndex = newData.findIndex(
-            (item) => (item.time as number) >= oldFisrtDataTime,
-          )
-          if (repeatStartIndex !== -1) {
-            const _newData = newData.slice(0, repeatStartIndex)
-            console.log('_newData:', _newData.length)
-            if (_newData.length !== 0) {
-              kLineOriginData.set(k, [...res.slice(0, repeatStartIndex), ...oldOriginData])
-              kLineData.set(k, [..._newData, ...oldData])
-            } else {
-              noMoreKLineData.value[_circle] = true
-            }
-          } else {
-            kLineOriginData.set(k, [...res, ...oldOriginData])
-            kLineData.set(k, [...newData, ...oldData])
-          }
-        }
+        kLineOriginData.set(k, [...res, ...oldOriginData])
+        kLineData.set(k, [...newData, ...oldData])
       } else {
         noMoreKLineData.value[_circle] = true
       }
