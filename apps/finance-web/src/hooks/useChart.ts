@@ -133,13 +133,14 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
       const k = `${_circle}`
       const _noMoreData = noMoreKLineData.value[_circle] || false
       const oldData = kLineData.get(k) || []
+      const oldFisrtDataTime = oldData[0]?.time ? (oldData[0].time as number) : undefined
 
+      console.log('窒息行了:11111')
       if (
-        _noMoreData &&
-        params?.startTime &&
-        oldData.length > 0 &&
-        params.startTime < (oldData[0]?.time as number)
+        _noMoreData ||
+        (params?.startTime && oldFisrtDataTime && params.startTime >= oldFisrtDataTime * 1000)
       ) {
+        done()
         return
       }
       const _startTime = params?.startTime || 0
@@ -151,8 +152,8 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
         limit: 1000,
       })
 
-      if (Array.isArray(res)) {
-        const d = res.map((item): CandlestickData => {
+      if (Array.isArray(res) && res.length > 0) {
+        const newData = res.map((item): CandlestickData => {
           return {
             time: dayjs(item.OpenTime).unix() as UTCTimestamp, // time 是秒
             open: item.Open,
@@ -161,20 +162,39 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
             close: item.Close,
           }
         })
-        if (oldData[0]?.time && d[0]?.time && d[0].time > oldData[0].time) {
+
+        if (circle.value !== _circle || code.value !== _code) {
+          done()
           return
         }
-        const firstData = d[0]
-        if (firstData?.time === oldData?.[0]?.time) {
-          noMoreKLineData.value[_circle] = true
-        }
-        if (circle.value !== _circle || code.value !== _code) return
+        const oldOriginData = kLineOriginData.get(k) || []
 
-        kLineOriginData.set(k, res)
-        kLineData.set(k, d)
-        // draw?.series?.kLine.setData(kLineDataByCircle.value)
-        done(d)
+        if (!oldFisrtDataTime) {
+          kLineOriginData.set(k, res)
+          kLineData.set(k, newData)
+        } else {
+          // 需要检查数据是否有重复的
+          const repeatStartIndex = newData.findIndex(
+            (item) => (item.time as number) >= oldFisrtDataTime,
+          )
+          if (repeatStartIndex !== -1) {
+            const _newData = newData.slice(0, repeatStartIndex)
+            console.log('_newData:', _newData.length)
+            if (_newData.length !== 0) {
+              kLineOriginData.set(k, [...res.slice(0, repeatStartIndex), ...oldOriginData])
+              kLineData.set(k, [..._newData, ...oldData])
+            } else {
+              noMoreKLineData.value[_circle] = true
+            }
+          } else {
+            kLineOriginData.set(k, [...res, ...oldOriginData])
+            kLineData.set(k, [...newData, ...oldData])
+          }
+        }
+      } else {
+        noMoreKLineData.value[_circle] = true
       }
+      done(kLineData.get(k))
     } catch (error) {
       done()
       console.log('error:>>', error)
@@ -191,10 +211,11 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
 
       if (logicalRange.from < BUFFER) {
         // startTime 是秒
-        const startTime = (kLineDataByCircle.value[0]?.time as number) || dayjs().unix()
+        const lastStartTime = (kLineDataByCircle.value[0]?.time as number) || dayjs().unix()
 
         await getKlineData({
-          startTime: getStartTime(circle.value, (startTime as number) * 1000),
+          startTime: getStartTime(circle.value, (lastStartTime as number) * 1000),
+          endTime: lastStartTime * 1000,
         })
       }
     })
