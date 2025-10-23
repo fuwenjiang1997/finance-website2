@@ -3,8 +3,9 @@ import type { ChartInstance } from '@/hooks/useChart'
 import ChartCycle from './ChartCycle'
 import { cycleListMap } from '@/utils/const'
 import LightMenu from './LightMenu'
-import { NButton } from 'naive-ui'
+import { NButton, useNotification } from 'naive-ui'
 import cn from 'classnames'
+import { useChartStore } from '@/stores/chartStore'
 
 export default defineComponent({
   props: {
@@ -23,6 +24,8 @@ export default defineComponent({
   setup(props) {
     const chartContainerRef = useTemplateRef<HTMLDivElement>('chartContainerRef')
     const chartRef = useTemplateRef<HTMLDivElement>('chartRef')
+    const chartStore = useChartStore()
+    const notification = useNotification()
 
     onMounted(() => {
       props.chart.initChart({
@@ -30,6 +33,17 @@ export default defineComponent({
         chartContainerRef: chartContainerRef,
       })
     })
+
+    function onDeleteChart(id: string) {
+      if (chartStore.chartList.length <= 1) {
+        notification.warning({
+          content: '至少需要有一个图表',
+          duration: 3000,
+        })
+        return
+      }
+      chartStore.onDeleteChart(id)
+    }
 
     return () => (
       <div
@@ -48,16 +62,20 @@ export default defineComponent({
                 {/* {cycleListMap[toValue(props.chart.circle)]?.label} ) */}
               </span>
             </div>
-            <div>
+            <div class={'flex gap-2'}>
               {props.chart.kLineSimulation.isActriveKLineSimulation && (
                 <NButton
                   type="primary"
-                  size="small"
+                  size="tiny"
                   onClick={props.chart.kLineSimulation.exitKLineSimulation}
                 >
                   退出k线模拟
                 </NButton>
               )}
+
+              <NButton type="primary" size="tiny" onClick={() => onDeleteChart(props.chart.id)}>
+                <i class={'iconfont icon-close'}></i>
+              </NButton>
             </div>
           </div>
         </div>
