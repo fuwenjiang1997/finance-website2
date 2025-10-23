@@ -40,5 +40,5 @@ export function getScreenPositonFromTP(
   const _x = timeScale.timeToCoordinate(x as Time)
   const _y = kLineSeries.priceToCoordinate(y)
   if (_x === null || _y === null) return
-  return { x, y }
+  return { x: _x, y: _y }
 }
