@@ -1,9 +1,10 @@
-import { LineStyle } from 'lightweight-charts'
+import { BarPrice, LineData, LineStyle, Time } from 'lightweight-charts'
 
 export interface PluginPoint {
   x: number
   y: number
 }
+export type PluginTpPoint = LineData<Time>
 
 export enum PluginWidth {
   w1 = 1,

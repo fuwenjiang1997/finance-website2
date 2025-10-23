@@ -61,12 +61,16 @@ export class LineSegment extends DrawPlugin {
 
     if (!screenMouse || !screenP1 || !screenP2) return false
 
-    const threshold = LINE_THRESHOLD // 10像素的容差范围
+    // console.log('点:', screenMouse, screenP1, screenP2)
+
+    const threshold = LINE_THRESHOLD
 
     // 检查是否靠近端点
     const distToP1 = Math.sqrt(
       Math.pow(screenMouse.x - screenP1.x, 2) + Math.pow(screenMouse.y - screenP1.y, 2),
     )
+    // console.log('distToP1:', screenMouse.x, screenP1.x, screenMouse.y, screenP1.y)
+    console.log('distToPoint:', distToP1, point, screenMouse, screenP1, screenP2)
     if (distToP1 < threshold) return true
     const distToP2 = Math.sqrt(
       Math.pow(screenMouse.x - screenP2.x, 2) + Math.pow(screenMouse.y - screenP2.y, 2),
@@ -89,7 +93,7 @@ export class LineSegment extends DrawPlugin {
     const distToLine = Math.sqrt(
       Math.pow(screenMouse.x - projectionX, 2) + Math.pow(screenMouse.y - projectionY, 2),
     )
-
+    // console.log('distToLine < threshold:', distToLine < threshold, distToLine, threshold)
     return distToLine < threshold
   }
   onMouseMove(_: PluginPoint) {}
