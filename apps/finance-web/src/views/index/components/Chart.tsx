@@ -1,10 +1,11 @@
-import { defineComponent, onMounted, useTemplateRef, type PropType } from 'vue'
+import { defineComponent, onMounted, useTemplateRef, type PropType, ref } from 'vue'
 import type { ChartInstance } from '@/hooks/useChart'
 import ChartCycle from './ChartCycle'
 import LightMenu from './LightMenu'
 import { NButton, useNotification } from 'naive-ui'
 import cn from 'classnames'
 import { useChartStore } from '@/stores/chartStore'
+import { useFullscreen } from '@vueuse/core'
 
 export default defineComponent({
   props: {
@@ -16,6 +17,10 @@ export default defineComponent({
       type: Boolean,
     },
     index: {
+      type: Number,
+      required: true,
+    },
+    total: {
       type: Number,
       required: true,
     },
@@ -46,12 +51,18 @@ export default defineComponent({
       }
     }
 
+    const isFull = ref(false)
+    function onToggleFullScreen() {
+      isFull.value = !isFull.value
+    }
+
     return () => (
       <div
         class={cn(
           'h-full flex flex-col pb-2 bg-white rounded overflow-hidden border border-transparent',
           {
             '!border-black ': props.active,
+            ' absolute left-0 top-0 right-0 bottom-0 z-1': isFull.value,
           },
         )}
       >
@@ -74,9 +85,22 @@ export default defineComponent({
                 </NButton>
               )}
 
-              <NButton type="primary" size="tiny" onClick={() => onDeleteChart(props.chart.id)}>
-                <i class={'iconfont icon-close'}></i>
-              </NButton>
+              {props.total > 1 && (
+                <NButton type="primary" size="tiny" onClick={onToggleFullScreen}>
+                  <i
+                    class={[
+                      'iconfont',
+                      !isFull.value ? 'icon-24gl-fullScreenEnter' : 'icon-24gl-fullScreenExit',
+                    ]}
+                  ></i>
+                </NButton>
+              )}
+
+              {props.total > 1 && !isFull.value && (
+                <NButton type="primary" size="tiny" onClick={() => onDeleteChart(props.chart.id)}>
+                  <i class={'iconfont icon-close'}></i>
+                </NButton>
+              )}
             </div>
           </div>
         </div>

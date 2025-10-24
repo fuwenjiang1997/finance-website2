@@ -42,21 +42,24 @@ export default defineComponent({
         <AdminHeader class={'shrink-0'}></AdminHeader>
         <div class={'flex overflow-hidden'} style="height: calc(100vh - 40px)">
           <AdminSide class={'shrink-0 py-2'}></AdminSide>
-          <div
-            class={'flex-1 h-full grid gap-1 p-1 bg-gray overflow-hidden max-sm:!grid-cols-1'}
-            style={layoutStyle.value}
-          >
-            {chartList.value.map((chart, index) => {
-              return (
-                <Chart
-                  chart={chart}
-                  key={chart.id}
-                  onMouseenter={() => setActiveChart(chart.id)}
-                  index={index}
-                  active={activeChartId.value === chart.id}
-                ></Chart>
-              )
-            })}
+          <div class={' flex-1 h-full overflow-hidden p-1 bg-gray '}>
+            <div
+              class={'relative w-full h-full grid gap-1 overflow-hidden max-sm:!grid-cols-1'}
+              style={layoutStyle.value}
+            >
+              {chartList.value.map((chart, index) => {
+                return (
+                  <Chart
+                    chart={chart}
+                    key={chart.id}
+                    total={chartList.value.length}
+                    onMouseenter={() => setActiveChart(chart.id)}
+                    index={index}
+                    active={activeChartId.value === chart.id}
+                  ></Chart>
+                )
+              })}
+            </div>
           </div>
         </div>
       </div>

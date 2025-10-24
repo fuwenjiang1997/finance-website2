@@ -35,7 +35,7 @@ export default defineComponent({
             <i
               class={[
                 'iconfont',
-                isFullscreen ? 'icon-24gl-fullScreenEnter' : 'icon-24gl-fullScreenExit',
+                !isFullscreen.value ? 'icon-24gl-fullScreenEnter' : 'icon-24gl-fullScreenExit',
               ]}
             ></i>
           </MyTagButton>
