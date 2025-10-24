@@ -56,8 +56,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function getUserInfo() {
-    const res = (await apiGetUserInfo()) || {}
-    const { user } = res
+    const { user } = (await apiGetUserInfo()) || {}
     if (user && typeof user === 'object') {
       setUserInfo(user)
     }
