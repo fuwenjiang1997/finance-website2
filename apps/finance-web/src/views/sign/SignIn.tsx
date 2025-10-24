@@ -46,19 +46,12 @@ export default defineComponent({
     const [onSignIn, onSignInLoading] = useWithLoading(async (done) => {
       try {
         await checkAllFormItem()
-        const res = await apiSignIn({
-          email: form.username,
-          username: form.username,
-          password: form.password,
-        })
-        const { token, user } = res
-        userStore.setToken(token)
-        userStore.setUserInfo(user as UserInfo)
+        await userStore.signIn(form)
         userStore.onSignSuccessCb(form)
-        router.push({ path: (route.query?.redirect as string) || '/' })
         notification.success({
           content: '登录成功～',
         })
+        router.push({ path: (route.query?.redirect as string) || '/' })
       } catch (error) {
         if (error instanceof Error) {
           notification.error({

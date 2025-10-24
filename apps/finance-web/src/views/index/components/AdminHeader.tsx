@@ -1,17 +1,27 @@
 import { MyTagButton } from '@/components/button/MyTagButton'
-import { defineComponent, ref } from 'vue'
+import { defineComponent } from 'vue'
 import Search from './Search'
 import { useFullscreen } from '@vueuse/core'
-import SetDialog from './SetDialog'
+import { useUserStore } from '@/stores/userStore'
+import { storeToRefs } from 'pinia'
+import { RouterLink } from 'vue-router'
 
 export default defineComponent({
   setup() {
     const { isFullscreen, toggle: toggleFullScreen } = useFullscreen()
+
+    const userStore = useUserStore()
+    const { userInfo } = storeToRefs(userStore)
+
     return () => (
       <div class={'h-10 w-full flex items-center gap-2 bg-white'}>
         <div class={'flex flex-1 overflow-hidden'}>
           <div class={' w-12 flex-center '}>
-            <div class={'w-8 h-8 flex-center text-white bg-red-800 rounded-full'}>F</div>
+            {userInfo.value ? (
+              <div class={'w-8 h-8 flex-center text-white bg-red-800 rounded-full'}>F</div>
+            ) : (
+              <RouterLink to={'/signin'}>登录</RouterLink>
+            )}
           </div>
           <Search />
         </div>

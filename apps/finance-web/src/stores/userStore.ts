@@ -2,12 +2,15 @@ import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
 import { onMounted, ref } from 'vue'
 import type { FormRules } from 'naive-ui'
-import { apiGetUserInfo } from '@/http/api'
+import { apiGetUserInfo, apiSignIn } from '@/http/api'
 
 export interface SignFormParams {
   username?: string
   password?: string
   rememberMe: boolean
+}
+export interface SignUpFormParams extends SignFormParams {
+  otp: string
 }
 
 export enum UserRole {
@@ -29,7 +32,7 @@ export interface UserInfo {
 export const useUserStore = defineStore('user', () => {
   const token = useLocalStorage('token', '')
   const userInfo = ref<UserInfo | undefined>(undefined)
-  const rememberMeInfo = useLocalStorage('rememberMeInfo', { rememberMe: false })
+  const rememberMeInfo = useLocalStorage<SignFormParams>('rememberMeInfo', { rememberMe: false })
 
   const signRule: FormRules = {
     username: [
@@ -53,14 +56,11 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function getUserInfo() {
-    try {
-      const res = await apiGetUserInfo()
-      const { user } = res
-      if (user && typeof user === 'object') {
-        setUserInfo(user)
-      }
-    } catch (err) {
-      console.log('err', err)
+    console.log('获取用户信息:')
+    const res = (await apiGetUserInfo()) || {}
+    const { user } = res
+    if (user && typeof user === 'object') {
+      setUserInfo(user)
     }
   }
 
@@ -77,6 +77,25 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  async function signIn(_form: SignFormParams) {
+    const res = await apiSignIn({
+      email: _form.username,
+      username: _form.username,
+      password: _form.password,
+    })
+    const { token, user } = res
+    setToken(token)
+    setUserInfo(user as UserInfo)
+    onSignSuccessCb(_form)
+  }
+
+  async function autoSignin() {
+    const { rememberMe, username, password } = rememberMeInfo.value
+    if (rememberMe && username && password) {
+      return signIn({ username, password, rememberMe })
+    }
+  }
+
   onMounted(() => {
     getUserInfo()
   })
@@ -89,6 +108,8 @@ export const useUserStore = defineStore('user', () => {
     rememberMeInfo,
     setToken,
     setUserInfo,
+    signIn,
     onSignSuccessCb,
+    autoSignin,
   }
 })
