@@ -2,9 +2,9 @@ import { MyTagButton } from '@/components/button/MyTagButton'
 import type { ChartInstance } from '@/hooks/useChart'
 import { PluginWidth } from '@fuwenjiang1997/draw-plugin'
 import { useResizeObserver } from '@vueuse/core'
-import { NColorPicker, NDropdown, NPopconfirm, type PopoverInst } from 'naive-ui'
+import { NColorPicker, NDropdown, NPopconfirm } from 'naive-ui'
 import type { DropdownMixedOption } from 'naive-ui/es/dropdown/src/interface'
-import { toValue, type FunctionalComponent, ref, useTemplateRef } from 'vue'
+import { toValue, type FunctionalComponent, ref } from 'vue'
 import cn from 'classnames'
 import { computed, defineComponent, onBeforeUnmount, type PropType, type TemplateRef } from 'vue'
 import { LineStyle } from 'lightweight-charts'
@@ -181,11 +181,8 @@ const SetLineStyleItemOptiop: FunctionalComponent<{
 }
 
 const setLineStyle: FunctionalComponent<SetItemCmpProps> = (props) => {
-  const dropDownRef = useTemplateRef<PopoverInst>('dropDownRef')
-
   function setLineStyle(v: LineStyle) {
     selectedDrawing?.setLineStyle(v)
-    dropDownRef.value?.setShow(false)
   }
 
   const options: DropdownMixedOption[] = [
@@ -214,11 +211,6 @@ const setLineStyle: FunctionalComponent<SetItemCmpProps> = (props) => {
     {
       key: LineStyle.Dashed,
       type: 'render',
-      props: {
-        onSelect: () => {
-          console.log('111')
-        },
-      },
       render: () => (
         <SetLineStyleItemOptiop
           showText="点线"
@@ -232,7 +224,7 @@ const setLineStyle: FunctionalComponent<SetItemCmpProps> = (props) => {
   const selectedDrawing = toValue(props.chart.selectedDrawing)
 
   return (
-    <NDropdown options={options} ref="dropDownRef">
+    <NDropdown options={options} ref="dropdownRef">
       <MyTagButton>
         <div
           class={cn('w-4 border-b-2 border-black', {

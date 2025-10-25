@@ -152,6 +152,9 @@ export const useDrawingManager = ({ drawPluginHook }: { drawPluginHook: UseDrawP
         // activeDrawingInstance.draw() // 绘制最终形态
         drawings.push(activeDrawingInstance) // 添加到已完成列表
 
+        activeDrawingInstance.select()
+        selectedDrawing.value = drawings[drawings.length - 1]
+
         // 完成后自动取消工具
         drawPluginHook.resetUiActivePluginKeyWhenDrawCompleted()
       }
