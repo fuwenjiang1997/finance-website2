@@ -22,6 +22,7 @@ export interface IDrawingTool {
   isDrawing: boolean // 是否正在绘制中
   isSelected: boolean // 是否被选中
   isDragging: boolean // 是否正在拖拽中
+  isDeleted: boolean // 是否被删除
   // 具体渲染相关的数据
   store: {
     id: string

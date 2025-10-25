@@ -9,6 +9,7 @@ export abstract class DrawPlugin implements IDrawingTool {
   public isDragging: boolean = false
   public isDrawing: boolean = false
   public isSelected: boolean = false
+  public isDeleted: boolean = false
   protected draggedPointIndex: number | 'body' | undefined
   public render?: (point: PluginTpPoint[]) => void
   protected dragStartPoint: PluginTpPoint | undefined
@@ -100,17 +101,11 @@ export abstract class DrawPlugin implements IDrawingTool {
     this.store.lineVisible = v
     this.updateSet()
   }
-  noneRender() {
+  // 不会真正的删除，只是ui不显示，并标记删除，调用删除ui会卡顿
+  public remove(): void {
+    this.isDeleted = true
     this.series.forEach((item) => {
       item.setData([])
-    })
-  }
-
-  public remove(): void {
-    this.noneRender()
-    requestAnimationFrame(() => {
-      this.series.forEach((s) => this.chart.removeSeries(s))
-      this.series = []
     })
   }
 
