@@ -38,6 +38,17 @@ export const useDrawingManager = ({ drawPluginHook }: { drawPluginHook: UseDrawP
     return tp
   }
 
+  function deleteDraw(id: string) {
+    if (selectedDrawing.value?.store.id === id) {
+      selectedDrawing.value = undefined
+    }
+    const index = drawings.findIndex((item) => item.store.id === id)
+    if (index !== -1) {
+      drawings[index]?.remove()
+      drawings.splice(index, 1)
+    }
+  }
+
   const deactivateTool = () => {
     if (activeDrawingInstance && !activeDrawingInstance.isComplete()) {
       // 如果工具未完成绘制就被取消，则从图上移除
@@ -184,10 +195,12 @@ export const useDrawingManager = ({ drawPluginHook }: { drawPluginHook: UseDrawP
   const destory = () => {
     removeEventListenerHandler()
   }
+
   return {
     init,
     destory,
     clearAllDrawings,
+    deleteDraw,
     selectedDrawing,
   }
 }

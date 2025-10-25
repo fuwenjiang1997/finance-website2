@@ -91,16 +91,15 @@ export class LineSegment extends DrawPlugin {
     if (tempPoints[0].time === tempPoints[1].time) return
     // tempPoints.sort((a, b) => a.x - b.x)
 
-    if (this.series[0]) {
-      this.render?.(tempPoints)
-    } else {
-      this.series[0] = this.chart.addSeries(LineSeries, {
-        color: 'red',
-        lineWidth: 1,
-        lineStyle: LineStyle.Solid, // 预览时使用虚线
-      })
-      this.render?.(tempPoints)
-    }
+    this.render?.(tempPoints)
+    // else {
+    //   this.series[0] = this.chart.addSeries(LineSeries, {
+    //     color: 'red',
+    //     lineWidth: 1,
+    //     lineStyle: LineStyle.Solid, // 预览时使用虚线
+    //   })
+    //   this.render?.(tempPoints)
+    // }
   }
   onMouseDown(point: PluginTpPoint) {
     super.onMouseDown(point) // 调用基类方法设置 isDragging
@@ -178,5 +177,4 @@ export class LineSegment extends DrawPlugin {
   isComplete() {
     return this.store.points.length >= 2
   }
-  remove() {}
 }

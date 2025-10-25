@@ -70,6 +70,7 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     destory: destoryDrawingManager,
     clearAllDrawings,
     selectedDrawing,
+    deleteDraw,
   } = useDrawingManager({ drawPluginHook })
 
   // 设置代码
@@ -319,5 +320,6 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     setCircle,
     kLineSimulation,
     getTimePriceFromPosition,
+    deleteDraw,
   }
 }

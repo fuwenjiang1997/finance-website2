@@ -2,7 +2,7 @@ import { MyTagButton, MyTagButtonSize } from '@/components/button/MyTagButton'
 import type { ChartInstance } from '@/hooks/useChart'
 import { PluginWidth } from '@fuwenjiang1997/draw-plugin'
 import { useResizeObserver } from '@vueuse/core'
-import { NButton, NColorPicker, NDropdown } from 'naive-ui'
+import { NButton, NColorPicker, NDropdown, NPopconfirm } from 'naive-ui'
 import type { DropdownMixedOption } from 'naive-ui/es/dropdown/src/interface'
 import { toValue, type FunctionalComponent } from 'vue'
 import cn from 'classnames'
@@ -36,11 +36,6 @@ export default defineComponent({
   setup(props) {
     const yColWidth = ref()
     const setMap: { [k: string]: SetItem } = {
-      lock: {
-        key: 'lock',
-        label: '锁',
-        cmp: SetLock,
-      },
       color: {
         key: 'color',
         label: '颜色',
@@ -56,10 +51,20 @@ export default defineComponent({
         label: '线条类型',
         cmp: setLineType,
       },
+      lock: {
+        key: 'lock',
+        label: '锁',
+        cmp: SetLock,
+      },
       lineVisible: {
         key: 'lineVisible',
         label: '是否可见',
         cmp: setLineVisible,
+      },
+      lineDelete: {
+        key: 'lineDelete',
+        label: '删除',
+        cmp: setDeleteDraw,
       },
     }
 
@@ -243,5 +248,22 @@ const setLineVisible: FunctionalComponent<SetItemCmpProps> = (props) => {
         })}
       ></i>
     </MyTagButton>
+  )
+}
+
+const setDeleteDraw: FunctionalComponent<SetItemCmpProps> = (props) => {
+  const selectedDrawing = toValue(props.chart.selectedDrawing)
+
+  return (
+    <NPopconfirm onPositiveClick={() => props.chart.deleteDraw(selectedDrawing!.store.id)}>
+      {{
+        trigger: () => (
+          <MyTagButton>
+            <i class={cn('iconfont icon-shanchu')}></i>
+          </MyTagButton>
+        ),
+        default: () => '确定要删除吗？',
+      }}
+    </NPopconfirm>
   )
 }

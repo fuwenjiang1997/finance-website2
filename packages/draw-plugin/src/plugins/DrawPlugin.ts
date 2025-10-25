@@ -30,7 +30,7 @@ export abstract class DrawPlugin implements IDrawingTool {
       isLocked: false,
       points: [],
       color: 'rgb(255, 0, 0)',
-      lineWidth: PluginWidth.w1,
+      lineWidth: PluginWidth.w2,
       lineStyle: LineStyle.Solid,
       lineVisible: true,
     }
@@ -100,10 +100,18 @@ export abstract class DrawPlugin implements IDrawingTool {
     this.store.lineVisible = v
     this.updateSet()
   }
+  noneRender() {
+    this.series.forEach((item) => {
+      item.setData([])
+    })
+  }
 
   public remove(): void {
-    this.series.forEach((s) => this.chart.removeSeries(s))
-    this.series = []
+    this.noneRender()
+    requestAnimationFrame(() => {
+      this.series.forEach((s) => this.chart.removeSeries(s))
+      this.series = []
+    })
   }
 
   public toScreen(p: PluginTpPoint) {
