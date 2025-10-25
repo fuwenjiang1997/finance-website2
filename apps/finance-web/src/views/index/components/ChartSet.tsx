@@ -1,19 +1,12 @@
-import { MyTagButton, MyTagButtonSize } from '@/components/button/MyTagButton'
+import { MyTagButton } from '@/components/button/MyTagButton'
 import type { ChartInstance } from '@/hooks/useChart'
 import { PluginWidth } from '@fuwenjiang1997/draw-plugin'
 import { useResizeObserver } from '@vueuse/core'
-import { NButton, NColorPicker, NDropdown, NPopconfirm } from 'naive-ui'
+import { NColorPicker, NDropdown, NPopconfirm, type PopoverInst } from 'naive-ui'
 import type { DropdownMixedOption } from 'naive-ui/es/dropdown/src/interface'
-import { toValue, type FunctionalComponent } from 'vue'
+import { toValue, type FunctionalComponent, ref, useTemplateRef } from 'vue'
 import cn from 'classnames'
-import {
-  computed,
-  defineComponent,
-  onBeforeUnmount,
-  ref,
-  type PropType,
-  type TemplateRef,
-} from 'vue'
+import { computed, defineComponent, onBeforeUnmount, type PropType, type TemplateRef } from 'vue'
 import { LineStyle } from 'lightweight-charts'
 
 interface SetItem {
@@ -46,10 +39,10 @@ export default defineComponent({
         label: '线条宽度',
         cmp: SetLineWidth,
       },
-      lineType: {
-        key: 'lineType',
+      lineStyle: {
+        key: 'lineStyle',
         label: '线条类型',
-        cmp: setLineType,
+        cmp: setLineStyle,
       },
       lock: {
         key: 'lock',
@@ -187,46 +180,65 @@ const SetLineStyleItemOptiop: FunctionalComponent<{
   )
 }
 
-const setLineType: FunctionalComponent<SetItemCmpProps> = (props) => {
-  const lineCmp = {
-    [LineStyle.Solid]: () => (
-      <SetLineStyleItemOptiop
-        showText="实现"
-        class="border-solid"
-        onClick={() => selectedDrawing?.setLineStyle(LineStyle.Solid)}
-      ></SetLineStyleItemOptiop>
-    ),
-    [LineStyle.Dashed]: () => (
-      <SetLineStyleItemOptiop
-        showText="虚线"
-        class="border-dashed"
-        onClick={() => selectedDrawing?.setLineStyle(LineStyle.Dashed)}
-      ></SetLineStyleItemOptiop>
-    ),
+const setLineStyle: FunctionalComponent<SetItemCmpProps> = (props) => {
+  const dropDownRef = useTemplateRef<PopoverInst>('dropDownRef')
+
+  function setLineStyle(v: LineStyle) {
+    selectedDrawing?.setLineStyle(v)
+    dropDownRef.value?.setShow(false)
   }
 
   const options: DropdownMixedOption[] = [
     {
       key: LineStyle.Solid,
       type: 'render',
-      render: lineCmp[LineStyle.Solid],
+      render: () => (
+        <SetLineStyleItemOptiop
+          showText="实现"
+          class="border-solid"
+          onClick={() => setLineStyle(LineStyle.Solid)}
+        ></SetLineStyleItemOptiop>
+      ),
     },
     {
       key: LineStyle.Dashed,
       type: 'render',
-      render: lineCmp[LineStyle.Dashed],
+      render: () => (
+        <SetLineStyleItemOptiop
+          showText="虚线"
+          class="border-dashed"
+          onClick={() => setLineStyle(LineStyle.Dashed)}
+        ></SetLineStyleItemOptiop>
+      ),
+    },
+    {
+      key: LineStyle.Dashed,
+      type: 'render',
+      props: {
+        onSelect: () => {
+          console.log('111')
+        },
+      },
+      render: () => (
+        <SetLineStyleItemOptiop
+          showText="点线"
+          class="border-dotted"
+          onClick={() => setLineStyle(LineStyle.Dashed)}
+        ></SetLineStyleItemOptiop>
+      ),
     },
   ]
 
   const selectedDrawing = toValue(props.chart.selectedDrawing)
 
   return (
-    <NDropdown options={options}>
+    <NDropdown options={options} ref="dropDownRef">
       <MyTagButton>
         <div
           class={cn('w-4 border-b-2 border-black', {
-            ' border-solid': selectedDrawing?.store?.lineStyle === LineStyle.Solid,
-            ' border-dashed': selectedDrawing?.store?.lineStyle === LineStyle.Dashed,
+            'border-solid': selectedDrawing?.store?.lineStyle === LineStyle.Solid,
+            'border-dashed': selectedDrawing?.store?.lineStyle === LineStyle.Dashed,
+            'border-dotted': selectedDrawing?.store?.lineStyle === LineStyle.Dotted,
           })}
         ></div>
       </MyTagButton>

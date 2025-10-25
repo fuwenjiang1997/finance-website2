@@ -91,7 +91,6 @@ export abstract class DrawPlugin implements IDrawingTool {
   setLineStyle(v: LineStyle) {
     this.store.lineStyle = v
     this.updateSet()
-    console.log('ddd:')
   }
   setLock(v: boolean) {
     this.store.isLocked = v
