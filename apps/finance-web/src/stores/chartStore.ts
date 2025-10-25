@@ -1,6 +1,5 @@
-import type { IChartApi } from 'lightweight-charts'
 import { defineStore } from 'pinia'
-import { computed, nextTick, onMounted, ref, shallowRef } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useChart } from '@/hooks/useChart'
 import type { ChartInstance } from '@/hooks/useChart'
 import { apiGetStockList } from '@/http/api'
@@ -15,7 +14,6 @@ export interface CodeSymbol {
 export const MAX_CHART_COUNT = 8
 
 export const useChartStore = defineStore('chartStore', () => {
-  const chart = shallowRef<IChartApi>()
   const chartList = ref<ChartInstance[]>([])
   const activeChartId = ref()
   const activeChart = computed(() => {
@@ -91,7 +89,6 @@ export const useChartStore = defineStore('chartStore', () => {
   })
 
   return {
-    chart,
     chartList,
     codeSymbolList,
     activeChartId,

@@ -42,9 +42,11 @@ export default defineComponent({
         <AdminHeader class={'shrink-0'}></AdminHeader>
         <div class={'flex overflow-hidden'} style="height: calc(100vh - 40px)">
           <AdminSide class={'shrink-0 py-2'}></AdminSide>
-          <div class={' flex-1 h-full overflow-hidden p-1 bg-gray '}>
+          <div class={'flex-1 h-full overflow-hidden p-1 bg-gray '}>
             <div
-              class={'relative w-full h-full grid gap-1 overflow-hidden max-sm:!grid-cols-1'}
+              class={
+                'relative w-full h-full grid gap-1 overflow-hidden max-sm:!grid-cols-1 max-sm:overflow-y-scroll'
+              }
               style={layoutStyle.value}
             >
               {chartList.value.map((chart, index) => {
@@ -52,6 +54,7 @@ export default defineComponent({
                   <Chart
                     chart={chart}
                     key={chart.id}
+                    class={'min-h-[400px]'}
                     total={chartList.value.length}
                     onMouseenter={() => setActiveChart(chart.id)}
                     index={index}

@@ -5,7 +5,7 @@ import LightMenu from './LightMenu'
 import { NButton, useNotification } from 'naive-ui'
 import cn from 'classnames'
 import { useChartStore } from '@/stores/chartStore'
-import { useFullscreen } from '@vueuse/core'
+import ChartSet from './ChartSet'
 
 export default defineComponent({
   props: {
@@ -59,10 +59,10 @@ export default defineComponent({
     return () => (
       <div
         class={cn(
-          'h-full flex flex-col pb-2 bg-white rounded overflow-hidden border border-transparent',
+          'relative h-full flex flex-col pb-2 bg-white rounded overflow-hidden border border-transparent',
           {
             '!border-black ': props.active,
-            ' absolute left-0 top-0 right-0 bottom-0 z-1': isFull.value,
+            '!absolute left-0 top-0 right-0 bottom-0 z-1': isFull.value,
           },
         )}
       >
@@ -106,10 +106,13 @@ export default defineComponent({
         </div>
 
         <div class={'flex-1 relative'} ref="chartContainerRef">
-          <div class={' absolute left-0 top-0 right-0 bottom-0 opacity-5'} ref="chartRef"></div>
+          <div class={' absolute left-0 top-0 right-0 bottom-0'} ref="chartRef"></div>
         </div>
         <LightMenu chart={props.chart} chartContainerRef={chartContainerRef}></LightMenu>
-        <ChartCycle chart={props.chart} class={''}></ChartCycle>
+        {props.chart.selectedDrawing && (
+          <ChartSet chart={props.chart} chartContainerRef={chartContainerRef}></ChartSet>
+        )}
+        <ChartCycle chart={props.chart}></ChartCycle>
       </div>
     )
   },

@@ -188,5 +188,6 @@ export const useDrawingManager = ({ drawPluginHook }: { drawPluginHook: UseDrawP
     init,
     destory,
     clearAllDrawings,
+    selectedDrawing,
   }
 }

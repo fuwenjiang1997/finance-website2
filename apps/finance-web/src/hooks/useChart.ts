@@ -69,6 +69,7 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     init: initPlugin,
     destory: destoryDrawingManager,
     clearAllDrawings,
+    selectedDrawing,
   } = useDrawingManager({ drawPluginHook })
 
   // 设置代码
@@ -311,6 +312,7 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     draw,
     kLineDataByCircle,
     kLineOriginDataByCircle,
+    selectedDrawing,
     initChart,
     destory,
     setCode,

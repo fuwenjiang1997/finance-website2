@@ -29,6 +29,7 @@
   ],
   "packageManager": "pnpm@10.6.1",
   "dependencies": {
+    "color": "^5.0.2",
     "lodash-es": "^4.17.21",
     "uuid": "^13.0.0"
   }

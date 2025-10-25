@@ -3,10 +3,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { IDrawingTool, PluginTpPoint, PluginWidth } from '../type'
 import { getScreenPositonFromTP } from '../utils'
 
-const DEFAULT_COLOR = 'red'
-const DEFAULT_LINE_WIDTH = 2
-const SELECTED_LINE_WIDTH = 3
-
 export abstract class DrawPlugin implements IDrawingTool {
   public chart: IChartApi
   public kLineSeries: ISeriesApi<SeriesType> | undefined
@@ -20,9 +16,11 @@ export abstract class DrawPlugin implements IDrawingTool {
   store: {
     id: string
     isLocked: boolean
+    color: string
     points: PluginTpPoint[]
-    lineWidth: PluginWidth.w1
-    lineStyle: LineStyle.Solid
+    lineWidth: PluginWidth
+    lineStyle: LineStyle
+    lineVisible: boolean
   }
 
   constructor(chart: IChartApi) {
@@ -31,10 +29,14 @@ export abstract class DrawPlugin implements IDrawingTool {
       id: uuidv4(),
       isLocked: false,
       points: [],
+      color: 'rgb(255, 0, 0)',
       lineWidth: PluginWidth.w1,
       lineStyle: LineStyle.Solid,
+      lineVisible: true,
     }
   }
+
+  public abstract updateSet(): void
   onChartCrosshairMove(_: PluginTpPoint): void {
     throw new Error('Method not implemented.')
   }
@@ -62,15 +64,41 @@ export abstract class DrawPlugin implements IDrawingTool {
 
   select(): void {
     this.isSelected = true
-    this.series.forEach((s) => s.applyOptions({ color: '#1E88E5', lineWidth: SELECTED_LINE_WIDTH }))
+    this.updateSet()
+    // this.series.forEach((s) =>
+    //   s.applyOptions({ color: PluginLineColor.Selected, lineWidth: this.store.lineWidth }),
+    // )
   }
 
   deselect(): void {
     this.isSelected = false
+    this.updateSet()
     // 恢复原始颜色和线宽
-    this.series.forEach((s) =>
-      s.applyOptions({ color: DEFAULT_COLOR, lineWidth: DEFAULT_LINE_WIDTH }),
-    )
+    // this.series.forEach((s) =>
+    //   s.applyOptions({ color: this.store.color, lineWidth: this.store.lineWidth }),
+    // )
+  }
+
+  setLineWidth(v: PluginWidth) {
+    this.store.lineWidth = v
+    this.updateSet()
+  }
+  setLineColor(v: string) {
+    this.store.color = v
+    this.updateSet()
+  }
+  setLineStyle(v: LineStyle) {
+    this.store.lineStyle = v
+    this.updateSet()
+    console.log('ddd:')
+  }
+  setLock(v: boolean) {
+    this.store.isLocked = v
+    this.updateSet()
+  }
+  setLineVisible(v: boolean) {
+    this.store.lineVisible = v
+    this.updateSet()
   }
 
   public remove(): void {

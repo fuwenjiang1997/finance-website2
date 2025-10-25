@@ -3,13 +3,15 @@ import { DrawPlugin } from './DrawPlugin'
 import { PluginTpPoint } from '../type'
 import { cloneDeep, throttle } from 'lodash-es'
 import { LINE_THRESHOLD } from '../utils/const'
+import Color from 'color'
+// Color(params.upColor).alpha(0.7)
 
 export class LineSegment extends DrawPlugin {
   constructor(chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>) {
     super(chart)
     this.kLineSeries = kLineSeries
     const _series = chart.addSeries(LineSeries, {
-      color: 'red',
+      color: this.store.color,
       lineWidth: this.store.lineWidth,
       lineStyle: this.store.lineStyle, // 预览时使用虚线
     })
@@ -22,6 +24,15 @@ export class LineSegment extends DrawPlugin {
         console.log('error:>>', error)
       }
     }, 16)
+  }
+  updateSet() {
+    const { color, lineWidth, lineStyle, lineVisible } = this.store
+    this.series[0]?.applyOptions({
+      lineStyle: lineStyle,
+      color: this.isSelected ? Color(color).alpha(0.7).toString() : color,
+      lineWidth: lineWidth,
+      lineVisible,
+    })
   }
 
   isPointNear(point: PluginTpPoint) {

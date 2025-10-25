@@ -13,6 +13,10 @@ export enum PluginWidth {
   w4 = 4,
 }
 
+export enum PluginLineColor {
+  Selected = '#1E88E5',
+}
+
 // 定义画线工具的公共接口
 export interface IDrawingTool {
   isDrawing: boolean // 是否正在绘制中
@@ -21,12 +25,15 @@ export interface IDrawingTool {
   // 具体渲染相关的数据
   store: {
     id: string
+    color: string
     isLocked: boolean // 是否被锁定
     points: PluginTpPoint[]
     lineWidth: PluginWidth
     lineStyle: LineStyle
+    lineVisible: boolean
   }
   render?: (point: PluginTpPoint[]) => void
+  updateSet: () => void
   // 命中检测：检查坐标是否在图形上
   isPointNear(point: PluginTpPoint): boolean
   // 处理鼠标交互事件
@@ -43,4 +50,9 @@ export interface IDrawingTool {
   select(): void
   // 移除图形
   remove(): void
+  setLineWidth: (v: PluginWidth) => void
+  setLineStyle: (v: LineStyle) => void
+  setLock: (v: boolean) => void
+  setLineColor: (v: string) => void
+  setLineVisible: (v: boolean) => void
 }
