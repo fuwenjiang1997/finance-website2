@@ -8,6 +8,6 @@
     "jsx": "react-jsx", // 支持 React JSX
     "types": ["vite/client"]
   },
-  "include": ["src"], // 只编译 src 目录下的文件
+  "include": ["src", "go-wasm.d.ts"], // 只编译 src 目录下的文件
   "exclude": ["node_modules", "dist"]
 }

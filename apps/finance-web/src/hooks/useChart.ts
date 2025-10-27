@@ -18,7 +18,7 @@ import { useKLineSimulation } from './useKLineSimulation'
 import { useResizeObserver } from '@vueuse/core'
 import type { DrawInfoData } from './useDrawPlugin'
 import { useDrawingManager } from './useDrawingManager'
-import { getTpFromMouseEvent } from '@fuwenjiang1997/draw-plugin'
+import { getTpFromMouseEvent, type KLineIndexData } from '@fuwenjiang1997/draw-plugin'
 import { type UseDrawPluginRes } from './useDrawPlugin'
 
 export interface UiInitChartParams {
@@ -63,6 +63,22 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
   })
   const kLineOriginDataByCircle = computed(() => {
     return kLineOriginData.get(currentDataKey.value) || []
+  })
+
+  // 指标数据
+  const kLineIndexDataByCircle = computed((): KLineIndexData => {
+    const m: KLineIndexData = {
+      closes: <number[]>[],
+      highs: <number[]>[],
+      lows: <number[]>[],
+    }
+
+    kLineOriginDataByCircle.value.forEach((item) => {
+      m.closes.push(item.Close)
+      m.highs.push(item.High)
+      m.lows.push(item.Low)
+    })
+    return m
   })
 
   const {
@@ -321,5 +337,6 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     kLineSimulation,
     getTimePriceFromPosition,
     deleteDraw,
+    kLineIndexDataByCircle,
   }
 }

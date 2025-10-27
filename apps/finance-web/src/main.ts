@@ -5,6 +5,8 @@ import { createPinia } from 'pinia'
 
 import App from './App'
 import router from './router'
+import { vAuth } from './directive/VAuth'
+// import { installTradeWasm } from '@fuwenjiang1997/draw-plugin'
 
 const app = createApp(App)
 
@@ -18,5 +20,8 @@ app.config.errorHandler = (err, instance, info) => {
 
 app.use(createPinia())
 app.use(router)
+
+// installTradeWasm(app)
+app.directive('auth', vAuth)
 
 app.mount('#app')

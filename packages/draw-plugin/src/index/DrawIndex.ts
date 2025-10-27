@@ -1,0 +1,60 @@
+import { IChartApi, ISeriesApi, LineStyle, SeriesType } from 'lightweight-charts'
+import { IDrawingIndex, KLineIndexData, PluginWidth } from '../type'
+
+export abstract class DrawIndex implements IDrawingIndex {
+  public chart: IChartApi
+  public kLineSeries: ISeriesApi<SeriesType> | undefined
+  isDeleted: boolean = false
+  protected series: ISeriesApi<SeriesType>[] = [] // 用于存放绘制的 series
+
+  store: {
+    id: string
+    color: string
+    lineWidth: PluginWidth
+    lineStyle: LineStyle
+    visible: boolean
+  }
+
+  constructor(chart: IChartApi) {
+    this.chart = chart
+    this.store = {
+      id: '',
+      points: [],
+      color: 'rgb(255, 0, 0)',
+      lineWidth: PluginWidth.w2,
+      lineStyle: LineStyle.Solid,
+      visible: true,
+    }
+  }
+
+  public abstract render(v?: KLineIndexData): void
+  remove(): void {
+    throw new Error('Method not implemented.')
+  }
+  updateSet() {
+    const { color, lineWidth, lineStyle, visible } = this.store
+    this.series.forEach((item) => {
+      item?.applyOptions({
+        lineStyle: lineStyle,
+        color: color,
+        lineWidth: lineWidth,
+        lineVisible: visible,
+      })
+    })
+  }
+  setLineWidth(v: PluginWidth) {
+    this.store.lineWidth = v
+    this.updateSet()
+  }
+  setLineColor(v: string) {
+    this.store.color = v
+    this.updateSet()
+  }
+  setVisible(v: boolean) {
+    this.store.visible = v
+    this.updateSet()
+  }
+  // setData(v: KLineIndexData) {
+  //   // this.data = v
+  // }
+}

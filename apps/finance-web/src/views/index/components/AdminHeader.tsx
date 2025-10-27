@@ -1,10 +1,11 @@
 import { MyTagButton } from '@/components/button/MyTagButton'
-import { defineComponent } from 'vue'
+import { defineComponent, withDirectives } from 'vue'
 import Search from './Search'
 import { useFullscreen } from '@vueuse/core'
-import { useUserStore } from '@/stores/userStore'
+import { UserRole, useUserStore } from '@/stores/userStore'
 import { storeToRefs } from 'pinia'
 import { RouterLink } from 'vue-router'
+import { Mode, vAuth } from '@/directive/VAuth'
 
 export default defineComponent({
   setup() {
@@ -16,7 +17,7 @@ export default defineComponent({
     return () => (
       <div class={'h-10 w-full flex items-center gap-2 bg-white'}>
         <div class={'flex flex-1 overflow-hidden'}>
-          <div class={' w-12 flex-center '}>
+          <div class={'shrink-0 w-12 flex-center '}>
             {userInfo.value ? (
               <div class={'w-8 h-8 flex-center text-white bg-red-800 rounded-full'}>F</div>
             ) : (
@@ -29,7 +30,12 @@ export default defineComponent({
           <MyTagButton>
             <i class={'iconfont icon-shezhi'}></i>
           </MyTagButton>
-          {/* <SetDialog></SetDialog> */}
+          {/* {withDirectives(
+            <MyTagButton>
+              <i class={'iconfont icon-shezhi'}></i>
+            </MyTagButton>,
+            [[vAuth, { roles: [UserRole.Uesr], mode: Mode.hide }]],
+          )} */}
 
           <MyTagButton onClick={toggleFullScreen}>
             <i

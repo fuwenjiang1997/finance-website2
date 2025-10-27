@@ -2,6 +2,7 @@ import { IChartApi, ISeriesApi, LineStyle, SeriesType } from 'lightweight-charts
 import { v4 as uuidv4 } from 'uuid'
 import { IDrawingTool, PluginTpPoint, PluginWidth } from '../type'
 import { getScreenPositonFromTP } from '../utils'
+import Color from 'color'
 
 export abstract class DrawPlugin implements IDrawingTool {
   public chart: IChartApi
@@ -11,7 +12,7 @@ export abstract class DrawPlugin implements IDrawingTool {
   public isSelected: boolean = false
   public isDeleted: boolean = false
   protected draggedPointIndex: number | 'body' | undefined
-  public render?: (point: PluginTpPoint[]) => void
+  public render: (point: PluginTpPoint[]) => void = () => {}
   protected dragStartPoint: PluginTpPoint | undefined
   protected series: ISeriesApi<SeriesType>[] = [] // 用于存放绘制的 series
   store: {
@@ -37,7 +38,17 @@ export abstract class DrawPlugin implements IDrawingTool {
     }
   }
 
-  public abstract updateSet(): void
+  updateSet() {
+    const { color, lineWidth, lineStyle, lineVisible } = this.store
+    this.series.forEach((item) => {
+      item?.applyOptions({
+        lineStyle: lineStyle,
+        color: this.isSelected ? Color(color).alpha(0.7).toString() : color,
+        lineWidth: lineWidth,
+        lineVisible,
+      })
+    })
+  }
   onChartCrosshairMove(_: PluginTpPoint): void {
     throw new Error('Method not implemented.')
   }

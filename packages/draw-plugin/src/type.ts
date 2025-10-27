@@ -33,7 +33,7 @@ export interface IDrawingTool {
     lineStyle: LineStyle
     lineVisible: boolean
   }
-  render?: (point: PluginTpPoint[]) => void
+  render: (point: PluginTpPoint[]) => void
   updateSet: () => void
   // 命中检测：检查坐标是否在图形上
   isPointNear(point: PluginTpPoint): boolean
@@ -56,4 +56,28 @@ export interface IDrawingTool {
   setLock: (v: boolean) => void
   setLineColor: (v: string) => void
   setLineVisible: (v: boolean) => void
+}
+
+export interface IDrawingIndex {
+  isDeleted: boolean // 是否被删除
+  // data: KLineIndexData | undefined
+  store: {
+    id: string
+    color: string
+    lineWidth: PluginWidth
+    lineStyle: LineStyle
+    visible: boolean
+  }
+
+  remove(): void
+  render(v: KLineIndexData): void
+  setLineWidth: (v: PluginWidth) => void
+  setLineColor: (v: string) => void
+  setVisible: (v: boolean) => void
+}
+
+export interface KLineIndexData {
+  closes: number[]
+  highs: number[]
+  lows: number[]
 }

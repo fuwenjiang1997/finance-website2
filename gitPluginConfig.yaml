@@ -1,0 +1,4 @@
+MaxFileSize: 3145728  # default 3145728B
+SizeCheckSkip:
+#  - "skip file path, relative path of project root"
+#  - "govendor/.gitignore"

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type { FormRules } from 'naive-ui'
 import { apiGetUserInfo, apiSignIn } from '@/http/api'
 
@@ -15,6 +15,7 @@ export interface SignUpFormParams extends SignFormParams {
 
 export enum UserRole {
   Uesr = 'user',
+  Admin = 'admin',
 }
 
 export enum VipLevel {
@@ -33,6 +34,8 @@ export const useUserStore = defineStore('user', () => {
   const token = useLocalStorage('token', '')
   const userInfo = ref<UserInfo | undefined>(undefined)
   const rememberMeInfo = useLocalStorage<SignFormParams>('rememberMeInfo', { rememberMe: false })
+  const isLogined = computed(() => token.value && userInfo.value)
+  const userRole = computed(() => userInfo.value?.role)
 
   const signRule: FormRules = {
     username: [
@@ -109,5 +112,7 @@ export const useUserStore = defineStore('user', () => {
     signIn,
     onSignSuccessCb,
     autoSignin,
+    isLogined,
+    userRole,
   }
 })

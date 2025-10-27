@@ -1,10 +1,8 @@
-import { IChartApi, ISeriesApi, LineSeries, LineStyle, SeriesType, Time } from 'lightweight-charts'
+import { IChartApi, ISeriesApi, LineSeries, SeriesType, Time } from 'lightweight-charts'
 import { DrawPlugin } from './DrawPlugin'
 import { PluginTpPoint } from '../type'
 import { cloneDeep, throttle } from 'lodash-es'
 import { LINE_THRESHOLD } from '../utils/const'
-import Color from 'color'
-// Color(params.upColor).alpha(0.7)
 
 export class LineSegment extends DrawPlugin {
   constructor(chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>) {
@@ -26,13 +24,7 @@ export class LineSegment extends DrawPlugin {
     }, 16)
   }
   updateSet() {
-    const { color, lineWidth, lineStyle, lineVisible } = this.store
-    this.series[0]?.applyOptions({
-      lineStyle: lineStyle,
-      color: this.isSelected ? Color(color).alpha(0.7).toString() : color,
-      lineWidth: lineWidth,
-      lineVisible,
-    })
+    super.updateSet()
   }
 
   isPointNear(point: PluginTpPoint) {
