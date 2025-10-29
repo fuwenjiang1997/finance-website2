@@ -106,7 +106,7 @@ const SearchDialog: FunctionalComponent<SearchDialogProps> = (props, { attrs }) 
           />
           <NButton>搜索</NButton>
         </div>
-        <div class={'flex gap-2 mb-5'}>
+        <div class={'flex flex-wrap gap-2 mb-5'}>
           <SelectedCodeList />
         </div>
         <MyTable class={'flex-1'} columns={columns} data={renderList.value}>

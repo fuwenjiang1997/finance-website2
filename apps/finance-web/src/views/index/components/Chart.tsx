@@ -25,7 +25,10 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props) {
+  emits: {
+    changeFullScreen: (v: boolean) => true,
+  },
+  setup(props, { emit }) {
     const chartContainerRef = useTemplateRef<HTMLDivElement>('chartContainerRef')
     const chartRef = useTemplateRef<HTMLDivElement>('chartRef')
     const chartStore = useChartStore()
@@ -54,6 +57,7 @@ export default defineComponent({
     const isFull = ref(false)
     function onToggleFullScreen() {
       isFull.value = !isFull.value
+      emit('changeFullScreen', isFull.value)
     }
 
     return () => (
