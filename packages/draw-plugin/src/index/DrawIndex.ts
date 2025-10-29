@@ -1,9 +1,15 @@
 import { IChartApi, ISeriesApi, LineStyle, SeriesType } from 'lightweight-charts'
 import { IDrawingIndex, KLineIndexData, PluginWidth } from '../type'
 
+export type IDrawingIndexClass = new (
+  chart: IChartApi,
+  kLineSeries: ISeriesApi<SeriesType>,
+) => DrawIndex
+
 export abstract class DrawIndex implements IDrawingIndex {
-  public chart: IChartApi
+  public chart: IChartApi | undefined
   public kLineSeries: ISeriesApi<SeriesType> | undefined
+  public el: HTMLElement | undefined
   isDeleted: boolean = false
   protected series: ISeriesApi<SeriesType>[] = [] // 用于存放绘制的 series
 
@@ -19,7 +25,6 @@ export abstract class DrawIndex implements IDrawingIndex {
     this.chart = chart
     this.store = {
       id: '',
-      points: [],
       color: 'rgb(255, 0, 0)',
       lineWidth: PluginWidth.w2,
       lineStyle: LineStyle.Solid,
@@ -28,6 +33,7 @@ export abstract class DrawIndex implements IDrawingIndex {
   }
 
   public abstract render(v?: KLineIndexData): void
+  public abstract setData(v: KLineIndexData): void
   remove(): void {
     throw new Error('Method not implemented.')
   }
@@ -54,7 +60,4 @@ export abstract class DrawIndex implements IDrawingIndex {
     this.store.visible = v
     this.updateSet()
   }
-  // setData(v: KLineIndexData) {
-  //   // this.data = v
-  // }
 }

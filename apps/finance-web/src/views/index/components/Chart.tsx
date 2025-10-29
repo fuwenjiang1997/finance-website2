@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, useTemplateRef, type PropType, ref } from 'vue'
+import { defineComponent, onMounted, useTemplateRef, type PropType, ref, toValue } from 'vue'
 import type { ChartInstance } from '@/hooks/useChart'
 import ChartCycle from './ChartCycle'
 import LightMenu from './LightMenu'
@@ -112,6 +112,7 @@ export default defineComponent({
         <div class={'flex-1 relative'} ref="chartContainerRef">
           <div class={' absolute left-0 top-0 right-0 bottom-0 opacity-5'} ref="chartRef"></div>
         </div>
+
         <LightMenu chart={props.chart} chartContainerRef={chartContainerRef}></LightMenu>
         {props.chart.selectedDrawing && (
           <ChartSet chart={props.chart} chartContainerRef={chartContainerRef}></ChartSet>

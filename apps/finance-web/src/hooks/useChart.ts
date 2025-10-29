@@ -20,6 +20,7 @@ import type { DrawInfoData } from './useDrawPlugin'
 import { useDrawingManager } from './useDrawingManager'
 import { getTpFromMouseEvent, type KLineIndexData } from '@fuwenjiang1997/draw-plugin'
 import { type UseDrawPluginRes } from './useDrawPlugin'
+import { useDrawingIndexManager } from './useDrawIndeManager'
 
 export interface UiInitChartParams {
   chartRef: TemplateRef<HTMLElement>
@@ -89,6 +90,8 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     deleteDraw,
   } = useDrawingManager({ drawPluginHook })
 
+  const { init: initIndex, renderIndexList } = useDrawingIndexManager(kLineIndexDataByCircle)
+
   // 设置代码
   const setCode = (data: { code: string; name: string }) => {
     code.value = data.code
@@ -137,6 +140,11 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
         chart: chart.value,
         kLineSeries: kLineSeries as ISeriesApi<'Candlestick'>,
         chartContainer: chartContainerRef.value,
+      })
+
+      initIndex({
+        chart: chart.value,
+        kLineSeries: kLineSeries as ISeriesApi<'Candlestick'>,
       })
     }
     subscribeToRangeChanges()
@@ -338,5 +346,7 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     getTimePriceFromPosition,
     deleteDraw,
     kLineIndexDataByCircle,
+    // 指标相关
+    renderIndexList,
   }
 }
