@@ -1,4 +1,11 @@
-import { HistogramSeries, IChartApi, ISeriesApi, LineSeries, SeriesType } from 'lightweight-charts'
+import {
+  HistogramSeries,
+  IChartApi,
+  ISeriesApi,
+  LineSeries,
+  SeriesType,
+  Time,
+} from 'lightweight-charts'
 import { DrawIndex } from './DrawIndex'
 import { v4 as uuidv4 } from 'uuid'
 import { INDEX_NAME, KLineIndexData } from '../type'
@@ -10,8 +17,8 @@ interface WasmMACDResult {
 }
 
 export class MACD extends DrawIndex {
-  public macdLineSeries: ISeriesApi<SeriesType> | undefined
-  public signalLineSeries: ISeriesApi<SeriesType> | undefined
+  public deaLineSeries: ISeriesApi<SeriesType> | undefined // 慢线
+  public difLineSeries: ISeriesApi<SeriesType> | undefined // 快线
   public histogramSeries: ISeriesApi<SeriesType> | undefined
   constructor(chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>) {
     super(chart)
@@ -27,23 +34,24 @@ export class MACD extends DrawIndex {
     // 清理旧的 series
     this.removeMacdSeries()
 
+    const yName = 'macd_price_scale'
+
     // 创建 Series
-    this.macdLineSeries = this.chart.addSeries(
+    this.deaLineSeries = this.chart.addSeries(
       LineSeries,
       {
         color: '#2962FF',
         lineWidth: 2,
-
-        priceScaleId: 'macd_price_scale', // 使用独立的 Y 轴
+        priceScaleId: yName, // 使用独立的 Y 轴
       },
       1,
     )
-    this.signalLineSeries = this.chart.addSeries(
+    this.difLineSeries = this.chart.addSeries(
       LineSeries,
       {
         color: '#FFB300',
         lineWidth: 2,
-        priceScaleId: 'macd_price_scale',
+        priceScaleId: yName,
       },
       1,
     )
@@ -51,17 +59,17 @@ export class MACD extends DrawIndex {
       HistogramSeries,
       {
         color: '#FF3D00',
-        priceScaleId: 'macd_price_scale',
+        priceScaleId: yName,
       },
       1,
     )
   }
   removeMacdSeries() {
-    this.macdLineSeries && this.chart?.removeSeries(this.macdLineSeries)
-    this.signalLineSeries && this.chart?.removeSeries(this.signalLineSeries)
+    this.deaLineSeries && this.chart?.removeSeries(this.deaLineSeries)
+    this.difLineSeries && this.chart?.removeSeries(this.difLineSeries)
     this.histogramSeries && this.chart?.removeSeries(this.histogramSeries)
-    this.macdLineSeries = undefined
-    this.signalLineSeries = undefined
+    this.deaLineSeries = undefined
+    this.difLineSeries = undefined
     this.histogramSeries = undefined
   }
 
@@ -70,18 +78,36 @@ export class MACD extends DrawIndex {
   }
   setData(data: KLineIndexData): void {
     this.render(data)
-    // console.log('v:', data)
-    // const res = window?.MACD?.(data.closes, 12, 26, 9)
-    // console.log(res)
   }
 
   render(v?: KLineIndexData) {
     if (!v) return
     const res = window?.MACD?.(v.closes, 12, 26, 9) as WasmMACDResult | undefined
+
     if (res) {
-      // this.histogramSeries?.setData(res.histogram.map((value, index) => ({ time: index as number, value })))
-      // this.macdLineSeries?.setData(res.dif.map((value, index) => ({ time: index as number, value })))
-      // this.signalLineSeries?.setData(res.dea.map((value, index) => ({ time: index as number, value })))
+      this.histogramSeries?.setData(
+        v.times.map((time, index) => ({
+          time: time as Time,
+          value: res.histogram[index],
+          color: res.histogram[index] >= 0 ? this.store.upColor : this.store.downColor,
+        })),
+      )
+      // 慢线
+      this.deaLineSeries?.setData(
+        v.times.map((time, index) => ({
+          time: time as Time,
+          value: res.dea[index],
+          color: '#ffb86a',
+        })),
+      )
+      // 快线
+      this.difLineSeries?.setData(
+        v.times.map((time, index) => ({
+          time: time as Time,
+          value: res.dif[index],
+          color: '#c10007',
+        })),
+      )
     }
   }
 

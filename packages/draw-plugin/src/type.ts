@@ -81,6 +81,7 @@ export interface KLineIndexData {
   closes: number[]
   highs: number[]
   lows: number[]
+  times: number[]
 }
 
 export interface InitIndexParams {

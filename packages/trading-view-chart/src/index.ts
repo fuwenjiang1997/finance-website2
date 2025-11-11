@@ -3,6 +3,7 @@ import kLineSeries, { ReturnkLineSeries } from './libs/kLineSeries/kLineSeries'
 import { ComputedRef, reactive, Ref } from 'vue'
 import { KLineOriginData, VChartPlugin, VChartSeriesParams } from './libs/type'
 import tradingVolume from './libs/tradingVolume/tradingVolume'
+import { DEFAULT_DOWN_COLOR, DEFAULT_UP_COLOR } from './utils/const'
 
 export { type KLineData } from './libs/kLineSeries/kLineSeries'
 export * from './libs/type'
@@ -19,8 +20,8 @@ export default function vChart(chart: IChartApi, params: VChartParams) {
   const seriesParams: VChartSeriesParams = {
     kLineData: params.kLineData,
     kLineOriginData: params.kLineOriginData,
-    upColor: '#52a49a',
-    downColor: '#de5e57',
+    upColor: DEFAULT_UP_COLOR,
+    downColor: DEFAULT_DOWN_COLOR,
   }
 
   const kLine: ReturnkLineSeries = kLineSeries(chart, seriesParams)

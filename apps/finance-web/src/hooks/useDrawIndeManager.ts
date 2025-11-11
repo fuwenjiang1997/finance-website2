@@ -32,8 +32,6 @@ export const useDrawingIndexManager = (data: ComputedRef<KLineIndexData>) => {
     const plugin = indexMap?.[name]
     if (!plugin || !chart || !kLineSeries) return
 
-    console.log('111:', plugin)
-
     const instanceIndex = new plugin(chart, kLineSeries)
     if (positionIndex !== undefined) {
       renderIndexList.value[positionIndex]?.remove()
@@ -43,9 +41,10 @@ export const useDrawingIndexManager = (data: ComputedRef<KLineIndexData>) => {
     } else {
       renderIndexNameList.value.push(name)
       renderIndexList.value.push(instanceIndex)
+      positionIndex = renderIndexList.value.length - 1
     }
 
-    console.log('renderIndexNameList:', renderIndexNameList.value, renderIndexList.value)
+    updateIndex(positionIndex)
   }
 
   function removeIndex(name?: INDEX_NAME, index: number = -1) {
@@ -68,24 +67,22 @@ export const useDrawingIndexManager = (data: ComputedRef<KLineIndexData>) => {
     addIndex(name, index)
   }
 
-  // // 设置指标
-  // const indexList = ref<string[]>([])
-  // const MAX_INDEX_COUNT = 3
-  // function setIndex(indexName: string, index?: number) {
-  //   if (index === undefined) {
-  //     index = Math.min(MAX_INDEX_COUNT - 1, indexList.value.length)
-  //   }
-  //   indexList.value[index] = indexName
-  // }
+  function updateIndex(index?: number) {
+    if (data.value.closes.length === 0 || renderIndexList.value.length === 0) return
+
+    if (index === undefined) {
+      renderIndexList.value.forEach((item) => {
+        item.setData(data.value)
+      })
+    } else if (renderIndexList.value[index]) {
+      renderIndexList.value[index]?.setData(data.value)
+    }
+  }
 
   watch(
     () => data.value,
-    (_data) => {
-      if (_data.closes.length > 0) {
-        renderIndexList.value.forEach((item) => {
-          item.setData(_data)
-        })
-      }
+    () => {
+      updateIndex()
     },
     { immediate: true },
   )

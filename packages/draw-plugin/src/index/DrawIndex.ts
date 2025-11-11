@@ -1,5 +1,6 @@
 import { IChartApi, ISeriesApi, LineStyle, SeriesType } from 'lightweight-charts'
 import { IDrawingIndex, INDEX_NAME, KLineIndexData, PluginWidth } from '../type'
+import { DEFAULT_DOWN_COLOR, DEFAULT_UP_COLOR } from '../utils/const'
 
 export type IDrawingIndexClass = new (
   chart: IChartApi,
@@ -17,6 +18,8 @@ export abstract class DrawIndex implements IDrawingIndex {
   store: {
     id: string
     color: string
+    upColor: string
+    downColor: string
     lineWidth: PluginWidth
     lineStyle: LineStyle
     visible: boolean
@@ -27,6 +30,8 @@ export abstract class DrawIndex implements IDrawingIndex {
     this.store = {
       id: '',
       color: 'rgb(255, 0, 0)',
+      upColor: DEFAULT_UP_COLOR,
+      downColor: DEFAULT_DOWN_COLOR,
       lineWidth: PluginWidth.w2,
       lineStyle: LineStyle.Solid,
       visible: true,

@@ -72,12 +72,14 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
       closes: <number[]>[],
       highs: <number[]>[],
       lows: <number[]>[],
+      times: <number[]>[],
     }
 
     kLineOriginDataByCircle.value.forEach((item) => {
       m.closes.push(item.Close)
       m.highs.push(item.High)
       m.lows.push(item.Low)
+      m.times.push(dayjs(item.CloseTime).unix())
     })
     return m
   })
