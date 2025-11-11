@@ -1,3 +1,5 @@
+import { INDEX_NAME } from '@fuwenjiang1997/draw-plugin'
+
 export enum KLineCircle {
   m1 = '1m',
   m5 = '5m',
@@ -20,4 +22,8 @@ export const cycleListMap: { [k in KLineCircle]: { label: string; value: KLineCi
   [KLineCircle.D1]: { label: '1天', value: KLineCircle.D1 },
   [KLineCircle.W1]: { label: '1周', value: KLineCircle.W1 },
   [KLineCircle.M1]: { label: '1月', value: KLineCircle.M1 },
+}
+
+export const indexListMap: { [key: string]: { label: string; value: INDEX_NAME } } = {
+  [INDEX_NAME.MACD]: { label: 'MACD', value: INDEX_NAME.MACD },
 }

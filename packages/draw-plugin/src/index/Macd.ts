@@ -1,7 +1,13 @@
 import { HistogramSeries, IChartApi, ISeriesApi, LineSeries, SeriesType } from 'lightweight-charts'
 import { DrawIndex } from './DrawIndex'
 import { v4 as uuidv4 } from 'uuid'
-import { KLineIndexData } from '../type'
+import { INDEX_NAME, KLineIndexData } from '../type'
+
+interface WasmMACDResult {
+  dea: number[]
+  dif: number[]
+  histogram: number[]
+}
 
 export class MACD extends DrawIndex {
   public macdLineSeries: ISeriesApi<SeriesType> | undefined
@@ -10,7 +16,8 @@ export class MACD extends DrawIndex {
   constructor(chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>) {
     super(chart)
     this.kLineSeries = kLineSeries
-    this.store.id = `macd_${uuidv4()}`
+    this.name = INDEX_NAME.MACD
+    this.store.id = `${INDEX_NAME.MACD}_${uuidv4()}`
     this.addMacdSeries()
   }
 
@@ -21,9 +28,33 @@ export class MACD extends DrawIndex {
     this.removeMacdSeries()
 
     // 创建 Series
-    this.macdLineSeries = this.chart.addSeries(LineSeries, {})
-    this.signalLineSeries = this.chart.addSeries(LineSeries, {})
-    this.histogramSeries = this.chart.addSeries(HistogramSeries, {})
+    this.macdLineSeries = this.chart.addSeries(
+      LineSeries,
+      {
+        color: '#2962FF',
+        lineWidth: 2,
+
+        priceScaleId: 'macd_price_scale', // 使用独立的 Y 轴
+      },
+      1,
+    )
+    this.signalLineSeries = this.chart.addSeries(
+      LineSeries,
+      {
+        color: '#FFB300',
+        lineWidth: 2,
+        priceScaleId: 'macd_price_scale',
+      },
+      1,
+    )
+    this.histogramSeries = this.chart.addSeries(
+      HistogramSeries,
+      {
+        color: '#FF3D00',
+        priceScaleId: 'macd_price_scale',
+      },
+      1,
+    )
   }
   removeMacdSeries() {
     this.macdLineSeries && this.chart?.removeSeries(this.macdLineSeries)
@@ -38,17 +69,23 @@ export class MACD extends DrawIndex {
     super.updateSet()
   }
   setData(data: KLineIndexData): void {
-    console.log('v:', data)
-    const res = window?.MACD?.(data.closes, 12, 26, 9)
-    console.log(res)
+    this.render(data)
+    // console.log('v:', data)
+    // const res = window?.MACD?.(data.closes, 12, 26, 9)
+    // console.log(res)
   }
 
   render(v?: KLineIndexData) {
     if (!v) return
-
-    const res = window?.MACD?.(v.closes, 12, 26, 9)
+    const res = window?.MACD?.(v.closes, 12, 26, 9) as WasmMACDResult | undefined
     if (res) {
-      console.log('res:', res)
+      // this.histogramSeries?.setData(res.histogram.map((value, index) => ({ time: index as number, value })))
+      // this.macdLineSeries?.setData(res.dif.map((value, index) => ({ time: index as number, value })))
+      // this.signalLineSeries?.setData(res.dea.map((value, index) => ({ time: index as number, value })))
     }
+  }
+
+  remove() {
+    this.removeMacdSeries()
   }
 }

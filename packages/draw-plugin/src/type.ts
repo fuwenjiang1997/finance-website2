@@ -86,3 +86,7 @@ export interface KLineIndexData {
 export interface InitIndexParams {
   chart: IChartApi
 }
+
+export enum INDEX_NAME {
+  MACD = 'MACD',
+}

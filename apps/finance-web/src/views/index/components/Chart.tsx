@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, useTemplateRef, type PropType, ref, toValue } from 'vue'
+import { defineComponent, onMounted, useTemplateRef, type PropType, ref } from 'vue'
 import type { ChartInstance } from '@/hooks/useChart'
 import ChartCycle from './ChartCycle'
 import LightMenu from './LightMenu'
@@ -6,6 +6,7 @@ import { NButton, useNotification } from 'naive-ui'
 import cn from 'classnames'
 import { useChartStore } from '@/stores/chartStore'
 import ChartSet from './ChartSet'
+import ChartIndex from './ChartIndex'
 
 export default defineComponent({
   props: {
@@ -117,6 +118,7 @@ export default defineComponent({
         {props.chart.selectedDrawing && (
           <ChartSet chart={props.chart} chartContainerRef={chartContainerRef}></ChartSet>
         )}
+        <ChartIndex class={'mb-1'} chart={props.chart}></ChartIndex>
         <ChartCycle chart={props.chart}></ChartCycle>
       </div>
     )

@@ -1,5 +1,5 @@
 import { IChartApi, ISeriesApi, LineStyle, SeriesType } from 'lightweight-charts'
-import { IDrawingIndex, KLineIndexData, PluginWidth } from '../type'
+import { IDrawingIndex, INDEX_NAME, KLineIndexData, PluginWidth } from '../type'
 
 export type IDrawingIndexClass = new (
   chart: IChartApi,
@@ -11,6 +11,7 @@ export abstract class DrawIndex implements IDrawingIndex {
   public kLineSeries: ISeriesApi<SeriesType> | undefined
   public el: HTMLElement | undefined
   isDeleted: boolean = false
+  name: INDEX_NAME = INDEX_NAME.MACD
   protected series: ISeriesApi<SeriesType>[] = [] // 用于存放绘制的 series
 
   store: {

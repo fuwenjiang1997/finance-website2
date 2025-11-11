@@ -90,7 +90,14 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     deleteDraw,
   } = useDrawingManager({ drawPluginHook })
 
-  const { init: initIndex, renderIndexList } = useDrawingIndexManager(kLineIndexDataByCircle)
+  const {
+    init: initIndex,
+    renderIndexList,
+    renderIndexNameList,
+    addIndex,
+    setIndex,
+    removeIndex,
+  } = useDrawingIndexManager(kLineIndexDataByCircle)
 
   // 设置代码
   const setCode = (data: { code: string; name: string }) => {
@@ -348,5 +355,9 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     kLineIndexDataByCircle,
     // 指标相关
     renderIndexList,
+    renderIndexNameList,
+    addIndex,
+    setIndex,
+    removeIndex,
   }
 }
