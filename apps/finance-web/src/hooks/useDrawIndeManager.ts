@@ -32,7 +32,12 @@ export const useDrawingIndexManager = (data: ComputedRef<KLineIndexData>) => {
     const plugin = indexMap?.[name]
     if (!plugin || !chart || !kLineSeries) return
 
-    const instanceIndex = new plugin(chart, kLineSeries)
+    const pineIndex =
+      positionIndex !== undefined ? positionIndex + 1 : renderIndexList.value.length + 1
+
+    console.log('pineIndex:', pineIndex)
+    const instanceIndex = new plugin(chart, kLineSeries, pineIndex)
+
     if (positionIndex !== undefined) {
       renderIndexList.value[positionIndex]?.remove()
 

@@ -20,21 +20,24 @@ export class MACD extends DrawIndex {
   public deaLineSeries: ISeriesApi<SeriesType> | undefined // 慢线
   public difLineSeries: ISeriesApi<SeriesType> | undefined // 快线
   public histogramSeries: ISeriesApi<SeriesType> | undefined
-  constructor(chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>) {
+  constructor(chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>, pineIndex: number = 1) {
     super(chart)
     this.kLineSeries = kLineSeries
     this.name = INDEX_NAME.MACD
     this.store.id = `${INDEX_NAME.MACD}_${uuidv4()}`
-    this.addMacdSeries()
+
+    this.addMacdSeries(pineIndex)
   }
 
-  addMacdSeries() {
+  addMacdSeries(pineIndex: number) {
     if (!this.chart) return
 
     // 清理旧的 series
     this.removeMacdSeries()
 
     const yName = 'macd_price_scale'
+
+    console.log('pineIndex in MACD:', pineIndex)
 
     // 创建 Series
     this.deaLineSeries = this.chart.addSeries(
@@ -44,7 +47,7 @@ export class MACD extends DrawIndex {
         lineWidth: 2,
         priceScaleId: yName, // 使用独立的 Y 轴
       },
-      1,
+      pineIndex,
     )
     this.difLineSeries = this.chart.addSeries(
       LineSeries,
@@ -53,7 +56,7 @@ export class MACD extends DrawIndex {
         lineWidth: 2,
         priceScaleId: yName,
       },
-      1,
+      pineIndex,
     )
     this.histogramSeries = this.chart.addSeries(
       HistogramSeries,
@@ -61,7 +64,7 @@ export class MACD extends DrawIndex {
         color: '#FF3D00',
         priceScaleId: yName,
       },
-      1,
+      pineIndex,
     )
   }
   removeMacdSeries() {

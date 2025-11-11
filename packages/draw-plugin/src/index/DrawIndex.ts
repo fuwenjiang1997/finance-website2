@@ -5,6 +5,7 @@ import { DEFAULT_DOWN_COLOR, DEFAULT_UP_COLOR } from '../utils/const'
 export type IDrawingIndexClass = new (
   chart: IChartApi,
   kLineSeries: ISeriesApi<SeriesType>,
+  pineIndex?: number,
 ) => DrawIndex
 
 export abstract class DrawIndex implements IDrawingIndex {
