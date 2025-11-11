@@ -20,26 +20,27 @@ export class MACD extends DrawIndex {
   public deaLineSeries: ISeriesApi<SeriesType> | undefined // 慢线
   public difLineSeries: ISeriesApi<SeriesType> | undefined // 快线
   public histogramSeries: ISeriesApi<SeriesType> | undefined
-  constructor(chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>, pineIndex: number = 1) {
+  constructor(chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>) {
     super(chart)
     this.kLineSeries = kLineSeries
     this.name = INDEX_NAME.MACD
     this.store.id = `${INDEX_NAME.MACD}_${uuidv4()}`
-
-    this.addMacdSeries(pineIndex)
+    this.addMacdSeries()
   }
 
-  addMacdSeries(pineIndex: number) {
+  addMacdSeries() {
     if (!this.chart) return
-
     // 清理旧的 series
     this.removeMacdSeries()
-
     const yName = 'macd_price_scale'
 
-    console.log('pineIndex in MACD:', pineIndex)
-
+    if (!this.pane) {
+      super.createPane()
+    }
     // 创建 Series
+    const paneIndex = this.pane?.paneIndex()
+
+    console.log('创建的pane index:', paneIndex)
     this.deaLineSeries = this.chart.addSeries(
       LineSeries,
       {
@@ -47,7 +48,7 @@ export class MACD extends DrawIndex {
         lineWidth: 2,
         priceScaleId: yName, // 使用独立的 Y 轴
       },
-      pineIndex,
+      paneIndex,
     )
     this.difLineSeries = this.chart.addSeries(
       LineSeries,
@@ -56,7 +57,7 @@ export class MACD extends DrawIndex {
         lineWidth: 2,
         priceScaleId: yName,
       },
-      pineIndex,
+      paneIndex,
     )
     this.histogramSeries = this.chart.addSeries(
       HistogramSeries,
@@ -64,7 +65,7 @@ export class MACD extends DrawIndex {
         color: '#FF3D00',
         priceScaleId: yName,
       },
-      pineIndex,
+      paneIndex,
     )
   }
   removeMacdSeries() {
@@ -115,6 +116,11 @@ export class MACD extends DrawIndex {
   }
 
   remove() {
-    this.removeMacdSeries()
+    // 清空pane的时候会删除series
+    super.remove()
+    // 清空自己的series实例
+    this.deaLineSeries = undefined
+    this.difLineSeries = undefined
+    this.histogramSeries = undefined
   }
 }

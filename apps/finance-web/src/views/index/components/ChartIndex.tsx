@@ -43,7 +43,7 @@ export default defineComponent({
               size={isMinWindow.value ? MyTagButtonSize.Small : MyTagButtonSize.Default}
             >
               <span
-                class={cn({
+                class={cn('select-none', {
                   'text-[11px]': isMinWindow.value,
                 })}
               >

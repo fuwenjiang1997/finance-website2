@@ -1,4 +1,4 @@
-import { IChartApi, ISeriesApi, LineStyle, SeriesType } from 'lightweight-charts'
+import { IChartApi, IPaneApi, ISeriesApi, LineStyle, SeriesType, Time } from 'lightweight-charts'
 import { IDrawingIndex, INDEX_NAME, KLineIndexData, PluginWidth } from '../type'
 import { DEFAULT_DOWN_COLOR, DEFAULT_UP_COLOR } from '../utils/const'
 
@@ -10,6 +10,7 @@ export type IDrawingIndexClass = new (
 
 export abstract class DrawIndex implements IDrawingIndex {
   public chart: IChartApi | undefined
+  public pane?: IPaneApi<Time>
   public kLineSeries: ISeriesApi<SeriesType> | undefined
   public el: HTMLElement | undefined
   isDeleted: boolean = false
@@ -41,8 +42,17 @@ export abstract class DrawIndex implements IDrawingIndex {
 
   public abstract render(v?: KLineIndexData): void
   public abstract setData(v: KLineIndexData): void
+  createPane() {
+    if (!this.chart) return
+    this.pane = this.chart.addPane()
+    console.log('创建了：', this.pane.paneIndex())
+  }
   remove(): void {
-    throw new Error('Method not implemented.')
+    if (!this.chart || !this.pane) return
+
+    console.log('调用删除：', this.pane, this.pane.paneIndex())
+    this.chart.removePane(this.pane.paneIndex())
+    this.pane = undefined
   }
   updateSet() {
     const { color, lineWidth, lineStyle, visible } = this.store

@@ -55,10 +55,6 @@ export const useDrawingIndexManager = (data: ComputedRef<KLineIndexData>) => {
   function removeIndex(name?: INDEX_NAME, index: number = -1) {
     if (name) {
       index = renderIndexNameList.value.findIndex((item) => item === name)
-      // renderIndexList.value[index]?.remove()
-      // renderIndexList.value.splice(index, 1)
-      // renderIndexNameList.value.splice(index, 1)
-      // return
     }
     if (index === -1) return
 
