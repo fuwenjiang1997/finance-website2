@@ -45,12 +45,9 @@ export abstract class DrawIndex implements IDrawingIndex {
   createPane() {
     if (!this.chart) return
     this.pane = this.chart.addPane()
-    console.log('创建了：', this.pane.paneIndex())
   }
   remove(): void {
     if (!this.chart || !this.pane) return
-
-    console.log('调用删除：', this.pane, this.pane.paneIndex())
     this.chart.removePane(this.pane.paneIndex())
     this.pane = undefined
   }
