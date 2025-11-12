@@ -1,11 +1,12 @@
 import { MyTagButton } from '@/components/button/MyTagButton'
 import { defineComponent, withDirectives } from 'vue'
-import Search from './Search'
+import Search from '../Search'
 import { useFullscreen } from '@vueuse/core'
 import { UserRole, useUserStore } from '@/stores/userStore'
 import { storeToRefs } from 'pinia'
 import { RouterLink } from 'vue-router'
 import { Mode, vAuth } from '@/directive/VAuth'
+import AdminHeaderSetBtn from './AdminHeaderSetBtn'
 
 export default defineComponent({
   setup() {
@@ -27,9 +28,7 @@ export default defineComponent({
           <Search />
         </div>
         <div class={'shrink-0 flex pr-1 text-black'}>
-          <MyTagButton>
-            <i class={'iconfont icon-shezhi'}></i>
-          </MyTagButton>
+          <AdminHeaderSetBtn></AdminHeaderSetBtn>
           {/* {withDirectives(
             <MyTagButton>
               <i class={'iconfont icon-shezhi'}></i>

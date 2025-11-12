@@ -35,8 +35,10 @@ export const useChartStore = defineStore('chartStore', () => {
   })
 
   const onAddChartByCode = (data: CodeSymbol) => {
+    console.log('chartItem:', 11111)
     const chartItem = useChart({ drawPluginHook })
     chartItem.setCode(data)
+    console.log('chartItem:', chartItem)
     chartList.value.push(chartItem)
   }
 

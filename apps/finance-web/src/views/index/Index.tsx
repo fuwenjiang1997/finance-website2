@@ -1,5 +1,5 @@
 import { computed, defineComponent, ref } from 'vue'
-import AdminHeader from './components/AdminHeader'
+import AdminHeader from './components/header/AdminHeader'
 import AdminSide from './components/AdminSide'
 import Chart from './components/Chart'
 import { useChartStore } from '@/stores/chartStore'

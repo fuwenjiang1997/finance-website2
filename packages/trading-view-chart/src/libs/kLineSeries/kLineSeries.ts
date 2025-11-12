@@ -34,11 +34,11 @@ const kLineSeries = (chart: IChartApi, params: VChartSeriesParams) => {
   const mainSeries = shallowRef<ISeriesApi<'Candlestick'>>()
 
   mainSeries.value = chart.addSeries(CandlestickSeries, {
-    // upColor: uiColor.value.upColor,
-    // downColor: uiColor.value.downColor,
     borderVisible: false,
-    // wickUpColor: uiColor.value.upColor,
-    // wickDownColor: uiColor.value.downColor,
+    upColor: params.color.upColor,
+    downColor: params.color.downColor,
+    wickUpColor: params.color.upColor,
+    wickDownColor: params.color.downColor,
   })
 
   mainSeries.value.priceScale().applyOptions({
@@ -56,9 +56,19 @@ const kLineSeries = (chart: IChartApi, params: VChartSeriesParams) => {
     mainSeries.value?.setData(data)
   }
 
+  function renderByUpdateColor() {
+    mainSeries.value?.applyOptions({
+      upColor: params.color.upColor,
+      downColor: params.color.downColor,
+      wickUpColor: params.color.upColor,
+      wickDownColor: params.color.downColor,
+    })
+  }
+
   return {
     mainSeries,
     getSeries,
+    renderByUpdateColor,
   }
 }
 

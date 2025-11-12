@@ -1,6 +1,7 @@
 import { CandlestickData, Time, WhitespaceData } from 'lightweight-charts'
 import { Reactive, Ref } from 'vue'
 import { ReturnkLineSeries } from './kLineSeries/kLineSeries'
+import { ChartColorParams } from '@fuwenjiang1997/common-types'
 
 export type VChartPlugin = (params: { kLine: ReturnkLineSeries }, ...args: any[]) => VChartPluginRes
 export interface VChartPluginRes {
@@ -27,8 +28,7 @@ export interface VChartSeriesParams {
   plugins?: Reactive<{ [k: string]: VChartPlugin }>
   kLineData: Ref<(CandlestickData<Time> | WhitespaceData<Time>)[]>
   kLineOriginData: Ref<KLineOriginData[]>
-  upColor: string
-  downColor: string
+  color: ChartColorParams
 }
 
 // export type VChartSeries = (chart: IChartApi, params: VChartSeriesParams) => any

@@ -26,8 +26,8 @@ const tradingVolume = (chart: IChartApi, params: VChartSeriesParams) => {
           value: vol.value,
           color:
             data[idx].Close > data[idx].Open
-              ? Color(params.upColor).alpha(0.7)
-              : Color(params.downColor).alpha(0.7),
+              ? Color(params.color.upColor).alpha(0.7).toString()
+              : Color(params.color.downColor).alpha(0.7).toString(),
         }
       }),
     )
@@ -51,8 +51,13 @@ const tradingVolume = (chart: IChartApi, params: VChartSeriesParams) => {
     return volumeSeries.value
   }
 
+  function renderByUpdateColor() {
+    setData(params.kLineOriginData.value)
+  }
+
   return {
     getSeries,
+    renderByUpdateColor,
   }
 }
 

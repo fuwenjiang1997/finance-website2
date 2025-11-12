@@ -13,7 +13,7 @@ import { apiGetKLineData, type apiGetKLineDataReturn } from '@/http/api'
 import dayjs from 'dayjs'
 import vChart, { type VChart } from '@fuwenjiang1997/trading-view-chart'
 import { useWithLoading } from './useWithLoading'
-import { KLineCircle } from '@/utils/const'
+import { DEFAULT_DOWN_COLOR, DEFAULT_UP_COLOR, KLineCircle } from '@/utils/const'
 import { useKLineSimulation } from './useKLineSimulation'
 import { useResizeObserver } from '@vueuse/core'
 import type { DrawInfoData } from './useDrawPlugin'
@@ -21,6 +21,8 @@ import { useDrawingManager } from './useDrawingManager'
 import { getTpFromMouseEvent, type KLineIndexData } from '@fuwenjiang1997/draw-plugin'
 import { type UseDrawPluginRes } from './useDrawPlugin'
 import { useDrawingIndexManager } from './useDrawIndeManager'
+import { useAppStore } from '@/stores/app'
+import { storeToRefs } from 'pinia'
 
 export interface UiInitChartParams {
   chartRef: TemplateRef<HTMLElement>
@@ -38,6 +40,13 @@ export interface UserChartParams {
   uiPluginMap: Ref<{ [k: string]: DrawInfoData }>
 }
 
+export interface ChartSetConfig {
+  upColor: string
+  downColor: string
+}
+
+export type ChartSetConfigFnParams = Partial<ChartSetConfig>
+
 // 可能有多个chart表，将chart提取出来
 export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes }) {
   const id = uuidv4()
@@ -49,6 +58,9 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
   const draw: { series: VChart | undefined } = {
     series: undefined,
   }
+  const appStore = useAppStore()
+  const { uiColor } = storeToRefs(appStore)
+
   const theChartContainerRef = shallowRef<HTMLElement | null>()
   const theChartRef = shallowRef<HTMLElement | null>()
   const kLineOriginData = shallowReactive<Map<string, apiGetKLineDataReturn[]>>(new Map())
@@ -101,6 +113,14 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     removeIndex,
   } = useDrawingIndexManager(kLineIndexDataByCircle)
 
+  watch(
+    uiColor,
+    (newColor) => {
+      draw.series?.setColor(newColor)
+    },
+    { deep: true },
+  )
+
   // 设置代码
   const setCode = (data: { code: string; name: string }) => {
     code.value = data.code
@@ -139,6 +159,7 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     draw.series = vChart(chart.value, {
       kLineData: kLineDataByCircle,
       kLineOriginData: kLineOriginDataByCircle,
+      color: uiColor.value,
     })
     theChartContainerRef.value = params.chartContainerRef.value
     theChartRef.value = params.chartRef.value
