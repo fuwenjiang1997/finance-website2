@@ -26,6 +26,7 @@ export const cycleListMap: { [k in KLineCircle]: { label: string; value: KLineCi
 
 export const indexListMap: { [key: string]: { label: string; value: INDEX_NAME } } = {
   [INDEX_NAME.MACD]: { label: 'MACD', value: INDEX_NAME.MACD },
+  [INDEX_NAME.CCI]: { label: 'CCI', value: INDEX_NAME.CCI },
 }
 
 export const DEFAULT_UP_COLOR = '#26a69a' // 涨绿色

@@ -1,4 +1,5 @@
 import {
+  CCI,
   DrawIndex,
   INDEX_NAME,
   MACD,
@@ -16,7 +17,8 @@ export interface InitParams {
 
 export const useDrawingIndexManager = (data: ComputedRef<KLineIndexData>) => {
   const indexMap: { [k: string]: IDrawingIndexClass } = {
-    MACD: MACD,
+    [INDEX_NAME.MACD]: MACD,
+    [INDEX_NAME.CCI]: CCI,
   }
   let chart: IChartApi
   let kLineSeries: ISeriesApi<SeriesType>

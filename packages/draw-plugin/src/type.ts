@@ -90,4 +90,5 @@ export interface InitIndexParams {
 
 export enum INDEX_NAME {
   MACD = 'MACD',
+  CCI = 'CCI',
 }

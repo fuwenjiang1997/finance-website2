@@ -2,7 +2,7 @@ export {}
 
 declare global {
   interface Window {
-    CCI?: () => any
+    CCI?: (v1: number[], v2: mber[], v3: numbermber[], period: number) => number[]
     MACD?: (v1: number[], fastPeriod: number, slowPeriod: number, signalPeriod: number) => number[]
     Go: new () => any
   }
