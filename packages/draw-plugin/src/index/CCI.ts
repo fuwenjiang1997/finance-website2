@@ -43,7 +43,6 @@ export class CCI extends DrawIndex {
       paneIndex,
     )
 
-    // 4. (可选但推荐) 为CCI指标添加 +100 和 -100 的水平线
     this.cciSeries.createPriceLine({
       price: 100,
       color: '#787B86',
