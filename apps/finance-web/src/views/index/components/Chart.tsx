@@ -2,11 +2,12 @@ import { defineComponent, onMounted, useTemplateRef, type PropType, ref } from '
 import type { ChartInstance } from '@/hooks/useChart'
 import ChartCycle from './ChartCycle'
 import LightMenu from './LightMenu'
-import { NButton, useNotification } from 'naive-ui'
+import { NButton, NDivider, useNotification } from 'naive-ui'
 import cn from 'classnames'
 import { useChartStore } from '@/stores/chartStore'
 import ChartSet from './ChartSet'
 import ChartIndex from './ChartIndex'
+import ChartHeaderIndex from './ChartHeaderIndex'
 
 export default defineComponent({
   props: {
@@ -79,6 +80,9 @@ export default defineComponent({
                 {/* {cycleListMap[toValue(props.chart.circle)]?.label} ) */}
               </span>
             </div>
+            <div class={'flex-1'}>
+              <ChartHeaderIndex chart={props.chart}></ChartHeaderIndex>
+            </div>
             <div class={'flex gap-2'}>
               {props.chart.kLineSimulation.isActriveKLineSimulation && (
                 <NButton
@@ -111,14 +115,15 @@ export default defineComponent({
         </div>
 
         <div class={'flex-1 relative'} ref="chartContainerRef">
-          <div class={' absolute left-0 top-0 right-0 bottom-0 opacity-5'} ref="chartRef"></div>
+          <div class={' absolute left-0 top-0 right-0 bottom-0'} ref="chartRef"></div>
         </div>
 
         <LightMenu chart={props.chart} chartContainerRef={chartContainerRef}></LightMenu>
         {props.chart.selectedDrawing && (
           <ChartSet chart={props.chart} chartContainerRef={chartContainerRef}></ChartSet>
         )}
-        <ChartIndex class={'mb-1'} chart={props.chart}></ChartIndex>
+        <ChartIndex class={''} chart={props.chart}></ChartIndex>
+        <NDivider class={'!my-0.5'}></NDivider>
         <ChartCycle chart={props.chart}></ChartCycle>
       </div>
     )

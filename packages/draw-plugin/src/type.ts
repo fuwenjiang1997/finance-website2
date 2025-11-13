@@ -91,4 +91,10 @@ export interface InitIndexParams {
 export enum INDEX_NAME {
   MACD = 'MACD',
   CCI = 'CCI',
+  SMA = 'SMA',
+}
+
+export enum INDEX_TYPE {
+  MAIN = 'main', // 主图
+  VICE = 'vice', // 幅图
 }

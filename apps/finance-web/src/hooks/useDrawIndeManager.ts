@@ -3,6 +3,7 @@ import {
   DrawIndex,
   INDEX_NAME,
   MACD,
+  SMA,
   type IDrawingIndexClass,
   type KLineIndexData,
 } from '@fuwenjiang1997/draw-plugin'
@@ -19,6 +20,7 @@ export const useDrawingIndexManager = (data: ComputedRef<KLineIndexData>) => {
   const indexMap: { [k: string]: IDrawingIndexClass } = {
     [INDEX_NAME.MACD]: MACD,
     [INDEX_NAME.CCI]: CCI,
+    [INDEX_NAME.SMA]: SMA,
   }
   let chart: IChartApi
   let kLineSeries: ISeriesApi<SeriesType>
@@ -30,15 +32,10 @@ export const useDrawingIndexManager = (data: ComputedRef<KLineIndexData>) => {
     kLineSeries = params.kLineSeries
   }
 
-  function addIndex(name: INDEX_NAME, positionIndex?: number) {
+  function addIndex(name: INDEX_NAME, positionIndex?: number, options?: any) {
     const plugin = indexMap?.[name]
     if (!plugin || !chart || !kLineSeries) return
-
-    const pineIndex =
-      positionIndex !== undefined ? positionIndex + 1 : renderIndexList.value.length + 1
-
-    console.log('pineIndex:', pineIndex)
-    const instanceIndex = new plugin(chart, kLineSeries, pineIndex)
+    const instanceIndex = new plugin(chart, kLineSeries)
 
     if (positionIndex !== undefined) {
       renderIndexList.value[positionIndex]?.remove()

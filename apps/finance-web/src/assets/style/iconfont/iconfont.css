@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 5041514 */
-  src: url('//at.alicdn.com/t/c/font_5041514_7mgwu41b2a8.woff2?t=1761379264308') format('woff2'),
-       url('//at.alicdn.com/t/c/font_5041514_7mgwu41b2a8.woff?t=1761379264308') format('woff'),
-       url('//at.alicdn.com/t/c/font_5041514_7mgwu41b2a8.ttf?t=1761379264308') format('truetype');
+  src: url('//at.alicdn.com/t/c/font_5041514_mosoi2erb1.woff2?t=1763033281610') format('woff2'),
+       url('//at.alicdn.com/t/c/font_5041514_mosoi2erb1.woff?t=1763033281610') format('woff'),
+       url('//at.alicdn.com/t/c/font_5041514_mosoi2erb1.ttf?t=1763033281610') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-zhibiao:before {
+  content: "\e66a";
 }
 
 .icon-shanchu:before {

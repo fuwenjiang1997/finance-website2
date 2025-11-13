@@ -29,5 +29,9 @@ export const indexListMap: { [key: string]: { label: string; value: INDEX_NAME }
   [INDEX_NAME.CCI]: { label: 'CCI', value: INDEX_NAME.CCI },
 }
 
+export const headerIndexListMap: { [key: string]: { label: string; value: INDEX_NAME } } = {
+  [INDEX_NAME.SMA]: { label: 'SMA', value: INDEX_NAME.SMA },
+}
+
 export const DEFAULT_UP_COLOR = '#26a69a' // 涨绿色
 export const DEFAULT_DOWN_COLOR = '#ef5350' // 跌红色

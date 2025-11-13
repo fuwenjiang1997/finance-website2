@@ -34,7 +34,6 @@ const tradingVolume = (chart: IChartApi, params: VChartSeriesParams) => {
   }
 
   volumeSeries.value = chart.addSeries(HistogramSeries, {
-    // pane: 1,
     priceFormat: {
       type: 'volume', // 格式化成交量，例如 1.5K, 2M
     },
