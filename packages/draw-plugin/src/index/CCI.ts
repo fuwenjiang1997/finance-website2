@@ -4,8 +4,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { INDEX_NAME, KLineIndexData } from '../type'
 
 export class CCI extends DrawIndex {
-  // public deaLineSeries: ISeriesApi<SeriesType> | undefined // 慢线
-  // public difLineSeries: ISeriesApi<SeriesType> | undefined // 快线
   public cciSeries: ISeriesApi<SeriesType> | undefined
   public cciPeriod: number
   constructor(chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>) {
