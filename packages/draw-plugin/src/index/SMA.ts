@@ -11,7 +11,6 @@ interface SMAItem {
 
 export class SMA extends DrawIndex {
   public smaSeries: ISeriesApi<SeriesType>[]
-  public smaPeriod: number
   public seriesOptions: SMAItem[]
   constructor(chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>) {
     super(chart)
@@ -19,7 +18,7 @@ export class SMA extends DrawIndex {
     this.kLineSeries = kLineSeries
     this.name = INDEX_NAME.MACD
     this.store.id = `${INDEX_NAME.MACD}_${uuidv4()}`
-    this.smaPeriod = 20
+
     this.smaSeries = []
     this.seriesOptions = [
       { value: 5, color: Color('#000').alpha(0.5).toString() },
@@ -38,7 +37,7 @@ export class SMA extends DrawIndex {
     this.seriesOptions.forEach((item, index) => {
       if (this.smaSeries[index] === undefined && this.chart) {
         this.smaSeries[index] = this.chart.addSeries(LineSeries, {
-          lineWidth: 2,
+          lineWidth: 1,
           title: `SMA(${item.value})`,
           color: item.color,
           priceScaleId: 'right', // 确保和主K线在同一个价格轴
@@ -62,13 +61,14 @@ export class SMA extends DrawIndex {
 
   render(v?: KLineIndexData) {
     if (!v || !this.chart) return
-    if (v.times.length < this.smaPeriod) {
-      return []
-    }
+
+    console.log('111:')
 
     this.seriesOptions.forEach((item, index) => {
+      if (v.highs.length < item.value) {
+        return
+      }
       const res = window?.SMA?.(v.highs, item.value)
-      console.log(res, this.smaSeries)
       if (!res) return
 
       this.smaSeries[index].setData(
