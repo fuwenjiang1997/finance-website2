@@ -80,9 +80,12 @@ export interface IDrawingIndex {
 
 export interface KLineIndexData {
   closes: number[]
+  opens: number[]
   highs: number[]
   lows: number[]
   times: number[]
+  openTimes: number[]
+  volume: number[]
 }
 
 export interface InitIndexParams {
@@ -93,6 +96,7 @@ export enum INDEX_NAME {
   MACD = 'MACD',
   CCI = 'CCI',
   SMA = 'SMA',
+  TRADINGVOLUME = 'TradingVolume',
 }
 
 export enum INDEX_TYPE {

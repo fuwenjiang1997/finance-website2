@@ -63,7 +63,7 @@ export class MACD extends DrawIndex {
       paneIndex,
     )
   }
-  removeMacdSeries() {
+  removeSeries() {
     this.deaLineSeries && this.chart?.removeSeries(this.deaLineSeries)
     this.difLineSeries && this.chart?.removeSeries(this.difLineSeries)
     this.histogramSeries && this.chart?.removeSeries(this.histogramSeries)
@@ -114,11 +114,7 @@ export class MACD extends DrawIndex {
   }
 
   remove() {
-    // 清空pane的时候会删除series
+    this.removeSeries()
     super.remove()
-    // 清空自己的series实例
-    this.deaLineSeries = undefined
-    this.difLineSeries = undefined
-    this.histogramSeries = undefined
   }
 }

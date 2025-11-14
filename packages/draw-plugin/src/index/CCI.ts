@@ -87,9 +87,7 @@ export class CCI extends DrawIndex {
   }
 
   remove() {
-    // 清空pane的时候会删除series
+    this.removeSeries()
     super.remove()
-    // 清空自己的series实例
-    this.cciSeries = undefined
   }
 }

@@ -51,14 +51,6 @@ export abstract class DrawIndex implements IDrawingIndex {
   public abstract setData(v: KLineIndexData): void
   setPane(_pane: IPaneApi<Time>) {
     this.pane = _pane
-    console.log('this.pane:', this.pane.paneIndex())
-    // const h = this.chartContainer.clientHeight
-    // // this.pane.setHeight(1)
-    // setTimeout(() => {
-    //   this.pane?.setHeight(h * 0.2)
-    //   this.paneElement = this.pane?.getHTMLElement() || undefined
-    //   this.addEventListenerPaneSize()
-    // }, 1)
   }
   remove(): void {
     if (!this.chart || !this.pane) return

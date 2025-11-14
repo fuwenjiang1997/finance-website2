@@ -82,9 +82,12 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
   const kLineIndexDataByCircle = computed((): KLineIndexData => {
     const m: KLineIndexData = {
       closes: <number[]>[],
+      opens: <number[]>[],
       highs: <number[]>[],
       lows: <number[]>[],
       times: <number[]>[],
+      openTimes: <number[]>[],
+      volume: <number[]>[],
     }
 
     kLineOriginDataByCircle.value.forEach((item) => {
@@ -92,6 +95,9 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
       m.highs.push(item.High)
       m.lows.push(item.Low)
       m.times.push(dayjs(item.CloseTime).unix())
+      m.openTimes.push(dayjs(item.OpenTime).unix())
+      m.volume.push(item.Volume)
+      m.opens.push(item.Open)
     })
     return m
   })

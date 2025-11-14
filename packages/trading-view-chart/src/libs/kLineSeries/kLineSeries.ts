@@ -43,8 +43,8 @@ const kLineSeries = (chart: IChartApi, params: VChartSeriesParams) => {
 
   mainSeries.value.priceScale().applyOptions({
     scaleMargins: {
-      top: 0.1, // 主图顶部留白 10%
-      bottom: 0.25, // 主图底部留白 25%
+      top: 0.05, // 主图顶部留白 5%
+      bottom: 0.05, // 主图底部留白 5%
     },
   })
 

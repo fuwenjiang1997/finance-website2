@@ -2,7 +2,6 @@ import { CandlestickData, Time, WhitespaceData, type IChartApi } from 'lightweig
 import kLineSeries, { ReturnkLineSeries } from './libs/kLineSeries/kLineSeries'
 import { ComputedRef, reactive, Ref } from 'vue'
 import { KLineOriginData, VChartPlugin, VChartSeriesParams } from './libs/type'
-import tradingVolume from './libs/tradingVolume/tradingVolume'
 import { DEFAULT_DOWN_COLOR, DEFAULT_UP_COLOR } from './utils/const'
 import Color from 'color'
 import { ChartColorParams } from '@fuwenjiang1997/common-types'
@@ -41,7 +40,7 @@ export default function vChart(chart: IChartApi, params: VChartParams) {
   }
 
   const kLine: ReturnkLineSeries = kLineSeries(chart, seriesParams)
-  const volume = tradingVolume(chart, seriesParams)
+  // const volume = tradingVolume(chart, seriesParams)
 
   function usePlugin(plugin: VChartPlugin) {
     if (!plugins[plugin.name]) {
@@ -54,12 +53,13 @@ export default function vChart(chart: IChartApi, params: VChartParams) {
   function setColor(uiColor: ChartColorParams) {
     Object.assign(color, uiColor)
     kLine.renderByUpdateColor()
-    volume.renderByUpdateColor()
+    // 更新插件的颜色
+    // volume.renderByUpdateColor()
   }
 
   return {
     kLine,
-    volume,
+    // volume,
     plugins,
     usePlugin,
     setColor,

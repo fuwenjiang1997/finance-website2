@@ -10,12 +10,16 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
 
   function remvePane() {
     if (!pane.value) return
+
+    console.log('pane.value.paneIndex():', pane.value.paneIndex())
     chart.removePane(pane.value.paneIndex())
+    pane.value = undefined
   }
 
   function createPane() {
     if (pane.value) return
-    pane.value = chart.addPane()
+
+    pane.value = chart.addPane(true)
     const h = chartContainer.clientHeight
     const panes = chart.panes()
     setTimeout(() => {
