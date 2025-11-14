@@ -1,6 +1,5 @@
 import {
   CCI,
-  DrawIndex,
   INDEX_NAME,
   MACD,
   SMA,
@@ -9,11 +8,12 @@ import {
 } from '@fuwenjiang1997/draw-plugin'
 import type { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts'
 import { ref, shallowRef, watch, type ComputedRef } from 'vue'
+import { usePane, type UsePane } from './usePane'
 
 export interface InitParams {
   chart: IChartApi
   kLineSeries: ISeriesApi<SeriesType>
-  chartContainer?: HTMLElement
+  chartContainer: HTMLElement
 }
 
 export const useDrawingIndexManager = (data: ComputedRef<KLineIndexData>) => {
@@ -24,27 +24,34 @@ export const useDrawingIndexManager = (data: ComputedRef<KLineIndexData>) => {
   }
   let chart: IChartApi
   let kLineSeries: ISeriesApi<SeriesType>
-  const renderIndexList = shallowRef<DrawIndex[]>([])
+  let chartContainer: HTMLElement
+  const renderIndexList = shallowRef<UsePane[]>([])
   const renderIndexNameList = ref<INDEX_NAME[]>([])
 
   function init(params: InitParams) {
     chart = params.chart
     kLineSeries = params.kLineSeries
+    chartContainer = params.chartContainer
   }
 
-  function addIndex(name: INDEX_NAME, positionIndex?: number, options?: any) {
+  function addIndex(name: INDEX_NAME, positionIndex?: number) {
     const plugin = indexMap?.[name]
-    if (!plugin || !chart || !kLineSeries) return
-    const instanceIndex = new plugin(chart, kLineSeries)
+    if (!plugin || !chart || !kLineSeries || !chartContainer) return
+
+    const instanceIndex = new plugin(chartContainer, chart, kLineSeries)
 
     if (positionIndex !== undefined) {
-      renderIndexList.value[positionIndex]?.remove()
+      const pane = renderIndexList.value[positionIndex]
+      if (!pane) return
 
+      pane.removePlugin()
       renderIndexNameList.value.splice(positionIndex, 0, name)
-      renderIndexList.value.splice(positionIndex, 0, instanceIndex)
+      pane.addPlugin(instanceIndex)
     } else {
+      const pane = usePane(chart, chartContainer)
+      pane.addPlugin(instanceIndex)
       renderIndexNameList.value.push(name)
-      renderIndexList.value.push(instanceIndex)
+      renderIndexList.value.push(pane)
       positionIndex = renderIndexList.value.length - 1
     }
 
@@ -72,10 +79,10 @@ export const useDrawingIndexManager = (data: ComputedRef<KLineIndexData>) => {
 
     if (index === undefined) {
       renderIndexList.value.forEach((item) => {
-        item.setData(data.value)
+        item.plugin.value?.setData(data.value)
       })
     } else if (renderIndexList.value[index]) {
-      renderIndexList.value[index]?.setData(data.value)
+      renderIndexList.value[index]?.plugin.value?.setData(data.value)
     }
   }
 

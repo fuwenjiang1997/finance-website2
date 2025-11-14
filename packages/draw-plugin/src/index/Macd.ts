@@ -20,32 +20,27 @@ export class MACD extends DrawIndex {
   public deaLineSeries: ISeriesApi<SeriesType> | undefined // 慢线
   public difLineSeries: ISeriesApi<SeriesType> | undefined // 快线
   public histogramSeries: ISeriesApi<SeriesType> | undefined
-  constructor(chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>) {
-    super(chart)
+  constructor(chartContainer: HTMLElement, chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>) {
+    super(chart, chartContainer)
     this.kLineSeries = kLineSeries
     this.name = INDEX_NAME.MACD
     this.store.id = `${INDEX_NAME.MACD}_${uuidv4()}`
-    this.addMacdSeries()
   }
 
   addMacdSeries() {
     if (!this.chart) return
-    // 清理旧的 series
-    this.removeMacdSeries()
+    if (this.deaLineSeries && this.difLineSeries && this.histogramSeries) {
+      return
+    }
     const yName = 'macd_price_scale'
 
-    if (!this.pane) {
-      super.createPane()
-    }
     // 创建 Series
     const paneIndex = this.pane?.paneIndex()
-
-    console.log('创建的pane index:', paneIndex)
     this.deaLineSeries = this.chart.addSeries(
       LineSeries,
       {
         color: '#2962FF',
-        lineWidth: 2,
+        lineWidth: 1,
         priceScaleId: yName, // 使用独立的 Y 轴
       },
       paneIndex,
@@ -54,7 +49,7 @@ export class MACD extends DrawIndex {
       LineSeries,
       {
         color: '#FFB300',
-        lineWidth: 2,
+        lineWidth: 1,
         priceScaleId: yName,
       },
       paneIndex,
@@ -86,6 +81,9 @@ export class MACD extends DrawIndex {
 
   render(v?: KLineIndexData) {
     if (!v) return
+
+    this.addMacdSeries()
+
     const res = window?.MACD?.(v.closes, 12, 26, 9) as WasmMACDResult | undefined
 
     if (res) {

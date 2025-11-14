@@ -175,6 +175,7 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
       initIndex({
         chart: chart.value,
         kLineSeries: kLineSeries as ISeriesApi<'Candlestick'>,
+        chartContainer: chartContainerRef.value,
       })
     }
     subscribeToRangeChanges()

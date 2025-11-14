@@ -12,8 +12,8 @@ interface SMAItem {
 export class SMA extends DrawIndex {
   public smaSeries: ISeriesApi<SeriesType>[]
   public seriesOptions: SMAItem[]
-  constructor(chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>) {
-    super(chart)
+  constructor(chartContainer: HTMLElement, chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>) {
+    super(chart, chartContainer)
     this.indexType = INDEX_TYPE.MAIN
     this.kLineSeries = kLineSeries
     this.name = INDEX_NAME.MACD

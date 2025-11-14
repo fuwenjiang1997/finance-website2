@@ -6,23 +6,19 @@ import { INDEX_NAME, KLineIndexData } from '../type'
 export class CCI extends DrawIndex {
   public cciSeries: ISeriesApi<SeriesType> | undefined
   public cciPeriod: number
-  constructor(chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>) {
-    super(chart)
+  constructor(chartContainer: HTMLElement, chart: IChartApi, kLineSeries: ISeriesApi<SeriesType>) {
+    super(chart, chartContainer)
     this.kLineSeries = kLineSeries
     this.name = INDEX_NAME.MACD
     this.store.id = `${INDEX_NAME.MACD}_${uuidv4()}`
     this.cciPeriod = 20
-    this.addSeries()
   }
 
   addSeries() {
     if (!this.chart) return
     // 清理旧的 series
-    this.removeSeries()
+    if (this.cciSeries) return
 
-    if (!this.pane) {
-      super.createPane()
-    }
     // 创建 Series
     const paneIndex = this.pane?.paneIndex()
 
@@ -30,7 +26,7 @@ export class CCI extends DrawIndex {
       LineSeries,
       {
         color: '#2962FF',
-        lineWidth: 2,
+        lineWidth: 1,
         title: `CCI(${this.cciPeriod})`,
         priceFormat: {
           type: 'price',
@@ -77,6 +73,8 @@ export class CCI extends DrawIndex {
     }
     const res = window?.CCI?.(v.highs, v.lows, v.closes, this.cciPeriod)
     if (!res) return
+
+    this.addSeries()
 
     this.cciSeries?.setData(
       v.times?.map((item, i) => {

@@ -18,6 +18,5 @@ export async function initTradeWasm(): Promise<WebAssembly.WebAssemblyInstantiat
   if (exportsCache) return exportsCache
   const wasmUrl = new URL('./trade.wasm', import.meta.url).toString()
   await instantiate(wasmUrl)
-  console.log('exportsCache:', window?.CCI, window.MACD)
   return exportsCache
 }

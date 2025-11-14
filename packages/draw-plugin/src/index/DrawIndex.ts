@@ -3,6 +3,7 @@ import { IDrawingIndex, INDEX_NAME, INDEX_TYPE, KLineIndexData, PluginWidth } fr
 import { DEFAULT_DOWN_COLOR, DEFAULT_UP_COLOR } from '../utils/const'
 
 export type IDrawingIndexClass = new (
+  chartContainer: HTMLElement,
   chart: IChartApi,
   kLineSeries: ISeriesApi<SeriesType>,
 ) => DrawIndex
@@ -15,6 +16,8 @@ export abstract class DrawIndex implements IDrawingIndex {
   public isDeleted: boolean
   public name: INDEX_NAME
   public indexType: INDEX_TYPE
+  public chartContainer: HTMLElement
+  public paneElement?: HTMLElement
   protected series: ISeriesApi<SeriesType>[] = [] // 用于存放绘制的 series
 
   store: {
@@ -27,11 +30,12 @@ export abstract class DrawIndex implements IDrawingIndex {
     visible: boolean
   }
 
-  constructor(chart: IChartApi) {
+  constructor(chart: IChartApi, chartContainer: HTMLElement) {
     this.chart = chart
     this.isDeleted = false
     this.name = INDEX_NAME.MACD
     this.indexType = INDEX_TYPE.VICE // 默认副图
+    this.chartContainer = chartContainer
     this.store = {
       id: '',
       color: 'rgb(255, 0, 0)',
@@ -45,14 +49,21 @@ export abstract class DrawIndex implements IDrawingIndex {
 
   public abstract render(v?: KLineIndexData): void
   public abstract setData(v: KLineIndexData): void
-  createPane() {
-    if (!this.chart) return
-    this.pane = this.chart.addPane()
+  setPane(_pane: IPaneApi<Time>) {
+    this.pane = _pane
+    console.log('this.pane:', this.pane.paneIndex())
+    // const h = this.chartContainer.clientHeight
+    // // this.pane.setHeight(1)
+    // setTimeout(() => {
+    //   this.pane?.setHeight(h * 0.2)
+    //   this.paneElement = this.pane?.getHTMLElement() || undefined
+    //   this.addEventListenerPaneSize()
+    // }, 1)
   }
   remove(): void {
     if (!this.chart || !this.pane) return
-    this.chart.removePane(this.pane.paneIndex())
     this.pane = undefined
+    this.paneElement = undefined
   }
   updateSet() {
     const { color, lineWidth, lineStyle, visible } = this.store
