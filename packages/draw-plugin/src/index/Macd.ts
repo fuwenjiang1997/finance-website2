@@ -72,18 +72,15 @@ export class MACD extends DrawIndex {
     this.histogramSeries = undefined
   }
 
-  updateSet() {
-    super.updateSet()
-  }
   setData(data: KLineIndexData): void {
     this.render(data)
   }
 
-  render(v?: KLineIndexData) {
+  render(v: KLineIndexData) {
     if (!v) return
+    super.render(v)
 
     this.addMacdSeries()
-
     const res = window?.MACD?.(v.closes, 12, 26, 9) as WasmMACDResult | undefined
 
     if (res) {

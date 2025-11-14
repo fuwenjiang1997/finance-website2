@@ -39,10 +39,6 @@ export default defineComponent({
 
     const selectedIndexValue = ref<INDEX_NAME | undefined>(undefined)
     const selectedIndexOption = computed(() => {
-      indexList.map((item) => {
-        console.log(item, selectedIndexValue)
-        return item
-      })
       return indexList.find((item) => item.value === selectedIndexValue.value)
     })
 

@@ -18,8 +18,6 @@ export default defineComponent({
     const { width } = useElementSize(cycleRef)
     const isMinWindow = computed(() => width.value < 600)
 
-    console.log('props.chart.renderIndexNameList:', props.chart.renderIndexNameList)
-
     function onClickIndex(name: INDEX_NAME) {
       if (toValue(props.chart.renderIndexNameList).includes(name)) {
         props.chart.removeIndex(name)

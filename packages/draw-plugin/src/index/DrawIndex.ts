@@ -1,6 +1,7 @@
 import { IChartApi, IPaneApi, ISeriesApi, LineStyle, SeriesType, Time } from 'lightweight-charts'
 import { IDrawingIndex, INDEX_NAME, INDEX_TYPE, KLineIndexData, PluginWidth } from '../type'
 import { DEFAULT_DOWN_COLOR, DEFAULT_UP_COLOR } from '../utils/const'
+import { ChartColorParams } from '@fuwenjiang1997/common-types'
 
 export type IDrawingIndexClass = new (
   chartContainer: HTMLElement,
@@ -19,6 +20,7 @@ export abstract class DrawIndex implements IDrawingIndex {
   public chartContainer: HTMLElement
   public paneElement?: HTMLElement
   protected series: ISeriesApi<SeriesType>[] = [] // 用于存放绘制的 series
+  public data?: KLineIndexData
 
   store: {
     id: string
@@ -47,12 +49,29 @@ export abstract class DrawIndex implements IDrawingIndex {
     }
   }
 
-  public abstract render(v?: KLineIndexData): void
+  // public abstract render(v?: KLineIndexData): void
   public abstract setData(v: KLineIndexData): void
+  // public abstract reRender(): void
+  saveRenderData(v: KLineIndexData) {
+    this.data = v
+  }
+  render(v: KLineIndexData) {
+    this.saveRenderData(v)
+  }
   setPane(_pane: IPaneApi<Time>) {
     this.pane = _pane
   }
-  remove(): void {
+  setColor(colors: ChartColorParams) {
+    this.store.upColor = colors.upColor
+    this.store.downColor = colors.downColor
+    this.updateSet()
+    this.reRender()
+  }
+  reRender() {
+    if (!this.data) return
+    this.render(this.data)
+  }
+  remove() {
     if (!this.chart || !this.pane) return
     this.pane = undefined
     this.paneElement = undefined

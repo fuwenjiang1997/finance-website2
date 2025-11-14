@@ -52,9 +52,6 @@ export class SMA extends DrawIndex {
     this.smaSeries.length = 0
   }
 
-  updateSet() {
-    super.updateSet()
-  }
   setData(data: KLineIndexData): void {
     this.render(data)
   }
@@ -62,8 +59,7 @@ export class SMA extends DrawIndex {
   render(v?: KLineIndexData) {
     if (!v || !this.chart) return
 
-    console.log('111:')
-
+    super.render(v)
     this.seriesOptions.forEach((item, index) => {
       if (v.highs.length < item.value) {
         return

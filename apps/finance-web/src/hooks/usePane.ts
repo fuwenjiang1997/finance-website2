@@ -1,3 +1,4 @@
+import type { ChartColorParams } from '@fuwenjiang1997/common-types'
 import { INDEX_TYPE, type DrawIndex } from '@fuwenjiang1997/draw-plugin'
 import type { IChartApi, IPaneApi, Time } from 'lightweight-charts'
 import { shallowRef } from 'vue'
@@ -10,8 +11,6 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
 
   function remvePane() {
     if (!pane.value) return
-
-    console.log('pane.value.paneIndex():', pane.value.paneIndex())
     chart.removePane(pane.value.paneIndex())
     pane.value = undefined
   }
@@ -27,6 +26,9 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
         item.setHeight(h * 0.12)
       })
     })
+  }
+  function setColor(colors: ChartColorParams) {
+    plugin.value?.setColor(colors)
   }
 
   function addPlugin(p: DrawIndex) {
@@ -56,5 +58,6 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
     removePlugin,
     remove,
     plugin,
+    setColor,
   }
 }

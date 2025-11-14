@@ -72,15 +72,6 @@ export function useKLineSimulation() {
     return data
   }
 
-  // onKeyStroke('ArrowRight', () => {
-  //   console.log('333:')
-  //   handler['next']()
-  // })
-  // onKeyStroke('ArrowLeft', () => {
-  //   console.log('333:')
-  //   handler['pre']()
-  // })
-
   return {
     isActriveKLineSimulation,
     startKLineSimulation,

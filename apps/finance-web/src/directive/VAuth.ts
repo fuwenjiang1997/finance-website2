@@ -74,7 +74,6 @@ function apply(el: GuardEl, isAllow: boolean) {
   }
 
   const handler = (e: MouseEvent) => {
-    console.log('点击事件:', isAllow)
     if (!isAllow) {
       e.stopPropagation()
       e.preventDefault()

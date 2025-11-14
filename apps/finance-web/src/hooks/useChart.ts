@@ -13,7 +13,7 @@ import { apiGetKLineData, type apiGetKLineDataReturn } from '@/http/api'
 import dayjs from 'dayjs'
 import vChart, { type VChart } from '@fuwenjiang1997/trading-view-chart'
 import { useWithLoading } from './useWithLoading'
-import { DEFAULT_DOWN_COLOR, DEFAULT_UP_COLOR, KLineCircle } from '@/utils/const'
+import { KLineCircle } from '@/utils/const'
 import { useKLineSimulation } from './useKLineSimulation'
 import { useResizeObserver } from '@vueuse/core'
 import type { DrawInfoData } from './useDrawPlugin'
@@ -117,14 +117,17 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     addIndex,
     setIndex,
     removeIndex,
-  } = useDrawingIndexManager(kLineIndexDataByCircle)
+  } = useDrawingIndexManager(kLineIndexDataByCircle, { colors: uiColor })
 
   watch(
     uiColor,
     (newColor) => {
       draw.series?.setColor(newColor)
+      renderIndexList.value.forEach((item) => {
+        item.setColor(newColor)
+      })
     },
-    { deep: true },
+    { deep: true, flush: 'post' },
   )
 
   // 设置代码

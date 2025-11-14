@@ -1,4 +1,5 @@
 import { IChartApi, IPaneApi, LineData, LineStyle, Time } from 'lightweight-charts'
+import { ChartColorParams } from '@fuwenjiang1997/common-types'
 
 export interface PluginPoint {
   x: number
@@ -76,6 +77,8 @@ export interface IDrawingIndex {
   setVisible: (v: boolean) => void
   setData: (v: any) => void
   setPane: (v: IPaneApi<Time>) => void
+  setColor: (v: ChartColorParams) => void
+  reRender: () => void
 }
 
 export interface KLineIndexData {

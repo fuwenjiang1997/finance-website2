@@ -12,8 +12,8 @@ export enum DEFAULT_COLOR {
 export interface ChartColorParams {
   upColor: string
   downColor: string
-  volUpColor: string
-  volDownColor: string
-  upBgColor: string
-  downBgColor: string
+  volUpColor?: string
+  volDownColor?: string
+  upBgColor?: string
+  downBgColor?: string
 }

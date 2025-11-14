@@ -59,9 +59,6 @@ export class CCI extends DrawIndex {
     this.cciSeries = undefined
   }
 
-  updateSet() {
-    super.updateSet()
-  }
   setData(data: KLineIndexData): void {
     this.render(data)
   }
@@ -74,6 +71,7 @@ export class CCI extends DrawIndex {
     const res = window?.CCI?.(v.highs, v.lows, v.closes, this.cciPeriod)
     if (!res) return
 
+    super.render(v)
     this.addSeries()
 
     this.cciSeries?.setData(

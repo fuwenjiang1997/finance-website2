@@ -10,6 +10,7 @@ import {
 import type { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts'
 import { ref, shallowRef, watch, type ComputedRef } from 'vue'
 import { usePane, type UsePane } from './usePane'
+import type { ChartColorParams } from '@fuwenjiang1997/common-types'
 
 export interface InitParams {
   chart: IChartApi
@@ -17,7 +18,12 @@ export interface InitParams {
   chartContainer: HTMLElement
 }
 
-export const useDrawingIndexManager = (data: ComputedRef<KLineIndexData>) => {
+export const useDrawingIndexManager = (
+  data: ComputedRef<KLineIndexData>,
+  params: {
+    colors: ComputedRef<ChartColorParams>
+  },
+) => {
   const indexMap: { [k: string]: IDrawingIndexClass } = {
     [INDEX_NAME.MACD]: MACD,
     [INDEX_NAME.CCI]: CCI,
@@ -57,6 +63,7 @@ export const useDrawingIndexManager = (data: ComputedRef<KLineIndexData>) => {
       positionIndex = renderIndexList.value.length - 1
     }
 
+    renderIndexList.value[positionIndex]?.setColor(params.colors.value)
     updateIndex(positionIndex)
   }
 
@@ -87,6 +94,16 @@ export const useDrawingIndexManager = (data: ComputedRef<KLineIndexData>) => {
       renderIndexList.value[index]?.plugin.value?.setData(data.value)
     }
   }
+
+  watch(
+    params.colors,
+    (newColors) => {
+      renderIndexList.value.forEach((item) => {
+        item.setColor(newColors)
+      })
+    },
+    { deep: true },
+  )
 
   watch(
     () => data.value,

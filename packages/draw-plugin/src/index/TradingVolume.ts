@@ -34,6 +34,7 @@ export class TradingVolume extends DrawIndex {
       paneIndex,
     )
   }
+
   removeSeries() {
     this.volumeSeries && this.chart?.removeSeries(this.volumeSeries)
     this.volumeSeries = undefined
@@ -43,10 +44,12 @@ export class TradingVolume extends DrawIndex {
     this.render(data)
   }
 
-  render(v?: KLineIndexData) {
+  render(v: KLineIndexData) {
     if (!v) return
 
+    super.render(v)
     this.addSeries()
+
     this.volumeSeries?.setData(
       v.times?.map((item, i) => {
         return {
