@@ -16,7 +16,13 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
   function createPane() {
     if (pane.value) return
     pane.value = chart.addPane()
-    console.log('chartContainer', chartContainer)
+    const h = chartContainer.clientHeight
+    const panes = chart.panes()
+    setTimeout(() => {
+      panes.forEach((item) => {
+        item.setHeight(h * 0.12)
+      })
+    })
   }
 
   function addPlugin(p: DrawIndex) {
