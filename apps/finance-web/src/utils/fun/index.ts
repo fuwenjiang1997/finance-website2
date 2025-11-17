@@ -1,11 +1,7 @@
-type CallOnece = (...args: unknown[]) => unknown
-function callOneceFn<T extends CallOnece>(fn: CallOnece): (...args: unknown[]) => unknown {
-  let isCalled = false
-
-  return (...args) => {
-    if (isCalled) return
-
-    isCalled = true
-    return fn(...args)
-  }
+export async function sleep(t: number = 16) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true)
+    }, t)
+  })
 }

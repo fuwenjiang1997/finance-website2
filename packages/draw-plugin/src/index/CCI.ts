@@ -12,6 +12,7 @@ export class CCI extends DrawIndex {
     this.name = INDEX_NAME.MACD
     this.store.id = `${INDEX_NAME.MACD}_${uuidv4()}`
     this.cciPeriod = 20
+    this.name = INDEX_NAME.CCI
   }
 
   addSeries() {

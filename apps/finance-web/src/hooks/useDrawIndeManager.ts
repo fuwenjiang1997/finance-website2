@@ -11,6 +11,7 @@ import type { IChartApi, ISeriesApi, SeriesType } from 'lightweight-charts'
 import { ref, shallowRef, watch, type ComputedRef } from 'vue'
 import { usePane, type UsePane } from './usePane'
 import type { ChartColorParams } from '@fuwenjiang1997/common-types'
+import { cloneDeep } from 'lodash-es'
 
 export interface InitParams {
   chart: IChartApi
@@ -47,9 +48,10 @@ export const useDrawingIndexManager = (
     if (!plugin || !chart || !kLineSeries || !chartContainer) return
 
     const instanceIndex = new plugin(chartContainer, chart, kLineSeries)
+    const _renderIndexList = cloneDeep(renderIndexList.value)
 
     if (positionIndex !== undefined) {
-      const pane = renderIndexList.value[positionIndex]
+      const pane = _renderIndexList[positionIndex]
       if (!pane) return
 
       pane.removePlugin()
@@ -59,22 +61,32 @@ export const useDrawingIndexManager = (
       const pane = usePane(chart, chartContainer)
       pane.addPlugin(instanceIndex)
       renderIndexNameList.value.push(name)
-      renderIndexList.value.push(pane)
-      positionIndex = renderIndexList.value.length - 1
+      _renderIndexList.push(pane)
+      positionIndex = _renderIndexList.length - 1
     }
 
-    renderIndexList.value[positionIndex]?.setColor(params.colors.value)
+    _renderIndexList[positionIndex]?.setColor(params.colors.value)
+    renderIndexList.value = _renderIndexList
+
     updateIndex(positionIndex)
   }
+
+  watch(
+    () => renderIndexList.value,
+    () => {
+      console.log('改变了:')
+    },
+  )
 
   function removeIndex(name?: INDEX_NAME, index: number = -1) {
     if (name) {
       index = renderIndexNameList.value.findIndex((item) => item === name)
     }
     if (index === -1) return
-
-    renderIndexList.value[index]?.remove()
-    renderIndexList.value.splice(index, 1)
+    const _renderIndexList = cloneDeep(renderIndexList.value)
+    _renderIndexList[index]?.remove()
+    _renderIndexList.splice(index, 1)
+    renderIndexList.value = _renderIndexList
     renderIndexNameList.value.splice(index, 1)
   }
 
@@ -87,8 +99,13 @@ export const useDrawingIndexManager = (
     if (data.value.closes.length === 0 || renderIndexList.value.length === 0) return
 
     if (index === undefined) {
+      // for (let i = 0; i < renderIndexList.value.length; i++) {
+      //   const item = renderIndexList.value[i]
+      //   item?.plugin.value?.setData(cloneDeep(data.value))
+      // }
       renderIndexList.value.forEach((item) => {
-        item.plugin.value?.setData(data.value)
+        console.log('更新:', item)
+        item.plugin.value?.setData(cloneDeep(data.value))
       })
     } else if (renderIndexList.value[index]) {
       renderIndexList.value[index]?.plugin.value?.setData(data.value)

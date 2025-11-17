@@ -20,7 +20,7 @@ export default defineComponent({
     const defaultColor = '#000'
     const indexList = [
       {
-        label: '无',
+        label: '清空',
         value: undefined,
         options: [],
       },
@@ -91,7 +91,7 @@ export default defineComponent({
                 'text-[11px]': isMinWindow.value,
               })}
             >
-              {selectedIndexOption.value?.label}
+              {selectedIndexOption.value?.value ? selectedIndexOption.value?.label : '选择指标'}
             </span>
           </NButton>
         </NDropdown>

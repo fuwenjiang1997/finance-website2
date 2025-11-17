@@ -368,6 +368,10 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     chart.value?.remove()
   }
 
+  watch(renderIndexList, () => {
+    console.log('改变了2:')
+  })
+
   return {
     id,
     chart,

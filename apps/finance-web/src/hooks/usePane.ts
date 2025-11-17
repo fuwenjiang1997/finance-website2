@@ -1,13 +1,24 @@
+import { sleep } from '@/utils/fun'
 import type { ChartColorParams } from '@fuwenjiang1997/common-types'
 import { INDEX_TYPE, type DrawIndex } from '@fuwenjiang1997/draw-plugin'
+import { useResizeObserver } from '@vueuse/core'
 import type { IChartApi, IPaneApi, Time } from 'lightweight-charts'
-import { shallowRef } from 'vue'
+import { nextTick, ref, shallowRef } from 'vue'
 
 export type UsePane = ReturnType<typeof usePane>
 
 export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
   const pane = shallowRef<IPaneApi<Time>>()
   const plugin = shallowRef<DrawIndex | undefined>()
+  const paneEl = shallowRef<HTMLElement>()
+
+  const position = ref<{
+    left: string
+    top: string
+  }>({
+    left: '0',
+    top: '0',
+  })
 
   function remvePane() {
     if (!pane.value) return
@@ -15,7 +26,24 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
     pane.value = undefined
   }
 
-  function createPane() {
+  useResizeObserver(paneEl, async (entries) => {
+    const entry = entries[0]
+    if (!entry) return
+
+    if (!pane.value || !paneEl.value) return
+    const el = paneEl.value
+    const parentEl = getChartEl(el)
+    if (!parentEl) return
+    await sleep()
+    const rect = el.getBoundingClientRect()
+    const pRect = parentEl.getBoundingClientRect()
+    position.value = {
+      left: `${rect.left - pRect.left}px`,
+      top: `${rect.top - pRect.top}px`,
+    }
+  })
+
+  async function createPane() {
     if (pane.value) return
 
     pane.value = chart.addPane(true)
@@ -26,6 +54,9 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
         item.setHeight(h * 0.12)
       })
     })
+
+    await sleep()
+    paneEl.value = pane.value?.getHTMLElement() || undefined
   }
   function setColor(colors: ChartColorParams) {
     plugin.value?.setColor(colors)
@@ -50,6 +81,30 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
     removePlugin()
     remvePane()
   }
+  function getChartEl(el: HTMLElement): HTMLElement | undefined {
+    if (!el) return undefined
+    if (el.classList.contains('chart-wrapper')) {
+      return el
+    } else {
+      const parent = el.parentElement
+      return parent ? getChartEl(parent) : undefined
+    }
+  }
+
+  // function getPanePosition() {
+  //   if (!pane.value) return
+  //   const el = pane.value.getHTMLElement()
+  //   if (!el) return
+  //   const parentEl = getChartEl(el)
+  //   if (!parentEl) return
+
+  //   const pRect = parentEl.getBoundingClientRect()
+  //   const rect = el.getBoundingClientRect()
+  //   position.value.left = `${rect.left - pRect.left}px`
+  //   position.value.top = `${rect.top - pRect.top}px`
+
+  //   return position.value
+  // }
 
   return {
     pane,
@@ -58,6 +113,8 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
     removePlugin,
     remove,
     plugin,
+    position,
     setColor,
+    // getPanePosition,
   }
 }

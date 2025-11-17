@@ -13,6 +13,7 @@ export class TradingVolume extends DrawIndex {
     this.name = INDEX_NAME.MACD
     this.store.id = `${INDEX_NAME.MACD}_${uuidv4()}`
     this.cciPeriod = 20
+    this.name = this.name = INDEX_NAME.TRADINGVOLUME
   }
 
   addSeries() {

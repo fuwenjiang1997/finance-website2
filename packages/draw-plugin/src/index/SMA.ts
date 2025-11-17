@@ -18,6 +18,7 @@ export class SMA extends DrawIndex {
     this.kLineSeries = kLineSeries
     this.name = INDEX_NAME.MACD
     this.store.id = `${INDEX_NAME.MACD}_${uuidv4()}`
+    this.name = INDEX_NAME.SMA
 
     this.smaSeries = []
     this.seriesOptions = [
