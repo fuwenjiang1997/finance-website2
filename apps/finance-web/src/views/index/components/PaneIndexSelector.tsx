@@ -101,7 +101,7 @@ const PaneIndexSelectorItem = defineComponent({
     return () => {
       return (
         <div
-          class={'absolute'}
+          class={'absolute z-10'}
           style={{
             left: `${position.value.left}px`,
             top: `${position.value.top}px`,
@@ -109,7 +109,7 @@ const PaneIndexSelectorItem = defineComponent({
         >
           <NSelect
             size="tiny"
-            class={'min-w-22 opacity-45'}
+            class={'min-w-22 opacity-75'}
             placeholder="指标"
             value={selectPlugin.value}
             onUpdate:value={(v) => (selectPlugin.value = v)}
