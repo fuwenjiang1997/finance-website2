@@ -3,21 +3,22 @@ import type { ChartColorParams } from '@fuwenjiang1997/common-types'
 import { INDEX_TYPE, type DrawIndex } from '@fuwenjiang1997/draw-plugin'
 import { useResizeObserver } from '@vueuse/core'
 import type { IChartApi, IPaneApi, Time } from 'lightweight-charts'
-import { nextTick, ref, shallowRef } from 'vue'
+import { ref, shallowRef } from 'vue'
 
 export type UsePane = ReturnType<typeof usePane>
-
+export interface Position {
+  left: number
+  top: number
+}
 export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
   const pane = shallowRef<IPaneApi<Time>>()
   const plugin = shallowRef<DrawIndex | undefined>()
   const paneEl = shallowRef<HTMLElement>()
+  const resizeHandler = <((params: Position) => void)[]>[]
 
-  const position = ref<{
-    left: string
-    top: string
-  }>({
-    left: '0',
-    top: '0',
+  const position = ref<Position>({
+    left: 0,
+    top: 0,
   })
 
   function remvePane() {
@@ -31,16 +32,20 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
     if (!entry) return
 
     if (!pane.value || !paneEl.value) return
-    const el = paneEl.value
+    const el = entry.target as HTMLElement
+
     const parentEl = getChartEl(el)
     if (!parentEl) return
     await sleep()
     const rect = el.getBoundingClientRect()
     const pRect = parentEl.getBoundingClientRect()
     position.value = {
-      left: `${rect.left - pRect.left}px`,
-      top: `${rect.top - pRect.top}px`,
+      left: rect.left - pRect.left,
+      top: rect.top - pRect.top,
     }
+    resizeHandler.forEach((fn) => {
+      fn(position.value)
+    })
   })
 
   async function createPane() {
@@ -90,6 +95,12 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
       return parent ? getChartEl(parent) : undefined
     }
   }
+  function addResizeHandler(fn: (params: Position) => void) {
+    resizeHandler.push(fn)
+  }
+  function clearResizeHandler() {
+    resizeHandler.length = 0
+  }
 
   // function getPanePosition() {
   //   if (!pane.value) return
@@ -115,6 +126,8 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
     plugin,
     position,
     setColor,
+    addResizeHandler,
+    clearResizeHandler,
     // getPanePosition,
   }
 }

@@ -54,7 +54,7 @@ export default defineComponent({
 
     const IndexSelecter = () => {
       return (
-        <div class={'grid grid-cols-4 gap-2 p-2 w-40 text-sm'}>
+        <div class={'grid grid-cols-4 gap-2 p-2 w-52 text-sm'}>
           {indexList.map((item) => {
             return (
               <div>
@@ -85,7 +85,7 @@ export default defineComponent({
     return () => (
       <div class={cn('flex gap-2 items-center px-4')}>
         <NDropdown trigger="click" placement="top-start" options={IndexSelector}>
-          <NButton size="tiny">
+          <NButton size="small">
             <span
               class={cn('select-none', {
                 'text-[11px]': isMinWindow.value,
