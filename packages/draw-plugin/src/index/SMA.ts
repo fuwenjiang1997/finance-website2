@@ -69,7 +69,7 @@ export class SMA extends DrawIndex {
       if (!res) return
 
       this.smaSeries[index].setData(
-        v.times?.map((t, i) => {
+        v.openTimes?.map((t, i) => {
           return {
             time: t as Time,
             value: res[i],

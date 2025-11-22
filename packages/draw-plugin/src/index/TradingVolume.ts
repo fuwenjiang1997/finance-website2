@@ -52,7 +52,7 @@ export class TradingVolume extends DrawIndex {
     this.addSeries()
 
     this.volumeSeries?.setData(
-      v.times?.map((item, i) => {
+      v.openTimes?.map((item, i) => {
         return {
           time: item as Time,
           value: v.volume[i],

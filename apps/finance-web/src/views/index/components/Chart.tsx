@@ -69,7 +69,7 @@ export default defineComponent({
           'chart-wrapper relative h-full flex flex-col pb-2 bg-white rounded overflow-hidden border border-transparent',
           {
             '!border-black ': props.active,
-            '!absolute left-0 top-0 right-0 bottom-0 z-1': isFull.value,
+            '!absolute left-0 top-0 right-0 bottom-0 z-100': isFull.value,
           },
         )}
       >

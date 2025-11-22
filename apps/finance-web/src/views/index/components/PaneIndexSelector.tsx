@@ -100,26 +100,35 @@ const PaneIndexSelectorItem = defineComponent({
 
     return () => {
       return (
-        <div
-          class={'absolute z-10'}
-          style={{
-            left: `${position.value.left}px`,
-            top: `${position.value.top}px`,
-          }}
-        >
-          <NSelect
-            size="tiny"
-            class={'min-w-22 opacity-75'}
-            placeholder="指标"
-            value={selectPlugin.value}
-            onUpdate:value={(v) => (selectPlugin.value = v)}
-            options={options.value}
-          >
-            {{
-              empty: () => <div class={'text-gray-500'}>None</div>,
+        <>
+          <div
+            class={'absolute z-10 w-full h-[1px] bg-black'}
+            style={{
+              left: `${position.value.left}px`,
+              top: `${position.value.top - 1}px`,
             }}
-          </NSelect>
-        </div>
+          ></div>
+          <div
+            class={'absolute z-10'}
+            style={{
+              left: `${position.value.left}px`,
+              top: `${position.value.top}px`,
+            }}
+          >
+            <NSelect
+              size="tiny"
+              class={'min-w-22 opacity-75'}
+              placeholder="指标"
+              value={selectPlugin.value}
+              onUpdate:value={(v) => (selectPlugin.value = v)}
+              options={options.value}
+            >
+              {{
+                empty: () => <div class={'text-gray-500'}>None</div>,
+              }}
+            </NSelect>
+          </div>
+        </>
       )
     }
   },

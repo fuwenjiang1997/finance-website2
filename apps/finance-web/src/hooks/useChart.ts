@@ -20,7 +20,7 @@ import type { DrawInfoData } from './useDrawPlugin'
 import { useDrawingManager } from './useDrawingManager'
 import { getTpFromMouseEvent, type KLineIndexData } from '@fuwenjiang1997/draw-plugin'
 import { type UseDrawPluginRes } from './useDrawPlugin'
-import { useDrawingIndexManager } from './useDrawIndeManager'
+import { useDrawingIndexManager } from './useDrawIndexManager'
 import { useAppStore } from '@/stores/app'
 import { storeToRefs } from 'pinia'
 
@@ -288,7 +288,7 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
   function getStartTime(_circle: KLineCircle, lastStartTime?: number): number {
     const t = lastStartTime ? dayjs(lastStartTime) : dayjs()
 
-    const PerCount = 120
+    const PerCount = 300
 
     const handler: { [k in KLineCircle]: () => number } = {
       [KLineCircle.m1]: () => {

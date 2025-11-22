@@ -85,8 +85,9 @@ export class MACD extends DrawIndex {
     const res = window?.MACD?.(v.closes, 12, 26, 9) as WasmMACDResult | undefined
 
     if (res) {
+      console.log('res:>>', v, res)
       this.histogramSeries?.setData(
-        v.times.map((time, index) => ({
+        v.openTimes.map((time, index) => ({
           time: time as Time,
           value: res.histogram[index],
           color: res.histogram[index] >= 0 ? this.store.upColor : this.store.downColor,
@@ -94,7 +95,7 @@ export class MACD extends DrawIndex {
       )
       // 慢线
       this.deaLineSeries?.setData(
-        v.times.map((time, index) => ({
+        v.openTimes.map((time, index) => ({
           time: time as Time,
           value: res.dea[index],
           color: '#ffb86a',
@@ -102,7 +103,7 @@ export class MACD extends DrawIndex {
       )
       // 快线
       this.difLineSeries?.setData(
-        v.times.map((time, index) => ({
+        v.openTimes.map((time, index) => ({
           time: time as Time,
           value: res.dif[index],
           color: '#c10007',

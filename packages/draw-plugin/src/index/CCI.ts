@@ -76,7 +76,7 @@ export class CCI extends DrawIndex {
     this.addSeries()
 
     this.cciSeries?.setData(
-      v.times?.map((item, i) => {
+      v.openTimes?.map((item, i) => {
         return {
           time: item as Time,
           value: res[i],
