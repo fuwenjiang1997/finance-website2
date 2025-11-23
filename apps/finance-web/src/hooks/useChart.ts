@@ -153,6 +153,9 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
         attributionLogo: false,
         background: { type: ColorType.Solid, color: 'white' },
         textColor: 'black',
+        panes: {
+          separatorColor: '#000',
+        },
       },
       timeScale: {
         timeVisible: true, // 显示时间轴
@@ -367,10 +370,6 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     destoryDrawingManager()
     chart.value?.remove()
   }
-
-  watch(renderIndexList, () => {
-    console.log('改变了2:')
-  })
 
   return {
     id,

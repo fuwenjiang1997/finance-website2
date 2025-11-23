@@ -12,6 +12,7 @@ import { computed, ref, watch, type ComputedRef } from 'vue'
 import { usePane, type UsePane } from './usePane'
 import type { ChartColorParams } from '@fuwenjiang1997/common-types'
 import { cloneDeep } from 'lodash-es'
+import { sleep } from '@/utils/fun'
 
 export interface InitParams {
   chart: IChartApi
@@ -70,16 +71,36 @@ export const useDrawingIndexManager = (
     updateIndex(positionIndex)
   }
 
-  function removeIndex(name?: INDEX_NAME, index: number = -1) {
+  async function removeIndex(name?: INDEX_NAME, index: number = -1) {
     if (name) {
       index = renderIndexList.value.findIndex((item) => item.plugin?.name === name)
     }
     if (index === -1) return
-    // const _renderIndexList = cloneDeep(renderIndexList.value)
-    renderIndexList.value[index]?.remove()
-    // _renderIndexList.splice(index, 1)
-    renderIndexList.value.splice(index, 1)
-    // renderIndexNameList.value.splice(index, 1)
+
+    const len = renderIndexList.value.length
+    const removePane = renderIndexList.value[index]
+    removePane?.removePlugin()
+
+    for (let i = index; i < len; i++) {
+      if (i + 1 <= len - 1) {
+        const nextPlugin = renderIndexList.value[i + 1]?.plugin
+        if (nextPlugin) {
+          renderIndexList.value[i]?.addPlugin(nextPlugin)
+        }
+      }
+    }
+
+    renderIndexList.value[len - 1]?.remove()
+    renderIndexList.value.splice(len - 1, 1)
+
+    await sleep()
+    updatePanesEl()
+  }
+
+  function updatePanesEl() {
+    renderIndexList.value.forEach((item) => {
+      item.updatePaneEl()
+    })
   }
 
   function setIndex(name: INDEX_NAME, index: number) {

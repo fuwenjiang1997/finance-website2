@@ -1,4 +1,4 @@
-import { computed, defineComponent, onUnmounted, ref, toValue, type PropType } from 'vue'
+import { computed, defineComponent, ref, toValue, type PropType } from 'vue'
 import type { ChartInstance } from '@/hooks/useChart'
 import { indexListMap } from '@/utils/const'
 import type { Position, UsePane } from '@/hooks/usePane'
@@ -76,6 +76,7 @@ const PaneIndexSelectorItem = defineComponent({
 
     props.pane.addResizeHandler((p) => {
       position.value = p
+      console.log('position:', position.value)
     })
 
     const options = computed(() => {
@@ -94,20 +95,20 @@ const PaneIndexSelectorItem = defineComponent({
       },
     })
 
-    onUnmounted(() => {
-      props.pane.clearResizeHandler()
-    })
+    // onUnmounted(() => {
+    //   props.pane.clearResizeHandler()
+    // })
 
     return () => {
       return (
         <>
-          <div
+          {/* <div
             class={'absolute z-10 w-full h-[1px] bg-black'}
             style={{
               left: `${position.value.left}px`,
               top: `${position.value.top - 1}px`,
             }}
-          ></div>
+          ></div> */}
           <div
             class={'absolute z-10'}
             style={{

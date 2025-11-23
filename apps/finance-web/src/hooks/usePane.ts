@@ -25,9 +25,10 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
     if (!pane.value) return
     chart.removePane(pane.value.paneIndex())
     pane.value = undefined
+    clearResizeHandler()
   }
 
-  useResizeObserver(paneEl, async (entries) => {
+  const { stop } = useResizeObserver(paneEl, async (entries) => {
     const entry = entries[0]
     if (!entry) return
 
@@ -43,6 +44,8 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
       left: rect.left - pRect.left,
       top: rect.top - pRect.top,
     }
+    console.log('pane:>>', pane.value.paneIndex())
+    console.log('resizeHandler:', resizeHandler)
     resizeHandler.forEach((fn) => {
       fn(position.value)
     })
@@ -61,19 +64,19 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
     })
 
     await sleep()
-    paneEl.value = pane.value?.getHTMLElement() || undefined
+    updatePaneEl()
   }
+
   function setColor(colors: ChartColorParams) {
     plugin.value?.setColor(colors)
   }
-
   function addPlugin(p: DrawIndex) {
     removePlugin()
     if (p.indexType === INDEX_TYPE.VICE) {
       createPane()
     }
-    plugin.value = p
     if (pane.value) {
+      plugin.value = p
       plugin.value?.setPane(pane.value)
     }
   }
@@ -83,6 +86,7 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
     plugin.value = undefined
   }
   function remove() {
+    stop()
     removePlugin()
     remvePane()
   }
@@ -101,21 +105,14 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
   function clearResizeHandler() {
     resizeHandler.length = 0
   }
-
-  // function getPanePosition() {
-  //   if (!pane.value) return
-  //   const el = pane.value.getHTMLElement()
-  //   if (!el) return
-  //   const parentEl = getChartEl(el)
-  //   if (!parentEl) return
-
-  //   const pRect = parentEl.getBoundingClientRect()
-  //   const rect = el.getBoundingClientRect()
-  //   position.value.left = `${rect.left - pRect.left}px`
-  //   position.value.top = `${rect.top - pRect.top}px`
-
-  //   return position.value
-  // }
+  async function updatePaneEl() {
+    const oldEl = paneEl.value
+    const newEl = pane.value?.getHTMLElement() || undefined
+    if (oldEl !== newEl) {
+      paneEl.value = newEl
+      console.log('paneEl.value:', paneEl.value === oldEl)
+    }
+  }
 
   return {
     pane,
@@ -128,6 +125,7 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
     setColor,
     addResizeHandler,
     clearResizeHandler,
+    updatePaneEl,
     // getPanePosition,
   }
 }
