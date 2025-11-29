@@ -38,7 +38,7 @@ export default defineComponent({
               pane={item}
               name={_item?.name ? indexListMap[_item.name]?.label : ''}
               selectedPluginNameList={renderFooterIndexNameList.value}
-              key={index}
+              key={item.id}
               index={index}
             ></PaneIndexSelectorItem>
           )
@@ -72,13 +72,6 @@ const PaneIndexSelectorItem = defineComponent({
     },
   },
   setup(props) {
-    const position = ref<Position>({ left: 0, top: 0 })
-
-    props.pane.addResizeHandler((p) => {
-      position.value = p
-      console.log('position:', position.value)
-    })
-
     const options = computed(() => {
       return Object.values(indexListMap).filter((item) => {
         return !props.selectedPluginNameList.includes(item.value)
@@ -95,10 +88,6 @@ const PaneIndexSelectorItem = defineComponent({
       },
     })
 
-    // onUnmounted(() => {
-    //   props.pane.clearResizeHandler()
-    // })
-
     return () => {
       return (
         <>
@@ -112,8 +101,8 @@ const PaneIndexSelectorItem = defineComponent({
           <div
             class={'absolute z-10'}
             style={{
-              left: `${position.value.left}px`,
-              top: `${position.value.top}px`,
+              left: `${toValue(props.pane.position).left}px`,
+              top: `${toValue(props.pane.position).top}px`,
             }}
           >
             <NSelect

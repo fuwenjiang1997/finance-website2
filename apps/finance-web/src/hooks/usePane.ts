@@ -4,6 +4,7 @@ import { INDEX_TYPE, type DrawIndex } from '@fuwenjiang1997/draw-plugin'
 import { useResizeObserver } from '@vueuse/core'
 import type { IChartApi, IPaneApi, Time } from 'lightweight-charts'
 import { ref, shallowRef } from 'vue'
+import { v4 as uuidv4 } from 'uuid'
 
 export type UsePane = ReturnType<typeof usePane>
 export interface Position {
@@ -14,7 +15,7 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
   const pane = shallowRef<IPaneApi<Time>>()
   const plugin = shallowRef<DrawIndex | undefined>()
   const paneEl = shallowRef<HTMLElement>()
-  const resizeHandler = <((params: Position) => void)[]>[]
+  const id = uuidv4()
 
   const position = ref<Position>({
     left: 0,
@@ -25,7 +26,6 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
     if (!pane.value) return
     chart.removePane(pane.value.paneIndex())
     pane.value = undefined
-    clearResizeHandler()
   }
 
   const { stop } = useResizeObserver(paneEl, async (entries) => {
@@ -44,11 +44,6 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
       left: rect.left - pRect.left,
       top: rect.top - pRect.top,
     }
-    console.log('pane:>>', pane.value.paneIndex())
-    console.log('resizeHandler:', resizeHandler)
-    resizeHandler.forEach((fn) => {
-      fn(position.value)
-    })
   })
 
   async function createPane() {
@@ -71,7 +66,9 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
     plugin.value?.setColor(colors)
   }
   function addPlugin(p: DrawIndex) {
-    removePlugin()
+    // removePlugin()
+    if (plugin.value) return
+
     if (p.indexType === INDEX_TYPE.VICE) {
       createPane()
     }
@@ -99,13 +96,12 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
       return parent ? getChartEl(parent) : undefined
     }
   }
-  function addResizeHandler(fn: (params: Position) => void) {
-    resizeHandler.push(fn)
-  }
-  function clearResizeHandler() {
-    resizeHandler.length = 0
-  }
-  async function updatePaneEl() {
+  async function updatePaneEl(_pane?: IPaneApi<Time>) {
+    if (_pane) {
+      pane.value = _pane
+      plugin.value?.setPane(_pane)
+    }
+
     const oldEl = paneEl.value
     const newEl = pane.value?.getHTMLElement() || undefined
     if (oldEl !== newEl) {
@@ -115,6 +111,7 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
   }
 
   return {
+    id,
     pane,
     remvePane,
     addPlugin,
@@ -123,9 +120,6 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
     plugin,
     position,
     setColor,
-    addResizeHandler,
-    clearResizeHandler,
     updatePaneEl,
-    // getPanePosition,
   }
 }

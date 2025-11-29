@@ -76,30 +76,15 @@ export const useDrawingIndexManager = (
       index = renderIndexList.value.findIndex((item) => item.plugin?.name === name)
     }
     if (index === -1) return
-
-    const len = renderIndexList.value.length
     const removePane = renderIndexList.value[index]
-    removePane?.removePlugin()
-
-    for (let i = index; i < len; i++) {
-      if (i + 1 <= len - 1) {
-        const nextPlugin = renderIndexList.value[i + 1]?.plugin
-        if (nextPlugin) {
-          renderIndexList.value[i]?.addPlugin(nextPlugin)
-        }
-      }
-    }
-
-    renderIndexList.value[len - 1]?.remove()
-    renderIndexList.value.splice(len - 1, 1)
-
-    await sleep()
+    removePane?.remove()
+    renderIndexList.value.splice(index, 1)
     updatePanesEl()
   }
 
   function updatePanesEl() {
     renderIndexList.value.forEach((item) => {
-      item.updatePaneEl()
+      item.updatePaneEl(item.pane)
     })
   }
 
