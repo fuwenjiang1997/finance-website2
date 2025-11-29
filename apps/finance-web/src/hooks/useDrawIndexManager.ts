@@ -12,7 +12,6 @@ import { computed, ref, watch, type ComputedRef } from 'vue'
 import { usePane, type UsePane } from './usePane'
 import type { ChartColorParams } from '@fuwenjiang1997/common-types'
 import { cloneDeep } from 'lodash-es'
-import { sleep } from '@/utils/fun'
 
 export interface InitParams {
   chart: IChartApi
@@ -51,7 +50,6 @@ export const useDrawingIndexManager = (
     if (!plugin || !chart || !kLineSeries || !chartContainer) return
 
     const instanceIndex = new plugin(chartContainer, chart, kLineSeries)
-    // const _renderIndexList = cloneDeep(renderIndexList.value)
 
     if (positionIndex !== undefined) {
       const pane = renderIndexList.value[positionIndex]

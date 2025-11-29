@@ -72,8 +72,8 @@ export const usePane = (chart: IChartApi, chartContainer: HTMLElement) => {
     if (p.indexType === INDEX_TYPE.VICE) {
       createPane()
     }
+    plugin.value = p
     if (pane.value) {
-      plugin.value = p
       plugin.value?.setPane(pane.value)
     }
   }

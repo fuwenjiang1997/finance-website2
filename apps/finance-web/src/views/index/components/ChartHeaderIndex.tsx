@@ -42,7 +42,7 @@ export default defineComponent({
       return indexList.find((item) => item.value === selectedIndexValue.value)
     })
 
-    function onCLickIndex(v?: INDEX_NAME) {
+    function onClickIndex(v?: INDEX_NAME) {
       if (selectedIndexValue.value) {
         props.chart.removeIndex(selectedIndexValue.value)
       }
@@ -62,7 +62,7 @@ export default defineComponent({
                   class={cn('inline-block px-1 py-0.5 cursor-pointer rounded hover:bg-gray-100', {
                     'bg-gray-200': selectedIndexValue.value === item.value,
                   })}
-                  onClick={() => onCLickIndex(item.value)}
+                  onClick={() => onClickIndex(item.value)}
                 >
                   {item.label}
                   {/* <i class={' ml-0.5 text-xs iconfont icon-zhibiao'}></i> */}

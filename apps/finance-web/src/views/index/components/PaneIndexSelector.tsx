@@ -73,6 +73,7 @@ const PaneIndexSelectorItem = defineComponent({
   },
   setup(props) {
     const options = computed(() => {
+      // return Object.values(indexListMap)
       return Object.values(indexListMap).filter((item) => {
         return !props.selectedPluginNameList.includes(item.value)
       })
