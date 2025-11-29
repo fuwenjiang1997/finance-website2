@@ -7,6 +7,7 @@ import { storeToRefs } from 'pinia'
 import cn from 'classnames'
 
 export default defineComponent({
+  name: 'HomePage',
   props: {
     chart: {
       type: String,

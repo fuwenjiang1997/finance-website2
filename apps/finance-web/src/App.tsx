@@ -1,4 +1,4 @@
-import { defineComponent, onBeforeMount, onMounted } from 'vue'
+import { defineComponent, h, KeepAlive, onBeforeMount, onMounted } from 'vue'
 import { RouterView } from 'vue-router'
 import { NConfigProvider, NMessageProvider, NNotificationProvider } from 'naive-ui'
 import theme from './theme'
@@ -27,7 +27,15 @@ export default defineComponent({
       <NConfigProvider themeOverrides={theme}>
         <NNotificationProvider>
           <NMessageProvider>
-            <RouterView></RouterView>
+            <RouterView
+              v-slots={{
+                default: ({ Component }) => (
+                  <KeepAlive include={['HomePage']}>
+                    {Component ? h(Component as any) : null}
+                  </KeepAlive>
+                ),
+              }}
+            />
           </NMessageProvider>
         </NNotificationProvider>
       </NConfigProvider>

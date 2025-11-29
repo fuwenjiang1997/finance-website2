@@ -145,6 +145,7 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     if (!chartRef.value || !chartContainerRef.value) {
       throw Error('chartRef 和 chartContainerRef 必须存在')
     }
+
     chart.value = createChart(chartRef.value, {
       autoSize: true,
       width: chartContainerRef.value.clientWidth,
@@ -190,6 +191,8 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
         chartContainer: chartContainerRef.value,
       })
     }
+
+    initData()
     subscribeToRangeChanges()
   }
 
@@ -343,8 +346,8 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     return count
   }
 
-  watch([code, circle], async ([_code, _circle]) => {
-    if (!_code || !_circle) return
+  async function initData() {
+    if (!code.value || !circle.value) return
 
     if (kLineDataByCircle.value.length === 0) {
       try {
@@ -355,6 +358,10 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     }
     const w = theChartContainerRef.value?.clientWidth || 0
     setDefaultVisibleRange(getOneRenderCount(w))
+  }
+
+  watch([code, circle], async () => {
+    initData()
   })
 
   const { stop } = useResizeObserver(theChartContainerRef, (entries) => {

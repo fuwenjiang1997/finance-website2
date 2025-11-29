@@ -1,4 +1,13 @@
-import { defineComponent, onMounted, useTemplateRef, type PropType, ref } from 'vue'
+import {
+  defineComponent,
+  onMounted,
+  useTemplateRef,
+  type PropType,
+  ref,
+  onUnmounted,
+  toValue,
+  nextTick,
+} from 'vue'
 import type { ChartInstance } from '@/hooks/useChart'
 import ChartCycle from './ChartCycle'
 import LightMenu from './LightMenu'
@@ -9,6 +18,7 @@ import ChartSet from './ChartSet'
 import ChartIndex from './ChartIndex'
 import ChartHeaderIndex from './ChartHeaderIndex'
 import PaneIndexSelector from './PaneIndexSelector'
+import { KLineCircle } from '@/utils/const'
 
 export default defineComponent({
   props: {
@@ -38,9 +48,19 @@ export default defineComponent({
     const notification = useNotification()
 
     onMounted(() => {
+      const oldCircle = toValue(props.chart.circle)
+      const newCircle = oldCircle === KLineCircle.D1 ? KLineCircle.H1 : KLineCircle.D1
+      props.chart.setCircle(newCircle)
+      console.log('加载了')
       props.chart.initChart({
         chartRef: chartRef,
         chartContainerRef: chartContainerRef,
+      })
+
+      nextTick(() => {
+        if (oldCircle) {
+          props.chart.setCircle(oldCircle)
+        }
       })
     })
 
