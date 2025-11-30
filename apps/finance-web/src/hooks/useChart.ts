@@ -81,7 +81,7 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
       ...item,
       time: dayjs(item.OpenTime).unix().toString(),
     }))
-    return kLineSimulation.getSimulationKLineData(_data)
+    return kLineSimulation.getSimulationKLineData(_data) as unknown as apiGetKLineDataReturn[]
   })
 
   // 指标数据
