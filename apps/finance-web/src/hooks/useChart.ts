@@ -74,8 +74,14 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     // 获取模拟k线数据
     return kLineSimulation.getSimulationKLineData(kLineData.get(currentDataKey.value) || [])
   })
+
   const kLineOriginDataByCircle = computed(() => {
-    return kLineOriginData.get(currentDataKey.value) || []
+    const data = kLineOriginData.get(currentDataKey.value) || []
+    const _data = data.map((item) => ({
+      ...item,
+      time: dayjs(item.OpenTime).unix().toString(),
+    }))
+    return kLineSimulation.getSimulationKLineData(_data)
   })
 
   // 指标数据

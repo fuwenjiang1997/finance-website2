@@ -4,7 +4,6 @@
 
 import type { CandlestickData, Time, WhitespaceData } from 'lightweight-charts'
 import { ref } from 'vue'
-import { useMagicKeys, onKeyStroke } from '@vueuse/core'
 
 export function useKLineSimulation() {
   const isActriveKLineSimulation = ref(false)
