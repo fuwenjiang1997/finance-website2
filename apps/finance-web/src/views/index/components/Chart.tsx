@@ -51,7 +51,6 @@ export default defineComponent({
       const oldCircle = toValue(props.chart.circle)
       const newCircle = oldCircle === KLineCircle.D1 ? KLineCircle.H1 : KLineCircle.D1
       props.chart.setCircle(newCircle)
-      console.log('加载了')
       props.chart.initChart({
         chartRef: chartRef,
         chartContainerRef: chartContainerRef,
