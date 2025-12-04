@@ -72,6 +72,8 @@ export class CCI extends DrawIndex {
     const res = window?.CCI?.(v.highs, v.lows, v.closes, this.cciPeriod)
     if (!res) return
 
+    console.log('CCI res', v)
+
     super.render(v)
     this.addSeries()
 
