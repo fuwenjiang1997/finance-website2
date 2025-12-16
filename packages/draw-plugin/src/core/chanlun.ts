@@ -213,9 +213,10 @@ function filterFengxings(rawFenxings: FenXing[]): FenXing[] {
   const filtered: FenXing[] = []
   let lastFenxing: FenXing | undefined = undefined
 
-  for (let i = 0; i < rawFenxings.length; i++) {
-    const currentFenxing = rawFenxings[i]
-  }
+  // todo 筛选出来的分型必须是有效分型
+  // for (let i = 0; i < rawFenxings.length; i++) {
+  //   const currentFenxing = rawFenxings[i]
+  // }
 
   for (const currentFenxing of rawFenxings) {
     if (!lastFenxing) {
@@ -240,31 +241,52 @@ function filterFengxings(rawFenxings: FenXing[]): FenXing[] {
     } else {
       // 类型不同，上一个分型可以被确认
       // 检查K线是否有重叠（分型之间至少隔一根K线）
-      // 顶分型的最低点必须高于底分型的最低点
-      if (currentFenxing.startKLine.startIndex! - lastFenxing.endKline.endIndex! > 2) {
-        if (
-          (currentFenxing.type === FenXingType.TOP &&
-            currentFenxing.kLine.low > lastFenxing.kLine.low) ||
-          (currentFenxing.type === FenXingType.BOTTOM &&
-            currentFenxing.kLine.low < lastFenxing.kLine.low)
-        ) {
-          filtered.push(lastFenxing)
-          lastFenxing = currentFenxing
-        }
-      } else {
-        // todo K线重叠，进行比较取舍
-        // K线重叠，进行比较取舍（这是更严格的处理）
-        // if (lastFenxing.type === FenXingType.TOP && currentFenxing.price < lastFenxing.price) {
-        //   // 底分型更强，保留底
-        //   lastFenxing = currentFenxing
-        // } else if (
-        //   lastFenxing.type === FenXingType.BOTTOM &&
-        //   currentFenxing.price > lastFenxing.price
-        // ) {
-        //   // 顶分型更强，保留顶
-        //   lastFenxing = currentFenxing
-        // }
+
+      // 需要判断是否有效
+      let isValidate = true
+      if (currentFenxing.startKLine.startIndex! - lastFenxing.endKline.endIndex! <= 2) {
+        isValidate = false
       }
+
+      // 向上的一笔，顶分型的最低点必须高于底分型的最低点；向下的一笔，底分型的高点必须小于顶分型的低点
+      if (
+        (currentFenxing.type === FenXingType.TOP &&
+          currentFenxing.kLine.low <= lastFenxing.kLine.high) ||
+        (currentFenxing.type === FenXingType.BOTTOM &&
+          currentFenxing.kLine.high >= lastFenxing.kLine.low)
+      ) {
+        isValidate = false
+      }
+
+      if (isValidate) {
+        filtered.push(lastFenxing)
+        lastFenxing = currentFenxing
+      }
+
+      // if (currentFenxing.startKLine.startIndex! - lastFenxing.endKline.endIndex! > 2) {
+      //   if (
+      //     (currentFenxing.type === FenXingType.TOP &&
+      //       currentFenxing.kLine.low > lastFenxing.kLine.low) ||
+      //     (currentFenxing.type === FenXingType.BOTTOM &&
+      //       currentFenxing.kLine.low < lastFenxing.kLine.low)
+      //   ) {
+      //     filtered.push(lastFenxing)
+      //     lastFenxing = currentFenxing
+      //   }
+      // } else {
+      //   // todo K线重叠，进行比较取舍
+      //   // K线重叠，进行比较取舍（这是更严格的处理）
+      //   // if (lastFenxing.type === FenXingType.TOP && currentFenxing.price < lastFenxing.price) {
+      //   //   // 底分型更强，保留底
+      //   //   lastFenxing = currentFenxing
+      //   // } else if (
+      //   //   lastFenxing.type === FenXingType.BOTTOM &&
+      //   //   currentFenxing.price > lastFenxing.price
+      //   // ) {
+      //   //   // 顶分型更强，保留顶
+      //   //   lastFenxing = currentFenxing
+      //   // }
+      // }
     }
   }
   // 将最后一个暂存的分型加入
@@ -305,18 +327,17 @@ function findBi(fenXings: FenXing[], processedKlines: KLine[]): Bi[] {
       }
       continue // 继续寻找下一个异类分型
     } else {
-      // 向下的一笔
-      // 如果底分型的high <= 顶分型的low, 破坏笔,不成立
+      // 向下的一笔，前一个是顶分型
       if (tempFenxing.type === FenXingType.TOP) {
-        // currentFenxing.kLine.low >= tempFenxing.kLine.high
+        // 如果顶分型的low <= 底分型的high , 破坏笔,不成立
         if (tempFenxing.kLine.low <= currentFenxing.kLine.high) {
           continue // 继续寻找下一个异类分型
         }
       } else {
-        // 向上的一笔
-        // 如果顶分型的low <= 底分型的high, 破坏笔,不成立
-        // currentFenxing.kLine.low <= tempFenxing.kLine.high
-        if (currentFenxing.kLine.low <= tempFenxing.kLine.high) {
+        // 向上的一笔，前一个是底分型
+        // 如果底分型的high >= 顶分型的low, 破坏笔,不成立
+        // tempFenxing.kLine.high >= currentFenxing.kLine.low
+        if (tempFenxing.kLine.high >= currentFenxing.kLine.low) {
           continue // 继续寻找下一个异类分型
         }
       }
@@ -345,7 +366,7 @@ function findBi(fenXings: FenXing[], processedKlines: KLine[]): Bi[] {
     // const highBetween = Math.max(...klinesBetween.map((k) => k.high))
     // const lowBetween = Math.min(...klinesBetween.map((k) => k.low))
 
-    // if (fx1.type === 'bottom' && fx2.type === 'top') {
+    // if (fx1.type === FenXingType.BOTTOM && fx2.type === FenXingType.TOP) {
     //   // 潜在的向上一笔
     //   if (highBetween > fx2.price || lowBetween < fx1.price) {
     //     isValid = false
