@@ -100,6 +100,7 @@ export enum INDEX_NAME {
   CCI = 'CCI',
   SMA = 'SMA',
   TRADINGVOLUME = 'TradingVolume',
+  CHANLUN = 'ChanLun',
 }
 
 export enum INDEX_TYPE {

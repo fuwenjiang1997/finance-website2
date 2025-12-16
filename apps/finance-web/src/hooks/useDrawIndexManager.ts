@@ -4,6 +4,7 @@ import {
   MACD,
   SMA,
   TradingVolume,
+  CHANLUN,
   type IDrawingIndexClass,
   type KLineIndexData,
 } from '@fuwenjiang1997/draw-plugin'
@@ -30,6 +31,7 @@ export const useDrawingIndexManager = (
     [INDEX_NAME.CCI]: CCI,
     [INDEX_NAME.SMA]: SMA,
     [INDEX_NAME.TRADINGVOLUME]: TradingVolume,
+    [INDEX_NAME.CHANLUN]: CHANLUN,
   }
   let chart: IChartApi
   let kLineSeries: ISeriesApi<SeriesType>

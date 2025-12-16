@@ -35,6 +35,11 @@ export default defineComponent({
           // { label: '120', value: 120, color: '#d91a45' },
         ],
       },
+      {
+        label: '缠论',
+        value: INDEX_NAME.CHANLUN,
+        options: [],
+      },
     ]
 
     const selectedIndexValue = ref<INDEX_NAME | undefined>(undefined)
