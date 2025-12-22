@@ -95,7 +95,9 @@ export default defineComponent({
           <div class={'flex justify-between items-center h-8 px-2 bg-white'}>
             <div>
               <span>
-                [{props.index + 1}] {props.chart.code} ({props.chart.circle})
+                [{props.index + 1}] {props.chart.name}
+                { props.chart.name === props.chart.code ? null : ` [${props.chart.code}]` }
+                ({props.chart.circle})
                 {/* {cycleListMap[toValue(props.chart.circle)]?.label} ) */}
               </span>
             </div>
