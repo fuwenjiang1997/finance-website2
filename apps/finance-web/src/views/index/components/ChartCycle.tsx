@@ -1,7 +1,7 @@
 import { computed, defineComponent, toValue, useTemplateRef, type PropType } from 'vue'
 import { MyTagButton, MyTagButtonSize } from '@/components/button/MyTagButton'
 import type { ChartInstance } from '@/hooks/useChart'
-import { cycleListMap } from '@/utils/const'
+import { cycleListMap, aCycleListMap } from '@/utils/const'
 import { useElementSize } from '@vueuse/core'
 import cn from 'classnames'
 
@@ -19,6 +19,15 @@ export default defineComponent({
 
     const isMinWindow = computed(() => width.value < 600)
 
+    const cycleData = computed(() => {
+    console.log('props.chart.code:>>', toValue(props.chart.code))
+    
+      if (/^[a-zA-Z]/.test(toValue(props.chart.code))) {
+        return cycleListMap
+      }
+      return aCycleListMap
+    })
+
     return () => (
       <div
         class={cn('flex px-4 gap-[1px]', {
@@ -26,7 +35,7 @@ export default defineComponent({
         })}
         ref="cycleRef"
       >
-        {Object.values(cycleListMap).map((item) => {
+        {Object.values(cycleData.value).map((item) => {
           return (
             <MyTagButton
               onClick={() => props.chart.setCircle(item.value)}

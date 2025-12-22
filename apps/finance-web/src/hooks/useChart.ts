@@ -202,6 +202,7 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
     subscribeToRangeChanges()
   }
 
+  // let repeatedCount = 0
   const [getKlineData, getKlineDataLoading] = useWithLoading<
     [{ startTime?: number; endTime?: number }]
   >(async (done, ...[params]) => {
@@ -218,6 +219,15 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
       ) {
         done()
         return
+        // if (repeatedCount > 1) {
+        //   done()
+        //   return
+        // }
+        // if (params?.startTime) {
+        //   params.startTime = dayjs(params.startTime).add(-20, 'day').valueOf()
+        // }
+        
+        // repeatedCount++
       }
       const _startTime = params?.startTime || 0
       const res = await apiGetKLineData({
@@ -254,6 +264,7 @@ export function useChart({ drawPluginHook }: { drawPluginHook: UseDrawPluginRes 
         const oldOriginData = kLineOriginData.get(k) || []
         kLineOriginData.set(k, [...res, ...oldOriginData])
         kLineData.set(k, [...newData, ...oldData])
+        // repeatedCount = 0
       } else {
         noMoreKLineData.value[_circle] = true
       }
