@@ -1,0 +1,36 @@
+{
+  "name": "@fuwenjiang1997/draw-plugin",
+  "version": "1.0.0",
+  "description": "Shared utility functions for the monorepo",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "@fuwenjiang1997/common-types": "workspace:^",
+    "@types/lodash-es": "^4.17.12"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.22"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "dist"
+  ],
+  "packageManager": "pnpm@10.6.1",
+  "dependencies": {
+    "color": "^5.0.2",
+    "lodash-es": "^4.17.21",
+    "uuid": "^13.0.0"
+  }
+}

@@ -1,0 +1,5 @@
+packages:
+  # 所有的 packages 都放在 packages/ 目录下
+  - 'packages/*'
+  # 如果你有其他目录也可以包含进来，例如 apps
+  - 'apps/*'
